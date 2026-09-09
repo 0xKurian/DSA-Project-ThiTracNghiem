@@ -1,119 +1,121 @@
 #include <iostream>
-
-#include "core/QuestionList.h"
+#include "core/SubjectBST.h"
 
 using namespace std;
 
 int main() {
-    Question* head = nullptr;
+    Subject* root = nullptr;
 
-    cout << "Generated IDs:\n";
+    // ==================== INSERT ====================
 
-    cout << generateQuestionId() << '\n';
-    cout << generateQuestionId() << '\n';
-    cout << generateQuestionId() << '\n';
-
-    updateQuestionIdCounter(100);
-
-    cout << "After update to 100:\n";
-    cout << generateQuestionId() << '\n';
-    cout << generateQuestionId() << '\n';
-
-    cout << '\n';
-
-    Question* q1 = createQuestion(
-        1,
-        "2 + 2 = ?",
-        "1",
-        "2",
-        "3",
-        "4",
-        'D'
+    root = insertSubject(
+        root,
+        createSubject("CTDL", "Cau truc du lieu")
     );
 
-    Question* q2 = createQuestion(
-        2,
-        "3 + 3 = ?",
-        "4",
-        "5",
-        "6",
-        "7",
-        'C'
+    root = insertSubject(
+        root,
+        createSubject("OOP", "Lap trinh huong doi tuong")
     );
 
-    Question* q3 = createQuestion(
-        3,
-        "5 - 2 = ?",
-        "1",
-        "2",
-        "3",
-        "4",
-        'C'
+    root = insertSubject(
+        root,
+        createSubject("CSDL", "Co so du lieu")
     );
 
-    insertQuestion(head, q1);
-    insertQuestion(head, q2);
-    insertQuestion(head, q3);
+    root = insertSubject(
+        root,
+        createSubject("TRR", "Toan roi rac")
+    );
 
-    printQuestions(head);
+    cout << "=== SUBJECT LIST ===\n";
+    printSubjects(root);
 
-    Question* found = findQuestion(head, 2);
+    // ==================== FIND ====================
+
+    cout << "\n=== FIND ===\n";
+
+    Subject* found = findSubject(root, "OOP");
 
     if (found != nullptr) {
         cout << "Found: "
-            << found->id << " - "
-            << found->content << '\n';
-    }
-    else {
-        cout << "Question not found\n";
+             << found->id << " - "
+             << found->name << '\n';
     }
 
-    found = findQuestion(head, 100);
+    found = findSubject(root, "JAVA");
 
     if (found == nullptr) {
-        cout << "Question 100 not found\n";
+        cout << "JAVA not found\n";
     }
 
-    cout << "Number of questions: "
-     << countQuestions(head) << '\n';
+    // ==================== EDIT NAME ====================
 
-    cout << "\nDelete question 2:\n";
+    cout << "\n=== EDIT NAME ===\n";
 
-    if (deleteQuestion(head, 2)) {
-        cout << "Deleted successfully\n";
+    editSubject(
+        root,
+        "CTDL",
+        "CTDL",
+        "Data Structures"
+    );
+
+    printSubjects(root);
+
+    // ==================== EDIT ID ====================
+
+    cout << "\n=== EDIT ID ===\n";
+
+    editSubject(
+        root,
+        "OOP",
+        "AI",
+        "Artificial Intelligence"
+    );
+
+    printSubjects(root);
+
+    // ==================== DUPLICATE ID ====================
+
+    cout << "\n=== EDIT DUPLICATE ID ===\n";
+
+    if (!editSubject(
+        root,
+        "TRR",
+        "CSDL",
+        "Test"
+    )) {
+        cout << "Edit failed\n";
     }
-    else {
-        cout << "Question not found\n";
-    }
 
-    printQuestions(head);
+    // ==================== DELETE ====================
 
-    cout << "\nDelete question 1:\n";
+    cout << "\n=== DELETE AI ===\n";
 
-    if (deleteQuestion(head, 1)) {
-        cout << "Deleted successfully\n";
-    }
-    else {
-        cout << "Question not found\n";
-    }
+    root = deleteSubject(
+        root,
+        "AI"
+    );
 
-    printQuestions(head);
+    printSubjects(root);
 
-    cout << "\nDelete question 100:\n";
+    cout << "\n=== DELETE CTDL ===\n";
 
-    if (!deleteQuestion(head, 100)) {
-        cout << "Question 100 not found\n";
-    }
+    root = deleteSubject(
+        root,
+        "CTDL"
+    );
 
-    cout << "Number of questions after delete: "
-     << countQuestions(head) << '\n';
+    printSubjects(root);
 
-    while (head != nullptr) {
-        Question* temp = head;
-        head = head->next;
-        delete temp;
-    }
+    cout << "\n=== DELETE UNKNOWN ===\n";
+
+    root = deleteSubject(
+        root,
+        "JAVA"
+    );
+
+    printSubjects(root);
 
     return 0;
 }
-
