@@ -139,6 +139,11 @@ bool editStudent(
 
 // ==================== SCORE ====================
 
+Score* createScore(
+    const char subjectId[],
+    float score
+);
+
 Score* findScore(
     Student* student,
     const char subjectId[]
@@ -150,6 +155,20 @@ bool addScore(
     float score
 );
 
+bool updateScore(
+    Student* student,
+    const char subjectId[],
+    float score
+);
+
+void printScores(
+    Student* student
+);
+
+bool deleteScore(
+    Student* student,
+    const char subjectId[]
+);
 
 // ==================== AUTH ====================
 

@@ -1,0 +1,238 @@
+#include "ClassArray.h"
+#include "StudentList.h"
+#include "StringUtils.h"
+
+#include <iostream>
+
+using namespace std;
+
+
+// ==================== CREATE ====================
+
+Class* createClass(
+    const char id[],
+    const char name[]
+) {
+    Class* classroom = new Class;
+
+    stringCopy(
+        classroom->id,
+        id
+    );
+
+    stringCopy(
+        classroom->name,
+        name
+    );
+
+    classroom->studentList = nullptr;
+
+    return classroom;
+}
+
+
+// ==================== FIND ====================
+
+Class* findClass(
+    Class* classes[],
+    int classCount,
+    const char id[]
+) {
+    for (int i = 0; i < classCount; ++i) {
+        if (
+            classes[i] != nullptr &&
+            stringEqual(classes[i]->id, id)
+        ) {
+            return classes[i];
+        }
+    }
+
+    return nullptr;
+}
+
+
+// ==================== ADD ====================
+
+bool addClass(
+    Class* classes[],
+    int& classCount,
+    Class* newClass
+) {
+    if (newClass == nullptr) {
+        return false;
+    }
+
+    if (classCount >= MAX_CLASS) {
+        return false;
+    }
+
+    if (findClass(
+        classes,
+        classCount,
+        newClass->id
+    ) != nullptr) {
+        return false;
+    }
+
+    classes[classCount] = newClass;
+
+    ++classCount;
+
+    return true;
+}
+
+
+// ==================== CLEANUP HELPERS ====================
+
+static void deleteScoreListOfStudent(
+    Score*& head
+) {
+    while (head != nullptr) {
+        Score* temp = head;
+
+        head = head->next;
+
+        delete temp;
+    }
+}
+
+static void deleteExamDetailList(
+    ExamDetail*& head
+) {
+    while (head != nullptr) {
+        ExamDetail* temp = head;
+
+        head = head->next;
+
+        delete temp;
+    }
+}
+
+static void deleteExamHistoryList(
+    ExamHistory*& head
+) {
+    while (head != nullptr) {
+        ExamHistory* temp = head;
+
+        head = head->next;
+
+        deleteExamDetailList(
+            temp->detailList
+        );
+
+        delete temp;
+    }
+}
+
+static void deleteStudentListOfClass(
+    Student*& head
+) {
+    while (head != nullptr) {
+        Student* temp = head;
+
+        head = head->next;
+
+        deleteScoreListOfStudent(
+            temp->scoreList
+        );
+
+        deleteExamHistoryList(
+            temp->examHistoryList
+        );
+
+        delete temp;
+    }
+}
+
+
+// ==================== DELETE ====================
+
+bool deleteClass(
+    Class* classes[],
+    int& classCount,
+    const char id[]
+) {
+    int index = -1;
+
+    for (int i = 0; i < classCount; ++i) {
+        if (
+            classes[i] != nullptr &&
+            stringEqual(classes[i]->id, id)
+        ) {
+            index = i;
+            break;
+        }
+    }
+
+    if (index == -1) {
+        return false;
+    }
+
+    deleteStudentListOfClass(
+        classes[index]->studentList
+    );
+
+    delete classes[index];
+
+    for (
+        int i = index;
+        i < classCount - 1;
+        ++i
+    ) {
+        classes[i] = classes[i + 1];
+    }
+
+    --classCount;
+
+    classes[classCount] = nullptr;
+
+    return true;
+}
+
+
+// ==================== PRINT ====================
+
+void printClasses(
+    Class* classes[],
+    int classCount
+) {
+    if (classCount == 0) {
+        cout << "Class list is empty\n";
+        return;
+    }
+
+    for (int i = 0; i < classCount; ++i) {
+        if (classes[i] != nullptr) {
+            cout << classes[i]->id
+                 << " - "
+                 << classes[i]->name
+                 << '\n';
+        }
+    }
+}
+
+
+// ==================== FIND STUDENT GLOBAL ====================
+
+Student* findStudentGlobal(
+    Class* classes[],
+    int classCount,
+    const char id[]
+) {
+    for (int i = 0; i < classCount; ++i) {
+        if (classes[i] == nullptr) {
+            continue;
+        }
+
+        Student* found = findStudent(
+            classes[i]->studentList,
+            id
+        );
+
+        if (found != nullptr) {
+            return found;
+        }
+    }
+
+    return nullptr;
+}
