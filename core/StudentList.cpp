@@ -13,11 +13,11 @@ Student* createStudent(
 ) {
     Student* student = new Student;
 
-    stringCopy(student->id, id);
-    stringCopy(student->ho, ho);
-    stringCopy(student->ten, ten);
-    stringCopy(student->gender, gender);
-    stringCopy(student->password, password);
+    stringCopy(student->id, id, STUDENT_ID_LEN);
+    stringCopy(student->ho, ho, HO_LEN);
+    stringCopy(student->ten, ten, TEN_LEN);
+    stringCopy(student->gender, gender, GENDER_LEN);
+    stringCopy(student->password, password, PASSWORD_LEN);
 
     student->scoreList = nullptr;
     student->examHistoryList = nullptr;
@@ -184,10 +184,10 @@ bool editStudent(
         return false;
     }
 
-    stringCopy(student->ho, ho);
-    stringCopy(student->ten, ten);
-    stringCopy(student->gender, gender);
-    stringCopy(student->password, password);
+    stringCopy(student->ho, ho, HO_LEN);
+    stringCopy(student->ten, ten, TEN_LEN);
+    stringCopy(student->gender, gender, GENDER_LEN);
+    stringCopy(student->password, password, PASSWORD_LEN);
 
     return true;
 }

@@ -18,12 +18,12 @@ Question* createQuestion(
 
     question->id = id;
 
-    stringCopy(question->content, content);
+    stringCopy(question->content, content, QUESTION_CONTENT_LEN);
 
-    stringCopy(question->answerA, answerA);
-    stringCopy(question->answerB, answerB);
-    stringCopy(question->answerC, answerC);
-    stringCopy(question->answerD, answerD);
+    stringCopy(question->answerA, answerA, ANSWER_CONTENT_LEN);
+    stringCopy(question->answerB, answerB, ANSWER_CONTENT_LEN);
+    stringCopy(question->answerC, answerC, ANSWER_CONTENT_LEN);
+    stringCopy(question->answerD, answerD, ANSWER_CONTENT_LEN);
 
     question->correctAnswer = correctAnswer;
 

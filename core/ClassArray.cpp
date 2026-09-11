@@ -17,12 +17,14 @@ Class* createClass(
 
     stringCopy(
         classroom->id,
-        id
+        id,
+        CLASS_ID_LEN
     );
 
     stringCopy(
         classroom->name,
-        name
+        name,
+        CLASS_NAME_LEN
     );
 
     classroom->studentList = nullptr;
@@ -235,4 +237,30 @@ Student* findStudentGlobal(
     }
 
     return nullptr;
+}
+
+// ==================== ADD STUDENT GLOBAL ====================
+
+bool addStudentGlobal(
+    Class* classes[],
+    int classCount,
+    Class* classroom,
+    Student* student
+) {
+    if (classroom == nullptr || student == nullptr) {
+        return false;
+    }
+
+    if (findStudentGlobal(
+        classes,
+        classCount,
+        student->id
+    ) != nullptr) {
+        return false;
+    }
+
+    return addStudent(
+        classroom,
+        student
+    );
 }

@@ -4,14 +4,16 @@
 
 using namespace std;
 
+static void deleteQuestionList(Question*& head);
+
 Subject* createSubject(
     const char id[],
     const char name[]
 ) {
     Subject* subject = new Subject;
 
-    stringCopy(subject->id, id);
-    stringCopy(subject->name, name);
+    stringCopy(subject->id, id, SUBJECT_ID_LEN);
+    stringCopy(subject->name, name, SUBJECT_NAME_LEN);
 
     subject->questionList = nullptr;
 
@@ -40,6 +42,12 @@ Subject* insertSubject(
     }
     else if (cmp > 0) {
         root->right = insertSubject(root->right, subject);
+    }
+    else if (subject != root) {
+        // insertSubject nhan quyen so huu node duoc truyen vao.
+        // Neu trung ma mon, giai phong node moi de tranh memory leak.
+        deleteQuestionList(subject->questionList);
+        delete subject;
     }
 
     return root;
@@ -168,12 +176,14 @@ Subject* deleteSubject(
 
         stringCopy(
             root->id,
-            successor->id
+            successor->id,
+            SUBJECT_ID_LEN
         );
 
         stringCopy(
             root->name,
-            successor->name
+            successor->name,
+            SUBJECT_NAME_LEN
         );
 
         root->questionList =
@@ -202,18 +212,22 @@ bool editSubject(
         return false;
     }
 
-    // Khong doi ma mon, chi cap nhat ten
+    // Khong doi ma mon, chi cap nhat ten.
     if (stringEqual(oldId, newId)) {
-        stringCopy(subject->name, newName);
+        stringCopy(
+            subject->name,
+            newName,
+            SUBJECT_NAME_LEN
+        );
         return true;
     }
 
-    // Ma mon moi da ton tai
+    // Khong cho doi sang ma mon da ton tai.
     if (findSubject(root, newId) != nullptr) {
         return false;
     }
 
-    // Tao node moi va giu lai danh sach cau hoi
+    // Tao node moi va giu lai danh sach cau hoi.
     Subject* newSubject = createSubject(
         newId,
         newName
@@ -222,16 +236,16 @@ bool editSubject(
     newSubject->questionList =
         subject->questionList;
 
-    // Khong cho deleteSubject xoa questionList nay
+    // Khong cho deleteSubject xoa questionList nay.
     subject->questionList = nullptr;
 
-    // Xoa node cu khoi BST
+    // Xoa node cu khoi BST.
     root = deleteSubject(
         root,
         oldId
     );
 
-    // Chen node moi vao dung vi tri BST
+    // Chen node moi vao dung vi tri BST.
     root = insertSubject(
         root,
         newSubject

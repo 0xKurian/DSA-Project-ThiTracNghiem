@@ -12,11 +12,19 @@ int stringLength(const char str[]) {
 
 void stringCopy(
     char destination[],
-    const char source[]
+    const char source[],
+    int destinationSize
 ) {
+    if (destinationSize <= 0) {
+        return;
+    }
+
     int i = 0;
 
-    while (source[i] != '\0') {
+    while (
+        source[i] != '\0' &&
+        i < destinationSize - 1
+    ) {
         destination[i] = source[i];
         ++i;
     }
