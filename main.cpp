@@ -117,5 +117,10 @@ int main() {
 
     printSubjects(root);
 
+    // Release the subjects still present after the demo.
+    while (root != nullptr) {
+        root = deleteSubject(root, root->id);
+    }
+
     return 0;
 }

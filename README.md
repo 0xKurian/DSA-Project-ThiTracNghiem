@@ -459,7 +459,8 @@ int stringLength(const char str[]);
 
 void stringCopy(
     char destination[],
-    const char source[]
+    const char source[],
+    int destinationSize
 );
 
 int stringCompare(
@@ -523,23 +524,13 @@ destination[i] = '\0';
 
 phải được đặt sau khi copy xong.
 
-### Cảnh báo
+### Giới hạn độ dài
 
-Hàm hiện tại **không biết kích thước của destination**.
-
-Do đó:
-
-```cpp
-stringCopy(destination, source);
-```
-
-chỉ an toàn khi:
-
-```text
-length(source) < capacity(destination)
-```
-
-Validation độ dài phải được thực hiện ở Business Logic / Input layer.
+`stringCopy(destination, source, destinationSize)` sao chép tối đa
+`destinationSize - 1` ký tự và kết thúc bằng `'\0'` khi kích thước dương.
+Chuỗi dài hơn sẽ bị cắt; tầng nhập liệu vẫn phải báo lỗi độ dài để tránh mất nội dung.
+`editSubject` và `addScore` từ chối mã môn dài từ `SUBJECT_ID_LEN` ký tự
+trước khi thay đổi dữ liệu, để không kiểm tra trùng bằng một mã rồi lưu mã khác.
 
 ---
 
@@ -920,34 +911,10 @@ O(n)
 
 ## 12.2 Duplicate Subject
 
-`insertSubject()` không chèn khi ID bằng nhau.
-
-Ví dụ nguy hiểm:
-
-```cpp
-root = insertSubject(
-    root,
-    createSubject("CTDL", "...")
-);
-```
-
-nếu `CTDL` đã tồn tại.
-
-Node vừa tạo bằng `new` có thể không được đưa vào cây, dẫn tới leak nếu caller không `delete`.
-
-Luồng Business Logic nên là:
-
-```cpp
-if (findSubject(root, id) != nullptr) {
-    // Bao trung MAMH
-}
-else {
-    root = insertSubject(
-        root,
-        createSubject(id, name)
-    );
-}
-```
+`insertSubject()` nhận ownership của node được truyền vào. Nếu ID đã tồn tại,
+node mới và danh sách câu hỏi của node mới được giải phóng; node trong cây được giữ nguyên.
+Caller không được `delete` lại node đã giao cho hàm. Node đầu vào phải là node độc lập,
+không sở hữu cây con. Business Logic có thể kiểm tra trước bằng `findSubject()` để báo trùng.
 
 ---
 
@@ -2698,7 +2665,7 @@ minutes > 0
 số câu yêu cầu <= số câu hiện có
 ```
 
-Điều này đặc biệt quan trọng vì `stringCopy()` không kiểm tra capacity.
+`stringCopy()` bảo vệ kích thước đích nhưng có thể cắt chuỗi; validation vẫn cần để báo lỗi thay vì âm thầm mất nội dung.
 
 ---
 
@@ -3259,7 +3226,7 @@ Nếu chỉ có vài phút để đọc, hãy nhớ các điểm sau:
 9. ExamHistory sở hữu ExamDetail snapshots.
 10. Deep cleanup đã được xử lý cho Student/Class.
 11. Không dùng STL container và std::string cho dữ liệu chính.
-12. stringCopy không tự chống buffer overflow.
+12. stringCopy nhận capacity và kết thúc chuỗi; input dài vẫn cần được báo lỗi để tránh cắt dữ liệu.
 13. Không sửa trực tiếp key của BST.
 14. Business Logic chưa hoàn thành.
 15. Auth / Exam / Save-Load mới có prototype, cần implement tiếp.
@@ -3328,3 +3295,4 @@ Mốc hiện tại:
 TASK 02 — CORE COMPLETE
 NEXT     — BUSINESS LOGIC
 ```
+

@@ -17,6 +17,19 @@ int main() {
         createQuestion(1, "OOP?", "A", "B", "C", "D", 'A')
     );
 
+    // Reject an overlong ID before deleting the original subject/questions.
+    root = insertSubject(root, createSubject("ABCDEFGHIJKLMNO", "Existing"));
+    bool renamed = editSubject(root, "OOP", "ABCDEFGHIJKLMNOX", "Invalid");
+    assert(!renamed);
+    assert(findSubject(root, "OOP") == oop);
+    assert(countQuestions(oop->questionList) == 1);
+    assert(countQuestions(findSubject(root, "ABCDEFGHIJKLMNO")->questionList) == 0);
+    root = deleteSubject(root, "ABCDEFGHIJKLMNO");
+
+    renamed = editSubject(root, "OOP", "1234567890123456", "Invalid");
+    assert(!renamed);
+    assert(findSubject(root, "OOP") == oop);
+
     assert(editSubject(
         root,
         "OOP",
@@ -33,3 +46,4 @@ int main() {
     assert(root == nullptr);
     return 0;
 }
+

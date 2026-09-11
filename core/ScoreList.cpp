@@ -55,6 +55,11 @@ bool addScore(
         return false;
     }
 
+    // A truncated key could bypass the duplicate check below.
+    if (subjectId == nullptr || stringLength(subjectId) >= SUBJECT_ID_LEN) {
+        return false;
+    }
+
     if (findScore(student, subjectId) != nullptr) {
         return false;
     }
