@@ -37,4 +37,11 @@ Student* findStudentGlobal(
     const char id[]
 );
 
+bool addStudentGlobal(
+    Class* classes[],
+    int classCount,
+    Class* classroom,
+    Student* student
+);
+
 #endif

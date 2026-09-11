@@ -12,7 +12,8 @@ Score* createScore(
 
     stringCopy(
         newScore->subjectId,
-        subjectId
+        subjectId,
+        SUBJECT_ID_LEN
     );
 
     newScore->score = score;

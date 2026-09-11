@@ -5,7 +5,8 @@ int stringLength(const char str[]);
 
 void stringCopy(
     char destination[],
-    const char source[]
+    const char source[],
+    int destinationSize
 );
 
 int stringCompare(
