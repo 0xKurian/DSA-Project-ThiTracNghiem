@@ -206,6 +206,11 @@ bool editSubject(
     const char newId[],
     const char newName[]
 ) {
+    // Never truncate a key after checking uniqueness or deleting the old node.
+    if (newId == nullptr || stringLength(newId) >= SUBJECT_ID_LEN) {
+        return false;
+    }
+
     Subject* subject = findSubject(root, oldId);
 
     if (subject == nullptr) {
@@ -253,3 +258,4 @@ bool editSubject(
 
     return true;
 }
+
