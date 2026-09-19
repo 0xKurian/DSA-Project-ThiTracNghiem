@@ -20,7 +20,6 @@ Student* createStudent(
     stringCopy(student->password, password, PASSWORD_LEN);
 
     student->scoreList = nullptr;
-    student->examHistoryList = nullptr;
 
     student->next = nullptr;
 
@@ -72,16 +71,6 @@ bool addStudent(
     return true;
 }
 
-static void deleteScoreList(
-    Score*& head
-) {
-    while (head != nullptr) {
-        Score* temp = head;
-        head = head->next;
-        delete temp;
-    }
-}
-
 static void deleteExamDetailList(
     ExamDetail*& head
 ) {
@@ -92,11 +81,11 @@ static void deleteExamDetailList(
     }
 }
 
-static void deleteExamHistoryList(
-    ExamHistory*& head
+static void deleteScoreList(
+    Score*& head
 ) {
     while (head != nullptr) {
-        ExamHistory* temp = head;
+        Score* temp = head;
         head = head->next;
 
         deleteExamDetailList(
@@ -131,10 +120,6 @@ bool deleteStudent(
             temp->scoreList
         );
 
-        deleteExamHistoryList(
-            temp->examHistoryList
-        );
-
         delete temp;
 
         return true;
@@ -162,10 +147,6 @@ bool deleteStudent(
 
     deleteScoreList(
         temp->scoreList
-    );
-
-    deleteExamHistoryList(
-        temp->examHistoryList
     );
 
     delete temp;

@@ -86,36 +86,21 @@ bool addClass(
 
 // ==================== CLEANUP HELPERS ====================
 
-static void deleteScoreListOfStudent(
-    Score*& head
-) {
-    while (head != nullptr) {
-        Score* temp = head;
-
-        head = head->next;
-
-        delete temp;
-    }
-}
-
 static void deleteExamDetailList(
     ExamDetail*& head
 ) {
     while (head != nullptr) {
         ExamDetail* temp = head;
-
         head = head->next;
-
         delete temp;
     }
 }
 
-static void deleteExamHistoryList(
-    ExamHistory*& head
+static void deleteScoreListOfStudent(
+    Score*& head
 ) {
     while (head != nullptr) {
-        ExamHistory* temp = head;
-
+        Score* temp = head;
         head = head->next;
 
         deleteExamDetailList(
@@ -136,10 +121,6 @@ static void deleteStudentListOfClass(
 
         deleteScoreListOfStudent(
             temp->scoreList
-        );
-
-        deleteExamHistoryList(
-            temp->examHistoryList
         );
 
         delete temp;

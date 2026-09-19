@@ -3,9 +3,36 @@
 
 #include "Structures.h"
 
+// ==================== EXAM DETAIL ====================
+
+ExamDetail* createExamDetail(
+    const Question* question
+);
+
+void shuffleExamDetailAnswers(
+    ExamDetail* detail
+);
+
+void addExamDetail(
+    ExamDetail*& head,
+    ExamDetail* detail
+);
+
+void deleteExamDetailList(
+    ExamDetail*& head
+);
+
+// ==================== SCORE ====================
+
 Score* createScore(
     const char subjectId[],
     float score
+);
+
+Score* createScore(
+    const char subjectId[],
+    float score,
+    ExamDetail* detailList
 );
 
 Score* findScore(
@@ -17,6 +44,13 @@ bool addScore(
     Student* student,
     const char subjectId[],
     float score
+);
+
+bool addScore(
+    Student* student,
+    const char subjectId[],
+    float score,
+    ExamDetail* detailList
 );
 
 bool updateScore(

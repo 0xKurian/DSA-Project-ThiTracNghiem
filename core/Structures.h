@@ -6,11 +6,10 @@
 // Forward declarations
 struct Question;
 struct Subject;
+struct ExamDetail;
 struct Score;
 struct Student;
 struct Class;
-struct ExamDetail;
-struct ExamHistory;
 
 // ==================== QUESTION ====================
 
@@ -43,16 +42,6 @@ struct Subject {
 };
 
 
-// ==================== SCORE ====================
-
-struct Score {
-    char subjectId[SUBJECT_ID_LEN];
-    float score;
-
-    Score* next;
-};
-
-
 // ==================== EXAM DETAIL ====================
 
 struct ExamDetail {
@@ -60,11 +49,13 @@ struct ExamDetail {
 
     char content[QUESTION_CONTENT_LEN];
 
+    // These answers are stored in the exact order shown to the student.
     char answerA[ANSWER_CONTENT_LEN];
     char answerB[ANSWER_CONTENT_LEN];
     char answerC[ANSWER_CONTENT_LEN];
     char answerD[ANSWER_CONTENT_LEN];
 
+    // correctAnswer is updated after shuffling A/B/C/D.
     char correctAnswer;
     char selectedAnswer;
 
@@ -72,17 +63,16 @@ struct ExamDetail {
 };
 
 
-// ==================== EXAM HISTORY ====================
+// ==================== SCORE ====================
 
-struct ExamHistory {
+struct Score {
     char subjectId[SUBJECT_ID_LEN];
-
-    int numberOfQuestions;
     float score;
 
+    // One subject can be taken only once, so the exam detail belongs here.
     ExamDetail* detailList;
 
-    ExamHistory* next;
+    Score* next;
 };
 
 
@@ -98,7 +88,6 @@ struct Student {
     char password[PASSWORD_LEN];
 
     Score* scoreList;
-    ExamHistory* examHistoryList;
 
     Student* next;
 };

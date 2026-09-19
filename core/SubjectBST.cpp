@@ -5,7 +5,7 @@
 using namespace std;
 
 static void deleteQuestionList(Question*& head);
-
+q
 Subject* createSubject(
     const char id[],
     const char name[]
