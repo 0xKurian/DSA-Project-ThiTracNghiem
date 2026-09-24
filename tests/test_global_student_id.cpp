@@ -1,3 +1,6 @@
+#ifdef NDEBUG
+#undef NDEBUG
+#endif
 #include <cassert>
 #include "../core/ClassArray.h"
 #include "../core/StudentList.h"

@@ -1,10 +1,10 @@
 #include <iostream>
 
-#include "core/ClassArray.h"
-#include "core/StudentList.h"
-#include "core/ScoreList.h"
-#include "core/SubjectBST.h"
-#include "core/QuestionList.h"
+#include "../core/ClassArray.h"
+#include "../core/StudentList.h"
+#include "../core/ScoreList.h"
+#include "../core/SubjectBST.h"
+#include "../core/QuestionList.h"
 
 using namespace std;
 

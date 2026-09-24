@@ -1,12 +1,15 @@
+#ifdef NDEBUG
+#undef NDEBUG
+#endif
 #include <cassert>
 #include <iostream>
 
-#include "core/ClassArray.h"
-#include "core/StudentList.h"
-#include "core/ScoreList.h"
-#include "core/SubjectBST.h"
-#include "core/QuestionList.h"
-#include "core/StringUtils.h"
+#include "../core/ClassArray.h"
+#include "../core/StudentList.h"
+#include "../core/ScoreList.h"
+#include "../core/SubjectBST.h"
+#include "../core/QuestionList.h"
+#include "../core/StringUtils.h"
 
 using namespace std;
 
@@ -99,7 +102,7 @@ int main() {
         "Nam",
         "123456"
     );
-    assert(longIdStudent->id[STUDENT_ID_LEN - 1] == '\0');
+    assert(longIdStudent == nullptr);
     delete longIdStudent;
 
     // ==================== CLEANUP ====================

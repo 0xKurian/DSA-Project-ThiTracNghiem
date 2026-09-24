@@ -1,0 +1,19 @@
+# Build directories and local executables
+/build/
+/build-*/
+/cmake-build-*/
+/core-test
+/main
+*.o
+*.obj
+*.exe
+*.out
+*.a
+*.lib
+*.pdb
+
+# Editor and OS temporary files
+*.swp
+*~
+.DS_Store
+Thumbs.db

@@ -1,3 +1,5 @@
+> Tài liệu lịch sử, không phải hợp đồng API hiện tại. Xem README ở thư mục gốc và docs/CORE_API.md.
+
 # DSA core - ban sua an toan
 
 Ban nay giu nguyen phong cach C/C++ char[], con tro va cac cau truc du lieu hien co.

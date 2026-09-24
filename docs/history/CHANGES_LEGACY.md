@@ -1,3 +1,5 @@
+> Tài liệu lịch sử, không phải hợp đồng API hiện tại. Xem README ở thư mục gốc và docs/CORE_API.md.
+
 # Core fixes
 
 - `stringCopy` now receives destination size and always null-terminates when size > 0.

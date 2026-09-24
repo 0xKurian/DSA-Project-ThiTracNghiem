@@ -1,3 +1,6 @@
+#ifdef NDEBUG
+#undef NDEBUG
+#endif
 #include <cassert>
 #include "../core/StudentList.h"
 #include "../core/Constants.h"
@@ -14,8 +17,7 @@ int main() {
         "123456"
     );
 
-    assert(student != nullptr);
-    assert(student->id[STUDENT_ID_LEN - 1] == '\0');
+    assert(student == nullptr);
 
     delete student;
     return 0;
