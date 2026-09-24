@@ -1,5 +1,15 @@
 #include "StringUtils.h"
 
+bool isValidIdentifier(const char id[], int capacity) {
+    if (id == nullptr || capacity <= 1 || id[0] == '\0') {
+        return false;
+    }
+    for (int i = 0; i < capacity; ++i) {
+        if (id[i] == '\0') return true;
+    }
+    return false;
+}
+
 int stringLength(const char str[]) {
     int length = 0;
 
@@ -55,3 +65,4 @@ bool stringEqual(
 ) {
     return stringCompare(a, b) == 0;
 }
+

@@ -1,6 +1,13 @@
 #ifndef STUDENT_LIST_H
 #define STUDENT_LIST_H
 
+// Contract: createStudent rejects null/empty/overlong IDs with nullptr.
+// Other text inputs must be valid null-terminated strings.
+// addStudent accepts a fresh detached student, taking ownership only on success.
+// It checks uniqueness in one class; use addStudentGlobal (ClassArray.h) for
+// uniqueness across the registered classes.
+// deleteStudent also frees owned scores and exam details.
+
 #include "Structures.h"
 
 Student* createStudent(

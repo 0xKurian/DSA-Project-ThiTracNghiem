@@ -32,7 +32,8 @@ static void swapAnswerText(
 void shuffleExamDetailAnswers(
     ExamDetail* detail
 ) {
-    if (detail == nullptr) {
+    // A selected letter refers to the current order: never change that order.
+    if (detail == nullptr || detail->selectedAnswer != '\0') {
         return;
     }
 
@@ -178,7 +179,7 @@ Score* createScore(
     float score,
     ExamDetail* detailList
 ) {
-    if (subjectId == nullptr) {
+    if (!isValidIdentifier(subjectId, SUBJECT_ID_LEN)) {
         return nullptr;
     }
 
@@ -243,8 +244,7 @@ bool addScore(
     }
 
     if (
-        subjectId == nullptr ||
-        stringLength(subjectId) >= SUBJECT_ID_LEN
+        !isValidIdentifier(subjectId, SUBJECT_ID_LEN)
     ) {
         return false;
     }
@@ -393,3 +393,4 @@ bool deleteScore(
 
     return true;
 }
+

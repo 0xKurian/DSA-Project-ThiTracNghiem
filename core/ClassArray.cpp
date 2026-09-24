@@ -13,6 +13,10 @@ Class* createClass(
     const char id[],
     const char name[]
 ) {
+    if (!isValidIdentifier(id, CLASS_ID_LEN)) {
+        return nullptr;
+    }
+
     Class* classroom = new Class;
 
     stringCopy(
@@ -228,7 +232,19 @@ bool addStudentGlobal(
     Class* classroom,
     Student* student
 ) {
-    if (classroom == nullptr || student == nullptr) {
+    if (classes == nullptr || classCount < 0 || classCount > MAX_CLASS ||
+        classroom == nullptr || student == nullptr) {
+        return false;
+    }
+
+    bool registered = false;
+    for (int i = 0; i < classCount; ++i) {
+        if (classes[i] == classroom) {
+            registered = true;
+            break;
+        }
+    }
+    if (!registered) {
         return false;
     }
 
@@ -245,3 +261,4 @@ bool addStudentGlobal(
         student
     );
 }
+

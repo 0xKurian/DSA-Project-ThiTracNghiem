@@ -11,6 +11,10 @@ Student* createStudent(
     const char gender[],
     const char password[]
 ) {
+    if (!isValidIdentifier(id, STUDENT_ID_LEN)) {
+        return nullptr;
+    }
+
     Student* student = new Student;
 
     stringCopy(student->id, id, STUDENT_ID_LEN);

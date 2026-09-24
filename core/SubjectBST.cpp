@@ -5,11 +5,15 @@
 using namespace std;
 
 static void deleteQuestionList(Question*& head);
-q
+
 Subject* createSubject(
     const char id[],
     const char name[]
 ) {
+    if (!isValidIdentifier(id, SUBJECT_ID_LEN)) {
+        return nullptr;
+    }
+
     Subject* subject = new Subject;
 
     stringCopy(subject->id, id, SUBJECT_ID_LEN);
@@ -207,7 +211,7 @@ bool editSubject(
     const char newName[]
 ) {
     // Never truncate a key after checking uniqueness or deleting the old node.
-    if (newId == nullptr || stringLength(newId) >= SUBJECT_ID_LEN) {
+    if (!isValidIdentifier(newId, SUBJECT_ID_LEN)) {
         return false;
     }
 
@@ -258,4 +262,5 @@ bool editSubject(
 
     return true;
 }
+
 
