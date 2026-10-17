@@ -1,4 +1,4 @@
-5
+6
 ATTT|An Toan Thong Tin|0
 CSDL|Co so du lieu|3
 41|Khoa chinh (Primary Key) trong bang dung de lam gi?|Dinh danh duy nhat moi ban ghi|Lien ket toi bang khac|Luu tru du lieu trung lap|Tang toc do duyet khong can index|A
@@ -25,7 +25,8 @@ CTDL|Cau truc du lieu va Giai thuat|20
 18|Thuat toan duyet do thi theo chieu rong (BFS) thuong su dung cau truc du lieu nao?|Queue (Hang doi)|Stack (Ngan xep)|BST|Priority Queue|A
 19|Thuat toan duyet do thi theo chieu sau (DFS) thuong su dung cau truc du lieu nao?|Stack (hoac de quy)|Queue|Bang bam|Cay AVL|A
 20|Thuat toan Dijkstra duoc dung de giai quyet bai toan nao sau day?|Tim duong di ngan nhat tu 1 dinh toi tat ca cac dinh tren do thi trong so khong am|Tim cay khung nho nhat|Dem so thanh phan lien thong|Kiem tra tinh 2 phia cua do thi|A
-OOP|LAP TRINH HUONG DOI TUONG|20
+DSTT|Dai So Tuyen Tinh|0
+OOP|LAP TRINH HUONG DOI TUONG|22
 21|Bon tinh chat co ban cua Lap trinh huong doi tuong la gi?|Dong goi, Ke thua, Da hinh, Truu tuong|Dong goi, Bien dich, Thuc thi, Toi uu|Lien ket, Con tro, Vung nho, Giai phong|Lop, Doi tuong, Ham, Bien|A
 22|Muc dich chinh cua tinh Dong goi (Encapsulation) la gi?|Che giau thong tin noi bo va bao ve du lieu|Tang toc do thuc thi chuong trinh|Cho phep mot ham co nhieu cach cai dat|Giam dung luong bo nho|A
 23|Pham vi truy cap 'private' trong C++ co y nghia gi?|Chi co the truy cap tu ben trong chinh class do hoac ham friend|Co the truy cap tu bat ky dau trong chuong trinh|Chi co the truy cap tu class con ke thua|Tu do truy cap khong can tao doi tuong|A
@@ -46,5 +47,7 @@ OOP|LAP TRINH HUONG DOI TUONG|20
 38|Quan he 'is-a' giua cac thuc the thuong duoc the hien qua co che nao trong OOP?|Ke thua (Inheritance)|Dong goi (Encapsulation)|Chua dung (Composition)|Da hinh (Polymorphism)|A
 39|Quan he 'has-a' (chua dung) thuong duoc cai dat nhu the nao?|Class nay chua mot doi tuong hoac con tro cua Class khac lam thuoc tinh|Class nay ke thua tu Class khac|Class nay dinh nghia lai ham cua Class khac|Dung chung namespace|A
 40|Da hinh luc bien dich (Compile-time Polymorphism) duoc the hien chu yeu qua co che nao?|Nap chong ham (Overloading) va Template|Ham ao (Virtual Function)|Lop truu tuong|Ke thua da cap|A
+45|Mot Class Co Bao Nhieu Loai Thanh Phan|5|5|5|5|A
+46|Mot Class Gom Bao Nhieu Thanh Phan?|1|2|3|4|A
 TRR|TOAN ROI RAC|1
 44|Do thi vo huong gom n dinh va dung n - 1 canh khong chua chu trinh duoc goi la gi?|Cay(Tree)|Do thi Euler|Do thi Hamilton|Do thi phang|A
