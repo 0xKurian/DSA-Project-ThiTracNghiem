@@ -1,0 +1,36 @@
+3
+D23CQCN01
+Cong nghe thong tin 1
+2
+SV001|Nguyen Van|Nam|Nam|pass123|1
+CTDL
+10
+2
+4|Stack (Ngan xep) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|FILO (First In Last Out)|Random Access|A|A
+5|Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|FIFO (First In First Out)|LIFO (Last In First Out)|Priority Only|Random Access|A|A
+SV002|Tran Thi|Binh|Nu|pass456|1
+CTDL
+5
+2
+4|Stack (Ngan xep) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|FILO (First In Last Out)|Random Access|A|A
+5|Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|FIFO (First In First Out)|LIFO (Last In First Out)|Priority Only|Random Access|A|B
+D23CQCN02
+Cong nghe thong tin 2
+2
+SV004|Pham Minh|Dung|Nam|pass123|1
+OOP
+10
+1
+9|Bon tinh chat co ban cua Lap trinh huong doi tuong la gi?|Dong goi, Ke thua, Da hinh, Truu tuong|Dong goi, Bien dich, Thuc thi, Toi uu|Lien ket, Con tro, Vung nho, Giai phong|Lop, Doi tuong, Ham, Bien|A|A
+SV005|Hoang Thi|En|Nu|pass456|1
+CTDL
+2
+5
+5|Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|Random Access|Priority Only|B|A
+6|Trong cay nhi phan tim kiem (BST), gia tri cac node o cay con ben trai co dac diem gi so voi node cha?|Khong co quy tac|Luon lon hon node cha|Luon nho hon node cha|Bang node cha|C|B
+1|Do phuc tap thoi gian truy xuat phan tu theo chi so trong mang mot chieu la bao nhieu?|O(1)|O(n^2)|O(log n)|O(n)|A|C
+7|Phep duyet cay BST nao sau day cho thu tu cac khoa theo chieu tang dan?|Post-order (LRN)|In-order (LNR)|Level-order|Pre-order (NLR)|B|D
+15|Do phuc tap thoi gian trung binh cua thuat toan Quick Sort la bao nhieu?|O(n log n)|O(n^2)|O(n)|O(log n)|A|A
+E25CQCE01-N
+Lop cong nghe thong tin 1 d25
+0
