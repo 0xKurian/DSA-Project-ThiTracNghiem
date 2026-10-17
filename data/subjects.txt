@@ -1,0 +1,53 @@
+6
+ATTT|An Toan Thong Tin|0
+CSDL|Co so du lieu|3
+41|Khoa chinh (Primary Key) trong bang dung de lam gi?|Dinh danh duy nhat moi ban ghi|Lien ket toi bang khac|Luu tru du lieu trung lap|Tang toc do duyet khong can index|A
+42|Cau lenh SQL nao dung de lay du lieu tu bang?|SELECT|INSERT|UPDATE|DELETE|A
+43|Thao tac JOIN dung de lam gi trong SQL?|Ket hop cac hang tu hai hay nhieu bang dua tren cot chung|Xoa du lieu trong bang|Thay doi cau truc bang|Tao mot bang moi hoan toan|A
+CTDL|Cau truc du lieu va Giai thuat|20
+1|Do phuc tap thoi gian truy xuat phan tu theo chi so trong mang mot chieu la bao nhieu?|O(1)|O(n)|O(log n)|O(n^2)|A
+2|Trong danh sach lien ket don, con tro cua node cuoi cung tro toi dau?|nullptr (NULL)|Node dau tien|Chinh no|Vung nho ngau nhien|A
+3|Moi node trong danh sach lien ket kep chua bao nhieu con tro lien ket?|2 (prev va next)|1 (next)|3|Khong co con tro|A
+4|Stack (Ngan xep) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|FILO (First In Last Out)|Random Access|A
+5|Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|FIFO (First In First Out)|LIFO (Last In First Out)|Priority Only|Random Access|A
+6|Trong cay nhi phan tim kiem (BST), gia tri cac node o cay con ben trai co dac diem gi so voi node cha?|Luon nho hon node cha|Luon lon hon node cha|Bang node cha|Khong co quy tac|A
+7|Phep duyet cay BST nao sau day cho thu tu cac khoa theo chieu tang dan?|In-order (LNR)|Pre-order (NLR)|Post-order (LRN)|Level-order|A
+8|Do phuc tap tim kiem trung binh tren cay nhi phan tim kiem (BST) la gi?|O(log n)|O(n)|O(n log n)|O(1)|A
+9|Truong hop xau nhat (cay bi suy bien thanh danh sach lien ket), do phuc tap tim kiem tren BST la gi?|O(n)|O(log n)|O(1)|O(n^2)|A
+10|Cay AVL la cay gi?|Cay BST tu can bang voi do lech chieu cao khong qua 1|Cay co vo so node con|Cay co tat ca cac bac deu bang 2|Cay nhi phan hoan hao|A
+11|Hien tuong hai khoa khac nhau qua ham bam cho ra cung mot chi so trong bang bam duoc goi la gi?|Xung dot (Collision)|Trang bo nho (Overflow)|Loi chi muc (Index Error)|Phan manh (Fragmentation)|A
+12|Phuong phap giai quyet xung dot bang bam dung danh sach lien ket tai moi bucket goi la gi?|Chaining (Noi ket truc tiep)|Linear Probing|Quadratic Probing|Double Hashing|A
+13|Thuat toan Bubble Sort co do phuc tap thoi gian truong hop xau nhat la gi?|O(n^2)|O(n log n)|O(n)|O(log n)|A
+14|Thuat toan Quick Sort su dung ky thuat thiet ke nao sau day?|Chia de tri (Divide and Conquer)|Quy hoach dong|Tham lam (Greedy)|Nhanh can|A
+15|Do phuc tap thoi gian trung binh cua thuat toan Quick Sort la bao nhieu?|O(n log n)|O(n^2)|O(n)|O(log n)|A
+16|Dieu kien tien quyet de thuc hien thuat toan tim kiem nhi phan (Binary Search) la gi?|Mang phai duoc sap xep truoc|Mang phai co kich thuoc chan|Mang khong chua so am|Mang phai duoc luu bang danh sach lien ket|A
+17|Ma tran ke bieu dien do thi vo huong n dinh co tinh chat gi?|Doi xung qua duong cheo chinh|Tam giac tren bang 0|Tat ca phan tu deu bang 1|Khong the la ma tran vuong|A
+18|Thuat toan duyet do thi theo chieu rong (BFS) thuong su dung cau truc du lieu nao?|Queue (Hang doi)|Stack (Ngan xep)|BST|Priority Queue|A
+19|Thuat toan duyet do thi theo chieu sau (DFS) thuong su dung cau truc du lieu nao?|Stack (hoac de quy)|Queue|Bang bam|Cay AVL|A
+20|Thuat toan Dijkstra duoc dung de giai quyet bai toan nao sau day?|Tim duong di ngan nhat tu 1 dinh toi tat ca cac dinh tren do thi trong so khong am|Tim cay khung nho nhat|Dem so thanh phan lien thong|Kiem tra tinh 2 phia cua do thi|A
+DSTT|Dai So Tuyen Tinh|0
+OOP|LAP TRINH HUONG DOI TUONG|22
+21|Bon tinh chat co ban cua Lap trinh huong doi tuong la gi?|Dong goi, Ke thua, Da hinh, Truu tuong|Dong goi, Bien dich, Thuc thi, Toi uu|Lien ket, Con tro, Vung nho, Giai phong|Lop, Doi tuong, Ham, Bien|A
+22|Muc dich chinh cua tinh Dong goi (Encapsulation) la gi?|Che giau thong tin noi bo va bao ve du lieu|Tang toc do thuc thi chuong trinh|Cho phep mot ham co nhieu cach cai dat|Giam dung luong bo nho|A
+23|Pham vi truy cap 'private' trong C++ co y nghia gi?|Chi co the truy cap tu ben trong chinh class do hoac ham friend|Co the truy cap tu bat ky dau trong chuong trinh|Chi co the truy cap tu class con ke thua|Tu do truy cap khong can tao doi tuong|A
+24|Pham vi truy cap 'protected' khac 'private' o diem nao?|Cho phep class con ke thua truc tiep truy cap|Cho phep truy cap tu ben ngoai thong qua con tro|Khong the su dung cho bien thanh vien|Giong hoan toan private khong khac biet|A
+25|Dac diem nao sau day dung voi ham tao (Constructor) trong C++?|Ten trung voi ten lop va khong co kieu tra ve|Co kieu tra ve la void|Phai duoc goi thu cong sau khi tao bien|Moi lop chi duoc phep co dung 1 constructor|A
+26|Ky tu nao dung truoc ten ham de khai bao ham huy (Destructor) trong C++?|Dau nga (~)|Dau cham than (!)|Dau gach duoi (_)|Dau sao (*)|A
+27|Tham so truyen vao cua Copy Constructor trong C++ thuong co dang nao?|const ClassName& other|ClassName other|ClassName* other|void|A
+28|Con tro 'this' trong phuong thuc thanh vien cua class tro toi dau?|Tro toi chinh doi tuong dang goi phuong thuc do|Tro toi lop co so cha|Tro toi doi tuong dau tien trong bo nho|Tro toi ham main|A
+29|Dac diem nao sau day dung voi thanh vien tinh (static) trong class?|Duoc dung chung cho tat ca cac doi tuong thuoc lop do|Moi doi tuong tao ra mot ban sao rieng|Chi su dung duoc ben trong ham main|Tu dong bi huy khi mot doi tuong ket thuc|A
+30|Nap chong ham (Function Overloading) xay ra khi nao?|Cac ham cung ten nhung khac danh sach tham so trong cung pham vi|Cac ham cung ten cung tham so o lop cha va lop con|Cac ham chi khac nhau kieu tra ve|Cac ham duoc khai bao voi tu khoa static|A
+31|Tu khoa 'virtual' truoc ham thanh vien lop cha dung de lam gi?|Ho tro da hinh luc runtime va ghi de (Overriding) o lop con|Ngan chan class con ke thua ham nay|Tang toc do bien dich|Bien ham thanh ham tinh (static)|A
+32|Ham thuan ao (Pure Virtual Function) duoc khai bao bang cu phap nao sau day?|virtual void func() = 0;|void func() = 0;|virtual void func() = default;|pure virtual void func();|A
+33|Lop truu tuong (Abstract Class) la lop co dac diem nao?|Chua it nhat mot ham thuan ao va khong the khoi tao doi tuong truc tiep|Khong chua bat ky bien thanh vien nao|Tat ca cac ham deu phai co noi dung chi tiet|Co the khoi tao doi tuong binh thuong|A
+34|Ham ban (Friend Function) cua mot lop co quyen han gi?|Co quyen truy cap vao thanh vien private va protected cua lop do|La phuong thuc thanh vien chinh thuc cua lop|Tu dong duoc ke thua boi cac lop con|Chi duoc goi ben trong constructor|A
+35|Tai sao can khai bao Destructor la 'virtual' trong lop cha?|Dam bao destructor cua lop con duoc goi dung khi giai phong qua con tro lop cha|Tang toc do giai phong vung nho heap|Bat buoc moi class deu phai co virtual destructor|De co the nap chong destructor|A
+36|Van de kim cuong (Diamond Problem) trong da ke thua C++ duoc giai quyet bang cach nao?|Ke thua ao (Virtual Inheritance)|Dung tu khoa override|Dung ham ban (Friend)|Khong the giai quyet trong C++|A
+37|Toan tu gan sao chep (Copy Assignment Operator) khac Copy Constructor o diem nao?|Goi khi gan gia tri cho doi tuong da ton tai san trong bo nho|Khong the nap chong toan tu gan|Chi goi khi khoi tao doi tuong moi|Khong co tham so truyen vao|A
+38|Quan he 'is-a' giua cac thuc the thuong duoc the hien qua co che nao trong OOP?|Ke thua (Inheritance)|Dong goi (Encapsulation)|Chua dung (Composition)|Da hinh (Polymorphism)|A
+39|Quan he 'has-a' (chua dung) thuong duoc cai dat nhu the nao?|Class nay chua mot doi tuong hoac con tro cua Class khac lam thuoc tinh|Class nay ke thua tu Class khac|Class nay dinh nghia lai ham cua Class khac|Dung chung namespace|A
+40|Da hinh luc bien dich (Compile-time Polymorphism) duoc the hien chu yeu qua co che nao?|Nap chong ham (Overloading) va Template|Ham ao (Virtual Function)|Lop truu tuong|Ke thua da cap|A
+45|Mot Class Co Bao Nhieu Loai Thanh Phan|5|5|5|5|A
+46|Mot Class Gom Bao Nhieu Thanh Phan?|1|2|3|4|A
+TRR|TOAN ROI RAC|1
+44|Do thi vo huong gom n dinh va dung n - 1 canh khong chua chu trinh duoc goi la gi?|Cay(Tree)|Do thi Euler|Do thi Hamilton|Do thi phang|A
