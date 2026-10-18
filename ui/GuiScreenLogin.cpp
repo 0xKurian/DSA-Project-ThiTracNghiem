@@ -7,7 +7,7 @@
 
 #include <cstdio>
 
-// tai khoan demo: GV/GV, SV001/123; loi hien ngay trong the dang nhap
+// tai khoan demo: GV/GV, SV001/pass123 (pass123 la mat khau trong data/classes.txt); loi hien ngay trong the dang nhap
 
 void drawLoginScreen(GuiState& g) {
     DrawRectangle(0, 0, GUI_WIDTH, 180, COLOR_SIDEBAR);
@@ -36,13 +36,14 @@ void drawLoginScreen(GuiState& g) {
     }
 
     DrawTxt("Chon nhanh tai khoan de trai nghiem:", loginCard.x + 30, loginCard.y + 250, 14, COLOR_TEXT_MUTED);
-    if (GuiBtnOutline({ loginCard.x + 30, loginCard.y + 275, 210, 36 }, "Giang vien (GV / GV)", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
+    if (GuiBtnOutline({ loginCard.x + 30, loginCard.y + 275, 195, 36 }, "Giang vien (GV / GV)", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
         snprintf(g.loginUser, sizeof(g.loginUser), "GV");
         snprintf(g.loginPass, sizeof(g.loginPass), "GV");
     }
-    if (GuiBtnOutline({ loginCard.x + 260, loginCard.y + 275, 210, 36 }, "Sinh vien (SV001 / 123)", COLOR_SUCCESS, COLOR_SUCCESS, 14, true)) {
+    // mat khau SV001 trong data/classes.txt la pass123; nut to hon de chu khong tran khung
+    if (GuiBtnOutline({ loginCard.x + 235, loginCard.y + 275, 235, 36 }, "Sinh vien (SV001 / pass123)", COLOR_SUCCESS, COLOR_SUCCESS, 14, true)) {
         snprintf(g.loginUser, sizeof(g.loginUser), "SV001");
-        snprintf(g.loginPass, sizeof(g.loginPass), "123");
+        snprintf(g.loginPass, sizeof(g.loginPass), "pass123");
     }
 
     bool doLogin = GuiBtn({ loginCard.x + 30, loginCard.y + 345, 440, 48 }, "DANG NHAP NGAY", COLOR_PRIMARY, COLOR_PRIMARY_HOVER, WHITE, 18, true);

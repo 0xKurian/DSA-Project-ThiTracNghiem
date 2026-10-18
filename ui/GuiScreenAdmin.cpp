@@ -10,7 +10,7 @@ void drawAdminDashboard(GuiState& g) {
     DrawRectangle(0, 0, GUI_WIDTH, 65, COLOR_SIDEBAR);
     DrawTxt("BANG DIEU KHIEN GIANG VIEN", 30, 20, 22, WHITE, true);
 
-    if (GuiBtnOutline({ (float)(GUI_WIDTH - 260), 15, 110, 35 }, "Luu File", COLOR_SUCCESS, WHITE, 15, true)) {
+    if (GuiBtnOutline({ (float)(GUI_WIDTH - 260), 15, 110, 35 }, "Luu File", COLOR_SUCCESS, COLOR_SUCCESS, 15, true)) {
         saveAllData(g.root, g.classes, g.classCount, "data");
         g.showToast("Da luu du lieu thanh cong vao thu muc 'data'!", 3.0f, false);
     }

@@ -39,6 +39,8 @@ void runGraphicApp() {
         float dt = GetFrameTime();
         if (g.notifyTimer > 0) g.notifyTimer -= dt;
 
+        // duyet lai BST moi khung hinh de phan trang du lieu moi; xoa di khong thi mon bi nhan doi
+        g.subjects.clear();
         collectSubjects(g.root, g.subjects);
 
         // widget ben ngoai modal khong nhan click

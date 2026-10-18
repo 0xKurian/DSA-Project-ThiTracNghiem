@@ -75,6 +75,8 @@ struct GuiState {
     int selectedStudentIdx;
     int teacherSubNavOffset;
     int teacherClassNavOffset;
+    int scoreSubNavOffset;
+    int reviewSubNavOffset;
 
     int studentTab;
     int studentSubChoice;

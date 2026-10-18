@@ -27,10 +27,23 @@ void drawAdminTabScores(GuiState& g) {
     }
 
     DrawTxt("Mon:", contentRec.x + 620, contentRec.y + 68, 15, COLOR_TEXT_DARK, true);
-    for (size_t i = 0; i < g.subjects.size() && i < 4; ++i) {
-        bool sel = (g.selectedSubjectIdx == (int)i);
-        if (GuiBtn({ contentRec.x + 670 + i * 105, contentRec.y + 62, 95, 32 }, g.subjects[i]->id, sel ? COLOR_PRIMARY : COLOR_SIDEBAR, COLOR_PRIMARY_HOVER, WHITE, 14, sel)) {
-            g.selectedSubjectIdx = (int)i;
+    // 3 nut + 2 moc trang moi vua khoang ben phai; subject thu 4 bi cat di canh cua so
+    int subMax = 3;
+    if (g.scoreSubNavOffset >= (int)g.subjects.size()) g.scoreSubNavOffset = 0;
+    if (g.scoreSubNavOffset > 0 && GuiBtnOutline({ contentRec.x + 666, contentRec.y + 62, 30, 32 }, "<", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
+        g.scoreSubNavOffset--;
+    }
+    for (int c = 0; c < subMax; ++c) {
+        size_t idx = g.scoreSubNavOffset + c;
+        if (idx >= g.subjects.size()) break;
+        bool sel = (g.selectedSubjectIdx == (int)idx);
+        if (GuiBtn({ contentRec.x + 704 + c * 92, contentRec.y + 62, 88, 32 }, g.subjects[idx]->id, sel ? COLOR_PRIMARY : COLOR_SIDEBAR, COLOR_PRIMARY_HOVER, WHITE, 14, sel)) {
+            g.selectedSubjectIdx = (int)idx;
+        }
+    }
+    if (g.scoreSubNavOffset + subMax < (int)g.subjects.size()) {
+        if (GuiBtnOutline({ contentRec.x + 704 + subMax * 92, contentRec.y + 62, 30, 32 }, ">", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
+            g.scoreSubNavOffset++;
         }
     }
 
@@ -110,11 +123,24 @@ void drawAdminTabExamReview(GuiState& g) {
         }
 
         DrawTxt("Mon:", contentRec.x + 630, contentRec.y + 68, 15, COLOR_TEXT_DARK, true);
-        for (size_t i = 0; i < g.subjects.size() && i < 3; ++i) {
-            bool sel = (g.selectedSubjectIdx == (int)i);
-            if (GuiBtn({ contentRec.x + 680 + i * 100, contentRec.y + 62, 90, 32 }, g.subjects[i]->id, sel ? COLOR_PRIMARY : COLOR_SIDEBAR, COLOR_PRIMARY_HOVER, WHITE, 14, sel)) {
-                g.selectedSubjectIdx = (int)i;
+        // hang mon cung phan trang giong tab bang diem, môn thu 4 tro di nam ngoai man hinh
+        int reviewSubMax = 3;
+        if (g.reviewSubNavOffset >= (int)g.subjects.size()) g.reviewSubNavOffset = 0;
+        if (g.reviewSubNavOffset > 0 && GuiBtnOutline({ contentRec.x + 676, contentRec.y + 62, 30, 32 }, "<", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
+            g.reviewSubNavOffset--;
+        }
+        for (int c = 0; c < reviewSubMax; ++c) {
+            size_t idx = g.reviewSubNavOffset + c;
+            if (idx >= g.subjects.size()) break;
+            bool sel = (g.selectedSubjectIdx == (int)idx);
+            if (GuiBtn({ contentRec.x + 714 + c * 84, contentRec.y + 62, 80, 32 }, g.subjects[idx]->id, sel ? COLOR_PRIMARY : COLOR_SIDEBAR, COLOR_PRIMARY_HOVER, WHITE, 14, sel)) {
+                g.selectedSubjectIdx = (int)idx;
                 g.reviewQPage = 0;
+            }
+        }
+        if (g.reviewSubNavOffset + reviewSubMax < (int)g.subjects.size()) {
+            if (GuiBtnOutline({ contentRec.x + 714 + reviewSubMax * 84, contentRec.y + 62, 30, 32 }, ">", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
+                g.reviewSubNavOffset++;
             }
         }
 
