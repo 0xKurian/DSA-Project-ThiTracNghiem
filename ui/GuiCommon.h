@@ -1,0 +1,76 @@
+#ifndef GUI_COMMON_H
+#define GUI_COMMON_H
+// widget dung chung cho cac man hinh do hoa: palette, chu, textbox, toast
+#include "raylib.h"
+
+#include <vector>
+
+struct Subject;
+struct Question;
+struct Student;
+
+constexpr int GUI_WIDTH  = 1280;
+constexpr int GUI_HEIGHT = 768;
+
+constexpr int SUBJECTS_PER_PAGE   = 8;
+constexpr int CLASSES_PER_PAGE    = 8;
+constexpr int STUDENTS_PER_PAGE   = 8;
+constexpr int QUESTIONS_PER_PAGE  = 3;
+constexpr int SCORES_PER_PAGE     = 8;
+constexpr int REVIEW_PER_PAGE     = 3;
+
+inline const Color COLOR_BG             = { 245, 247, 250, 255 };
+inline const Color COLOR_CARD           = { 255, 255, 255, 255 };
+inline const Color COLOR_SIDEBAR        = { 30, 41, 59, 255 };    // Slate 800
+inline const Color COLOR_SIDEBAR_HOVER  = { 51, 65, 85, 255 };    // Slate 700
+inline const Color COLOR_SIDEBAR_ACTIVE = { 37, 99, 235, 255 };   // Blue 600
+inline const Color COLOR_PRIMARY        = { 37, 99, 235, 255 };   // Blue 600
+inline const Color COLOR_PRIMARY_HOVER  = { 29, 78, 216, 255 };   // Blue 700
+inline const Color COLOR_SUCCESS        = { 22, 163, 74, 255 };   // Green 600
+inline const Color COLOR_SUCCESS_HOVER  = { 21, 128, 61, 255 };   // Green 700
+inline const Color COLOR_DANGER         = { 220, 38, 38, 255 };   // Red 600
+inline const Color COLOR_DANGER_HOVER   = { 185, 28, 28, 255 };   // Red 700
+inline const Color COLOR_WARNING        = { 234, 88, 12, 255 };   // Orange 600
+inline const Color COLOR_TEXT_DARK      = { 15, 23, 42, 255 };    // Slate 900
+inline const Color COLOR_TEXT_MUTED     = { 100, 116, 139, 255 }; // Slate 500
+inline const Color COLOR_BORDER         = { 226, 232, 240, 255 }; // Slate 200
+inline const Color COLOR_ROW_ALT        = { 248, 250, 252, 255 }; // dong le cho bang
+
+inline Color MakeColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255) {
+    Color c;
+    c.r = r; c.g = g; c.b = b; c.a = a;
+    return c;
+}
+
+void loadVietnameseFonts();
+void unloadVietnameseFonts();
+
+void DrawTxt(const char* text, float posX, float posY, float fontSize, Color color = COLOR_TEXT_DARK, bool bold = false);
+float MeasureTxt(const char* text, float fontSize, bool bold = false);
+float DrawTxtWrapped(const char* text, float posX, float posY, float maxWidth, float fontSize,
+                     Color color = COLOR_TEXT_DARK, bool bold = false, float lineSpacing = 4.0f);
+
+void GuiSetModalState(bool modalOpen);
+void GuiMarkInsideModal();  // goi truoc khi ve modal(trong modal widget van hoat dong)
+
+bool GuiBtn(Rectangle rec, const char* text,
+            Color bg = COLOR_PRIMARY, Color hoverBg = COLOR_PRIMARY_HOVER,
+            Color textColor = WHITE, float fontSize = 16.0f,
+            bool bold = false, bool disabled = false);
+
+bool GuiBtnOutline(Rectangle rec, const char* text,
+                   Color borderColor = COLOR_PRIMARY, Color textColor = COLOR_PRIMARY,
+                   float fontSize = 15.0f, bool bold = false, bool disabled = false);
+
+void GuiTextBoxInput(Rectangle rec, char textBuffer[], int maxLen, bool& isActive,
+                     const char* placeholder = "", bool isPassword = false);
+
+void DrawCardPanel(Rectangle rec, Color bg = COLOR_CARD, Color border = COLOR_BORDER);
+
+void DrawToastNotification(const char* message, float timer, bool isError = false);
+
+void collectSubjects(Subject* root, std::vector<Subject*>& list);
+void collectQuestions(Question* head, std::vector<Question*>& list);
+void collectStudents(Student* head, std::vector<Student*>& list);
+
+#endif
