@@ -13,32 +13,13 @@ void drawAdminTabQuestions(GuiState& g) {
     DrawTxt("NGAN HANG CAU HOI THI TRAC NGHIEM", contentRec.x + 25, contentRec.y + 25, 20, COLOR_TEXT_DARK, true);
 
     DrawTxt("Chon Mon Hoc:", contentRec.x + 25, contentRec.y + 68, 15, COLOR_TEXT_DARK, true);
+    Rectangle questionSearchRec = { contentRec.x + 150, contentRec.y + 57, 380, 40 };
     if (g.subjects.empty()) {
-        DrawTxt("Chua co mon hoc nao de tao cau hoi.", contentRec.x + 160, contentRec.y + 68, 15, COLOR_TEXT_MUTED);
-    } else {
-        int maxVisibleSub = 4;
-        if (g.teacherSubNavOffset > 0) {
-            if (GuiBtnOutline({ contentRec.x + 150, contentRec.y + 62, 35, 32 }, "<", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
-                g.teacherSubNavOffset--;
-            }
-        }
+        DrawTxt("Chua co mon hoc nao de tao cau hoi.", contentRec.x + 150, contentRec.y + 68, 15, COLOR_TEXT_MUTED);
+    }
 
-        for (int s = 0; s < maxVisibleSub; ++s) {
-            int idx = g.teacherSubNavOffset + s;
-            if (idx >= (int)g.subjects.size()) break;
-            bool sel = (g.selectedSubjectIdx == idx);
-            Rectangle btnRec = { contentRec.x + 195 + s * 125, contentRec.y + 62, 115, 32 };
-            if (GuiBtn(btnRec, g.subjects[idx]->id, sel ? COLOR_PRIMARY : COLOR_SIDEBAR, COLOR_PRIMARY_HOVER, WHITE, 14, sel)) {
-                g.selectedSubjectIdx = idx;
-                g.questionPage = 0;
-            }
-        }
-
-        if (g.teacherSubNavOffset + maxVisibleSub < (int)g.subjects.size()) {
-            if (GuiBtnOutline({ contentRec.x + 195 + maxVisibleSub * 125, contentRec.y + 62, 35, 32 }, ">", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
-                g.teacherSubNavOffset++;
-            }
-        }
+    if (GuiBtnOutline({ contentRec.x + contentRec.width - 350, contentRec.y + 62, 155, 34 }, "<- Quay lai", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
+        g.teacherTab = 0;
     }
 
     if (!g.subjects.empty() && g.selectedSubjectIdx < (int)g.subjects.size()) {
@@ -62,7 +43,23 @@ void drawAdminTabQuestions(GuiState& g) {
         if (g.questionPage >= totalQPages) g.questionPage = totalQPages - 1;
         if (g.questionPage < 0) g.questionPage = 0;
 
-        DrawTxt(TextFormat("Mon: %s (%s) - Tong so: %d cau hoi", curSub->id, curSub->name, (int)qList.size()), contentRec.x + 25, contentRec.y + 110, 15, COLOR_TEXT_MUTED, true);
+        ExamConfigUi* cfg = findExamConfig(g.examConfigs, curSub->id);
+        char cfgText[80];
+        if (cfg != nullptr) {
+            snprintf(cfgText, sizeof(cfgText), "Cau hinh thi: %d cau / %d phut", cfg->questionCount, cfg->minutes);
+        } else {
+            snprintf(cfgText, sizeof(cfgText), "Chua cau hinh thi");
+        }
+        DrawTxt(TextFormat("Mon: %s - Tong so: %d cau hoi | %s", curSub->id, (int)qList.size(), cfgText), contentRec.x + 25, contentRec.y + 110, 15, COLOR_TEXT_MUTED, true);
+
+        if (GuiBtnOutline({ contentRec.x + contentRec.width - 180, contentRec.y + 103, 155, 30 }, "Cau hinh thi", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
+            g.currentModal = MODAL_EXAM_CONFIG;
+            snprintf(g.configSubjectId, sizeof(g.configSubjectId), "%s", curSub->id);
+            snprintf(g.formExamQ, sizeof(g.formExamQ), "%d", cfg != nullptr ? cfg->questionCount : 10);
+            snprintf(g.formExamMinutes, sizeof(g.formExamMinutes), "%d", cfg != nullptr ? cfg->minutes : 15);
+            g.modalError[0] = '\0';
+            g.activeFormBox = 1;
+        }
 
         if (qList.empty()) {
             DrawTxt("Mon hoc nay chua co cau hoi thi nao. Hay bam '+ Them Cau Hoi' de bo sung.", contentRec.x + 30, contentRec.y + 150, 16, COLOR_TEXT_MUTED);
@@ -114,6 +111,18 @@ void drawAdminTabQuestions(GuiState& g) {
             if (GuiBtnOutline({ contentRec.x + contentRec.width - 125, (float)pageBarY, 105, 30 }, "Trang sau >", COLOR_PRIMARY, COLOR_PRIMARY, 13, false, g.questionPage >= totalQPages - 1)) {
                 if (g.questionPage < totalQPages - 1) g.questionPage++;
             }
+        }
+    }
+
+    if (!g.subjects.empty()) {
+        std::vector<SuggestItem> items;
+        GuiMakeSubjectItems(g.subjects, true, items);
+        int picked = GuiSearchSuggest(questionSearchRec, g.searchQuestion, sizeof(g.searchQuestion),
+                                      g.activeSearchQuestion, items, g.selectedSubjectIdx,
+                                      "Tim theo ma hoac ten mon...");
+        if (picked >= 0) {
+            g.selectedSubjectIdx = picked;
+            g.questionPage = 0;
         }
     }
 }

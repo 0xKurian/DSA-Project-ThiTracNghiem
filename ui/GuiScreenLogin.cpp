@@ -7,7 +7,7 @@
 
 #include <cstdio>
 
-// tai khoan demo: GV/GV, SV001/pass123 (pass123 la mat khau trong data/classes.txt); loi hien ngay trong the dang nhap
+// dang nhap bang tai khoan trong data/classes.txt; loi hien ngay trong the dang nhap
 
 void drawLoginScreen(GuiState& g) {
     DrawRectangle(0, 0, GUI_WIDTH, 180, COLOR_SIDEBAR);
@@ -16,7 +16,7 @@ void drawLoginScreen(GuiState& g) {
     const char* subtitle = "Do an Cau truc Du lieu & Giai thuat (BST, Mang con tro, Danh sach lien ket)";
     DrawTxt(subtitle, GUI_WIDTH / 2.0f - MeasureTxt(subtitle, 16) / 2.0f, 95, 16, COLOR_TEXT_MUTED);
 
-    Rectangle loginCard = { (float)(GUI_WIDTH / 2 - 250), 220, 500, 470 };
+    Rectangle loginCard = { (float)(GUI_WIDTH / 2 - 250), 220, 500, 360 };
     DrawCardPanel(loginCard);
 
     DrawTxt("DANG NHAP HE THONG", loginCard.x + 30, loginCard.y + 30, 22, COLOR_TEXT_DARK, true);
@@ -35,18 +35,7 @@ void drawLoginScreen(GuiState& g) {
         else if (g.activePassBox) { g.activePassBox = false; g.activeUserBox = true; }
     }
 
-    DrawTxt("Chon nhanh tai khoan de trai nghiem:", loginCard.x + 30, loginCard.y + 250, 14, COLOR_TEXT_MUTED);
-    if (GuiBtnOutline({ loginCard.x + 30, loginCard.y + 275, 195, 36 }, "Giang vien (GV / GV)", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
-        snprintf(g.loginUser, sizeof(g.loginUser), "GV");
-        snprintf(g.loginPass, sizeof(g.loginPass), "GV");
-    }
-    // mat khau SV001 trong data/classes.txt la pass123; nut to hon de chu khong tran khung
-    if (GuiBtnOutline({ loginCard.x + 235, loginCard.y + 275, 235, 36 }, "Sinh vien (SV001 / pass123)", COLOR_SUCCESS, COLOR_SUCCESS, 14, true)) {
-        snprintf(g.loginUser, sizeof(g.loginUser), "SV001");
-        snprintf(g.loginPass, sizeof(g.loginPass), "pass123");
-    }
-
-    bool doLogin = GuiBtn({ loginCard.x + 30, loginCard.y + 345, 440, 48 }, "DANG NHAP NGAY", COLOR_PRIMARY, COLOR_PRIMARY_HOVER, WHITE, 18, true);
+    bool doLogin = GuiBtn({ loginCard.x + 30, loginCard.y + 255, 440, 52 }, "DANG NHAP NGAY", COLOR_PRIMARY, COLOR_PRIMARY_HOVER, WHITE, 18, true);
     if (IsKeyPressed(KEY_ENTER) && (g.activeUserBox || g.activePassBox)) {
         doLogin = true;
     }
@@ -69,6 +58,6 @@ void drawLoginScreen(GuiState& g) {
     }
 
     if (g.notifyTimer > 0 && g.notifyIsError) {
-        DrawTxt(g.notifyMessage, loginCard.x + 30, loginCard.y + 412, 15, COLOR_DANGER, true);
+        DrawTxt(g.notifyMessage, loginCard.x + 30, loginCard.y + 320, 15, COLOR_DANGER, true);
     }
 }

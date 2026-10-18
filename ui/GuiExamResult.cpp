@@ -28,5 +28,6 @@ void drawExamResult(GuiState& g) {
     if (GuiBtn({ card.x + 40, card.y + 330, 420, 48 }, "VE MAN HINH CHINH", COLOR_PRIMARY, COLOR_PRIMARY_HOVER, WHITE, 17, true)) {
         g.currentScreen = SCREEN_STUDENT_DASHBOARD;
         g.studentTab = 1;
+        g.studentReviewScoreIdx = -1;
     }
 }

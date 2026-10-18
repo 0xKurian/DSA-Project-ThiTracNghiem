@@ -5,6 +5,9 @@
 #include "../core/StudentList.h"
 #include "../core/SubjectBST.h"
 
+#include <algorithm>
+#include <cctype>
+#include <cstdio>
 #include <cstring>
 #include <string>
 
@@ -13,6 +16,23 @@ static Font gFontBold;
 
 static bool gModalOpen = false;
 static bool gInsideModal = false;
+
+// dropdown goi y ve sau cac widget khac, nen phai chan click cho khung hinh ke tiep
+static bool gShieldPrev = false;
+static bool gShieldCur = false;
+static Rectangle gShieldPrevRec = { 0, 0, 0, 0 };
+static Rectangle gShieldCurRec = { 0, 0, 0, 0 };
+
+void GuiBeginFrame() {
+    gShieldPrev = gShieldCur;
+    gShieldPrevRec = gShieldCurRec;
+    gShieldCur = false;
+}
+
+static bool clickShielded(Vector2 mouse) {
+    return gShieldPrev && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)
+        && CheckCollisionPointRec(mouse, gShieldPrevRec);
+}
 
 void GuiSetModalState(bool modalOpen) {
     gModalOpen = modalOpen;
@@ -135,7 +155,8 @@ bool GuiBtn(Rectangle rec, const char* text, Color bg, Color hoverBg, Color text
     float posY = rec.y + (rec.height - fontSize) / 2.0f;
     DrawTxt(text, posX, posY, fontSize, textColor, bold);
 
-    return hovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
+    if (hovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) return !clickShielded(mouse);
+    return false;
 }
 
 bool GuiBtnOutline(Rectangle rec, const char* text, Color borderColor, Color textColor, float fontSize, bool bold, bool disabled) {
@@ -161,8 +182,55 @@ bool GuiBtnOutline(Rectangle rec, const char* text, Color borderColor, Color tex
     float posY = rec.y + (rec.height - fontSize) / 2.0f;
     DrawTxt(text, posX, posY, fontSize, textColor, bold);
 
-    return hovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
+    if (hovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) return !clickShielded(mouse);
+    return false;
 }
+
+// do dai byte cua ky tu utf8 bat dau tai s
+static int utf8CharLen(const char* s) {
+    unsigned char c = (unsigned char)s[0];
+    if (c < 0x80) return 1;
+    if ((c >> 5) == 0x06) return 2;
+    if ((c >> 4) == 0x0E) return 3;
+    if ((c >> 3) == 0x1E) return 4;
+    return 1;
+}
+
+static int utf8PrevPos(const char* s, int pos) {
+    if (pos <= 0) return 0;
+    pos--;
+    while (pos > 0 && ((s[pos] & 0xC0) == 0x80)) pos--;
+    return pos;
+}
+
+static int utf8NextPos(const char* s, int pos) {
+    int len = (int)strlen(s);
+    if (pos >= len) return len;
+    int next = pos + utf8CharLen(s + pos);
+    return next > len ? len : next;
+}
+
+static int utf8CountBefore(const char* s, int pos) {
+    int cps = 0, i = 0;
+    while (i < pos && s[i] != '\0') {
+        i += utf8CharLen(s + i);
+        cps++;
+    }
+    return cps;
+}
+
+// do rong hien thi cua phan chuoi truoc vi tri byte (mat khau thay bang '*')
+static float displayWidthBefore(const char* buf, int bytePos, bool isPassword) {
+    if (!isPassword) {
+        std::string prefix(buf, bytePos);
+        return MeasureTxt(prefix.c_str(), 16.0f);
+    }
+    return (float)utf8CountBefore(buf, bytePos) * MeasureTxt("*", 16.0f);
+}
+
+// moi luc chi co 1 o nhap active nen chi can 1 con tro
+static char* gCaretBuf = nullptr;
+static int gCaretByte = 0;
 
 void GuiTextBoxInput(Rectangle rec, char textBuffer[], int maxLen, bool& isActive, const char* placeholder, bool isPassword) {
     if (gModalOpen && !gInsideModal) {
@@ -170,42 +238,73 @@ void GuiTextBoxInput(Rectangle rec, char textBuffer[], int maxLen, bool& isActiv
     } else {
         Vector2 mouse = GetMousePosition();
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-            isActive = CheckCollisionPointRec(mouse, rec);
+            isActive = CheckCollisionPointRec(mouse, rec) && !clickShielded(mouse);
+            if (isActive) {
+                int len = (int)strlen(textBuffer);
+                float textMaxW = rec.width - 24.0f;
+                float caretW = displayWidthBefore(textBuffer, (gCaretBuf == textBuffer ? gCaretByte : len), isPassword);
+                float scroll = caretW > textMaxW ? caretW - textMaxW : 0.0f;
+                float localX = mouse.x - (rec.x + 12.0f) + scroll;
+
+                // chon diem chen gan vi tri chuot nhat
+                int chosen = 0;
+                float bestDist = -1.0f;
+                int i = 0;
+                while (true) {
+                    float w = displayWidthBefore(textBuffer, i, isPassword);
+                    float d = w - localX;
+                    if (d < 0) d = -d;
+                    if (bestDist < 0 || d < bestDist) { bestDist = d; chosen = i; }
+                    if (i >= len) break;
+                    i += utf8CharLen(textBuffer + i);
+                }
+                gCaretBuf = textBuffer;
+                gCaretByte = chosen;
+            }
         }
     }
 
     if (isActive) {
+        int len = (int)strlen(textBuffer);
+        if (gCaretBuf != textBuffer) {
+            gCaretBuf = textBuffer;
+            gCaretByte = len;
+        }
+        if (gCaretByte < 0) gCaretByte = 0;
+        if (gCaretByte > len) gCaretByte = len;
+
         int key = GetCharPressed();
         while (key > 0) {
-            int len = (int)strlen(textBuffer);
-            if (key >= 32 && len < maxLen - 1) {
-                if (key > 127) {
-                    int utf8Size = 0;
-                    const char* utf8Bytes = CodepointToUTF8(key, &utf8Size);
-                    if (utf8Bytes && (len + utf8Size < maxLen)) {
-                        memcpy(textBuffer + len, utf8Bytes, utf8Size);
-                        textBuffer[len + utf8Size] = '\0';
-                    }
-                } else if (key <= 126) {
-                    textBuffer[len] = (char)key;
-                    textBuffer[len + 1] = '\0';
-                }
+            int bytesLen = 0;
+            const char* utf8Bytes = CodepointToUTF8(key, &bytesLen);
+            if (key >= 32 && utf8Bytes != nullptr && (int)strlen(textBuffer) + bytesLen < maxLen) {
+                len = (int)strlen(textBuffer);
+                memmove(textBuffer + gCaretByte + bytesLen, textBuffer + gCaretByte, len - gCaretByte + 1);
+                memcpy(textBuffer + gCaretByte, utf8Bytes, bytesLen);
+                gCaretByte += bytesLen;
             }
             key = GetCharPressed();
         }
 
         if (IsKeyPressed(KEY_BACKSPACE) || IsKeyPressedRepeat(KEY_BACKSPACE)) {
-            int len = (int)strlen(textBuffer);
-            if (len > 0) {
-                while (len > 0) {
-                    len--;
-                    if ((textBuffer[len] & 0xC0) != 0x80) {
-                        textBuffer[len] = '\0';
-                        break;
-                    }
-                }
+            if (gCaretByte > 0) {
+                int prev = utf8PrevPos(textBuffer, gCaretByte);
+                len = (int)strlen(textBuffer);
+                memmove(textBuffer + prev, textBuffer + gCaretByte, len - gCaretByte + 1);
+                gCaretByte = prev;
             }
         }
+        if (IsKeyPressed(KEY_DELETE) || IsKeyPressedRepeat(KEY_DELETE)) {
+            len = (int)strlen(textBuffer);
+            if (gCaretByte < len) {
+                int next = utf8NextPos(textBuffer, gCaretByte);
+                memmove(textBuffer + gCaretByte, textBuffer + next, len - next + 1);
+            }
+        }
+        if (IsKeyPressed(KEY_LEFT) || IsKeyPressedRepeat(KEY_LEFT)) gCaretByte = utf8PrevPos(textBuffer, gCaretByte);
+        if (IsKeyPressed(KEY_RIGHT) || IsKeyPressedRepeat(KEY_RIGHT)) gCaretByte = utf8NextPos(textBuffer, gCaretByte);
+        if (IsKeyPressed(KEY_HOME)) gCaretByte = 0;
+        if (IsKeyPressed(KEY_END)) gCaretByte = (int)strlen(textBuffer);
     }
 
     DrawRectangleRounded(rec, 0.15f, 4, COLOR_CARD);
@@ -221,23 +320,29 @@ void GuiTextBoxInput(Rectangle rec, char textBuffer[], int maxLen, bool& isActiv
     if (strlen(textBuffer) == 0 && !isActive) {
         DrawTxt(placeholder, posX, posY, fontSize, COLOR_TEXT_MUTED);
     } else {
+        int len = (int)strlen(textBuffer);
         std::string displayText;
         if (isPassword) {
-            displayText = std::string(strlen(textBuffer), '*');
+            displayText.assign(utf8CountBefore(textBuffer, len), '*');
         } else {
             displayText = textBuffer;
         }
 
         float textW = MeasureTxt(displayText.c_str(), fontSize);
-        float renderX = posX;
-        if (textW > textMaxW) {
-            renderX = posX - (textW - textMaxW);
+        float scroll = 0.0f;
+        if (isActive) {
+            float caretW = displayWidthBefore(textBuffer, gCaretByte, isPassword);
+            if (caretW > textMaxW) scroll = caretW - textMaxW;
+        } else if (textW > textMaxW) {
+            scroll = textW - textMaxW;
         }
+        float renderX = posX - scroll;
 
         DrawTxt(displayText.c_str(), renderX, posY, fontSize, COLOR_TEXT_DARK);
 
         if (isActive && ((GetTime() - (int)GetTime()) < 0.5)) {
-            DrawTxt("|", renderX + textW + 1.0f, posY, fontSize, COLOR_PRIMARY, true);
+            float caretW = displayWidthBefore(textBuffer, gCaretByte, isPassword);
+            DrawTxt("|", posX + caretW - scroll, posY, fontSize, COLOR_PRIMARY, true);
         }
     }
 
@@ -303,4 +408,156 @@ void collectStudents(Student* head, std::vector<Student*>& list) {
         list.push_back(cur);
         cur = cur->next;
     }
+}
+
+bool GuiMatchText(const char* text, const char* query) {
+    if (query == nullptr || query[0] == '\0') return true;
+
+    auto trim = [](const std::string& in) {
+        size_t b = 0, e = in.size();
+        while (b < e && (in[b] == ' ' || in[b] == '\t')) b++;
+        while (e > b && (in[e - 1] == ' ' || in[e - 1] == '\t')) e--;
+        return in.substr(b, e - b);
+    };
+
+    std::string hay = trim((text != nullptr) ? text : "");
+    std::string needle = trim(query);
+    if (needle.empty()) return true;
+    for (char& c : hay) c = (char)tolower((unsigned char)c);
+    for (char& c : needle) c = (char)tolower((unsigned char)c);
+    return hay.find(needle) != std::string::npos;
+}
+
+int GuiSearchSuggest(Rectangle rec, char* query, int capacity, bool& active,
+                     const std::vector<SuggestItem>& items, int currentValue,
+                     const char* placeholder, bool* textChanged) {
+    // click vao dong goi y lam textbox mat focus ngay trong frame; nho trang thai truoc do
+    // de van xu ly duoc click chon dong ben duoi
+    bool wasActive = active;
+    (void)currentValue; // khong to mau rieng cho muc dang chon nua
+    size_t lenBefore = strlen(query);
+    GuiTextBoxInput(rec, query, capacity, active, placeholder);
+    if (textChanged != nullptr) *textChanged = (strlen(query) != lenBefore);
+    if (!active && !wasActive) return -1;
+
+    std::vector<const SuggestItem*> matches;
+    for (const SuggestItem& it : items) {
+        if (GuiMatchText(it.id.c_str(), query) || GuiMatchText(it.name.c_str(), query)) {
+            matches.push_back(&it);
+        }
+    }
+    std::stable_sort(matches.begin(), matches.end(),
+                     [](const SuggestItem* a, const SuggestItem* b) { return a->id < b->id; });
+
+    const int maxRows = 6;
+    int shown = (int)matches.size();
+    if (shown > maxRows) shown = maxRows;
+
+    const float rowH = 34.0f;
+    float panelW = rec.width < 420.0f ? 420.0f : rec.width;
+    if (rec.x + panelW > GUI_WIDTH - 10.0f) panelW = GUI_WIDTH - 10.0f - rec.x;
+    Rectangle panel = { rec.x, rec.y + rec.height + 2.0f, panelW, shown * rowH + 8.0f };
+    if (matches.empty()) panel.height = rowH + 8.0f;
+
+    // vung chan click chi co hieu luc tu khung hinh sau (widget ve sau cac nut)
+    gShieldCur = true;
+    gShieldCurRec = panel;
+
+    DrawRectangleRounded(panel, 0.06f, 6, COLOR_CARD);
+    DrawRectangleRoundedLines(panel, 0.06f, 6, COLOR_BORDER);
+
+    if (matches.empty()) {
+        DrawTxt("Khong tim thay ket qua phu hop.", panel.x + 12, panel.y + 10, 14, COLOR_TEXT_MUTED);
+        return -1;
+    }
+
+    Vector2 mouse = GetMousePosition();
+    bool pressed = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
+    int picked = -1;
+
+    for (int r = 0; r < shown; ++r) {
+        const SuggestItem* it = matches[r];
+        Rectangle row = { panel.x + 4, panel.y + 4 + r * rowH, panel.width - 8, rowH };
+        bool hover = CheckCollisionPointRec(mouse, row);
+
+        Color rowBg = COLOR_CARD;
+        if (it->highlight) rowBg = MakeColor(220, 252, 231);
+        if (hover) rowBg = MakeColor(226, 232, 240);
+
+        DrawRectangleRounded(row, 0.10f, 4, rowBg);
+        DrawTxt(it->id.c_str(), row.x + 10, row.y + 8, 15, COLOR_PRIMARY, true);
+
+        float metaW = it->meta.empty() ? 0.0f : MeasureTxt(it->meta.c_str(), 14, true) + 20.0f;
+        float nameX = row.x + 10 + MeasureTxt(it->id.c_str(), 15, true) + 16.0f;
+        if (nameX < row.x + 104) nameX = row.x + 104;
+        if (nameX > row.x + row.width - metaW - 20) nameX = row.x + row.width - metaW - 20;
+        BeginScissorMode((int)nameX, (int)row.y, (int)(row.x + row.width - metaW - nameX), (int)row.height);
+        DrawTxt(it->name.c_str(), nameX, row.y + 8, 15, COLOR_TEXT_DARK);
+        EndScissorMode();
+
+        if (!it->meta.empty()) {
+            float mw = MeasureTxt(it->meta.c_str(), 14, true);
+            DrawTxt(it->meta.c_str(), row.x + row.width - mw - 12, row.y + 9, 14,
+                    it->highlight ? COLOR_SUCCESS : COLOR_TEXT_MUTED, true);
+        }
+
+        if (pressed && CheckCollisionPointRec(mouse, row)) {
+            snprintf(query, capacity, "%s", it->id.c_str());
+            picked = it->value;
+        }
+    }
+
+    if (picked >= 0) active = false;
+    return picked;
+}
+
+void GuiMakeSubjectItems(const std::vector<Subject*>& subjects, bool withCount, std::vector<SuggestItem>& out) {
+    out.clear();
+    for (size_t i = 0; i < subjects.size(); ++i) {
+        SuggestItem it;
+        it.value = (int)i;
+        it.id = subjects[i]->id;
+        it.name = subjects[i]->name;
+        if (withCount) {
+            int n = countQuestions(subjects[i]->questionList);
+            char meta[24];
+            snprintf(meta, sizeof(meta), "%d cau", n);
+            it.meta = meta;
+            it.highlight = (n > 0);
+        }
+        out.push_back(it);
+    }
+}
+
+void GuiMakeClassItems(Class* const classes[], int classCount, std::vector<SuggestItem>& out) {
+    out.clear();
+    for (int i = 0; i < classCount; ++i) {
+        if (classes[i] == nullptr) continue;
+        SuggestItem it;
+        it.value = i;
+        it.id = classes[i]->id;
+        it.name = classes[i]->name;
+        int n = 0;
+        for (Student* s = classes[i]->studentList; s != nullptr; s = s->next) n++;
+        char meta[24];
+        snprintf(meta, sizeof(meta), "%d SV", n);
+        it.meta = meta;
+        it.highlight = (n > 0);
+        out.push_back(it);
+    }
+    std::stable_sort(out.begin(), out.end(),
+                     [](const SuggestItem& a, const SuggestItem& b) { return a.id < b.id; });
+}
+
+void GuiMakeStudentItems(const std::vector<Student*>& students, std::vector<SuggestItem>& out) {
+    out.clear();
+    for (size_t i = 0; i < students.size(); ++i) {
+        SuggestItem it;
+        it.value = (int)i;
+        it.id = students[i]->id;
+        it.name = std::string(students[i]->ho) + " " + students[i]->ten;
+        out.push_back(it);
+    }
+    std::stable_sort(out.begin(), out.end(),
+                     [](const SuggestItem& a, const SuggestItem& b) { return a.id < b.id; });
 }

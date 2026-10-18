@@ -2,6 +2,32 @@
 
 Dòng thời gian so với bản cũ trước khi cập nhật GitHub (mốc so sánh: commit `373b2a6 "Add files via upload"`). Kiểu viết theo Conventional Commits.
 
+## [2.1.0] — 2026-10-18
+
+### Added
+
+- **widget tìm kiếm + gợi ý dùng chung** (`GuiSearchSuggest` trong `ui/GuiCommon`): gõ ký tự nào thì lọc theo mã hoặc tên, danh sách xếp tăng dần theo mã, chọn dòng để áp dụng; dropdown có cơ chế chặn click xuyên xuống bảng phía sau.
+- **ô nhập liệu có con trỏ soạn thảo**: click đặt caret, phím trái/phải/Home/End/Delete/Backspace sửa được giữa chuỗi (UTF-8), ô cuộn ngang theo caret.
+- **tab Môn học (GV)**: thanh tìm kiếm lọc bảng theo mã/tên (giữ thứ tự duyệt BST) và nút **Xem** trên từng dòng; tab "Ngan hang cau hoi" rời sidebar, mở qua nút Xem, có nút **"<- Quay lai"**.
+- **tab Lop hoc & Sinh vien (GV)**: gộp "Danh muc lop hoc" + "Sinh vien theo lop" thành màn hình master-detail 2 cột — trái là danh mục lớp (lọc, sĩ số, `Xem`/`Xoa`, phân trang) kèm mục **"Tat ca cac lop (Toan truong)"**; phải là sinh viên của lớp (hoặc toàn trường) với ô tìm MASV/họ tên, bảng đầy đủ cột và phân trang; sau khi thêm/xóa sinh viên sĩ số cập nhật ngay.
+- **tab Bang diem & Bai thi (GV)**: gộp "Bang diem mon hoc" + "Chi tiet bai thi", flow **môn → lớp → sinh viên**; bảng điểm theo môn/lớp, `[Xem]` mở chi tiết bài thi ngay trong tab (có nút quay lại).
+- **tab Bảng điểm SV**: gộp "Bang diem ca nhan" + "Xem lai bai thi" thành 1 tab, cột **[Xem]** mở chi tiết bài thi ngay trong tab kèm nút quay lại.
+- **cấu hình thi theo môn (tạm thời trong bộ nhớ UI)**: nút `Cau hinh thi` ở ngân hàng câu hỏi (số câu + số phút, validate theo ngân hàng); tab Vào thi của SV chỉ hiện cấu hình read-only và khóa nút bắt đầu khi môn chưa cấu hình.
+- **đăng nhập**: bỏ hai nút điền tài khoản demo; không còn hiện `GV/GV` hay `SV001/pass123` trên UI, người dùng tự nhập.
+
+### Changed
+
+- Bảng môn học dịch xuống để chừa hàng tìm kiếm; chỉnh vị trí header/cột thao tác các bảng cho khỏi chồng chữ.
+- **fix(ui): đăng xuất ở tab bảng điểm / xem lại làm tắt chương trình** — nguyên nhân: `loggedStudent` bị đặt về `nullptr` rồi vẫn vẽ tiếp trong cùng frame; nay thoát ngay sau khi chuyển về màn đăng nhập.
+- **fix(ui): phím ESC làm tắt ứng dụng** — raylib mặc định gán ESC là exit key; đã `SetExitKey(KEY_NULL)` để ESC chỉ đóng modal.
+- `ui/GuiState.h`: thêm buffer/cờ cho các ô tìm kiếm, `examConfigs`, `formClassId`, các ID chọn trong tab điểm; bỏ field điều hướng cũ không còn dùng.
+
+### Kiểm chứng
+
+- `make app`: 0 lỗi, 0 warning; `make test` PASS.
+- Chụp tự động 18 màn hình trên bản copy tách riêng (login trống, ngân hàng câu hỏi + cấu hình thi, master-detail lớp/SV, xóa lớp có cảnh báo sĩ số, bảng điểm theo môn/lớp, chi tiết bài thi, prepare chưa cấu hình / đã cấu hình, phòng thi, kết quả) — bố cục đúng.
+- Test tay bằng chuột/bàn phím thật: gõ "ditconrme" rồi ←← + Backspace sửa thành "ditconme"; click giữa chuỗi và Home/Delete hoạt động; lọc lớp "d23"; ESC đóng modal không tắt app; đăng nhập `GV/GV` bằng tay.
+
 ## [2.0.1] — 2026-10-18
 
 ### Changed
