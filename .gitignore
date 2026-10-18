@@ -17,3 +17,8 @@
 *~
 .DS_Store
 Thumbs.db
+
+# Personal/local docs, never in the repo
+/AGENTS.md
+/PROGRESS.md
+/agent.md
