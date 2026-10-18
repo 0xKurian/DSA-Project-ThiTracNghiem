@@ -14,6 +14,7 @@
 void runGraphicApp() {
     SetConfigFlags(FLAG_MSAA_4X_HINT);
     InitWindow(GUI_WIDTH, GUI_HEIGHT, "HE THONG QUAN LY VA THI TRAC NGHIEM - C++ DSA PROJECT");
+    SetExitKey(KEY_NULL);   // ESC chi de dong modal, khong thoat chuong trinh
     SetTargetFPS(60);
 
     loadVietnameseFonts();
@@ -26,17 +27,13 @@ void runGraphicApp() {
     g.currentRole = LOGIN_FAILED;
     g.loggedStudent = nullptr;
 
-    snprintf(g.loginUser, sizeof(g.loginUser), "GV");
-    snprintf(g.loginPass, sizeof(g.loginPass), "GV");
-
-    snprintf(g.numQuestionsInput, sizeof(g.numQuestionsInput), "4");
-    snprintf(g.examMinutesInput, sizeof(g.examMinutesInput), "10");
     snprintf(g.formGender, sizeof(g.formGender), "Nam");
     snprintf(g.formPass, sizeof(g.formPass), "123");
     snprintf(g.formCorrect, sizeof(g.formCorrect), "A");
 
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
+        GuiBeginFrame();
         if (g.notifyTimer > 0) g.notifyTimer -= dt;
 
         // duyet lai BST moi khung hinh de phan trang du lieu moi; xoa di khong thi mon bi nhan doi

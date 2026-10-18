@@ -22,21 +22,21 @@ void drawAdminDashboard(GuiState& g) {
     }
 
     DrawRectangle(0, 65, 240, GUI_HEIGHT - 65, COLOR_SIDEBAR);
+    // tab "Ngan hang cau hoi" khong con o menu: vao bang nut Xem o dong mon hoc
     const char* tabs[] = {
         "Mon hoc (BST)",
-        "Ngan hang cau hoi",
-        "Danh muc lop hoc",
-        "Sinh vien theo lop",
-        "Bang diem mon hoc",
-        "Chi tiet bai thi"
+        "Lop hoc & Sinh vien",
+        "Bang diem & Bai thi"
     };
+    const int tabIds[] = { 0, 2, 4 };
 
-    for (int i = 0; i < 6; ++i) {
+    for (int i = 0; i < 3; ++i) {
         Rectangle tabRec = { 10, (float)(85 + i * 55), 220, 45 };
-        bool active = (g.teacherTab == i);
+        // man hinh cau hoi (1) van thuoc nhom mon hoc nen tab me duoc to sang
+        bool active = (g.teacherTab == tabIds[i]) || (tabIds[i] == 0 && g.teacherTab == 1);
         Color tabBg = active ? COLOR_SIDEBAR_ACTIVE : COLOR_SIDEBAR;
         if (GuiBtn(tabRec, tabs[i], tabBg, COLOR_SIDEBAR_HOVER, WHITE, 15, active)) {
-            g.teacherTab = i;
+            g.teacherTab = tabIds[i];
         }
     }
 
@@ -53,14 +53,8 @@ void drawAdminDashboard(GuiState& g) {
     case 2:
         drawAdminTabClasses(g);
         break;
-    case 3:
-        drawAdminTabStudents(g);
-        break;
-    case 4:
-        drawAdminTabScores(g);
-        break;
     default:
-        drawAdminTabExamReview(g);
+        drawAdminTabScores(g);
         break;
     }
 }

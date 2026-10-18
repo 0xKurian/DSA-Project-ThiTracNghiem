@@ -1,69 +1,128 @@
-// tab bao cao diem theo lop + xem lai chi tiet bai thi (DSLK ExamDetail)
-// luu y: tab xem lai chi tiet doc Score (findScore) roi duyet detailList
+// tab diem + chi tiet bai thi: chon mon -> lop -> sinh vien (IDs, tranh lech index)
 #include "GuiCommon.h"
 #include "GuiState.h"
 
-#include "../business/ReportService.h"   // hasStudentTakenExam
-
-#include "../core/ScoreList.h"           // findScore
-#include "../core/SubjectBST.h"          // Subject (curS)
+#include "../core/ClassArray.h"   // findClass
+#include "../core/ScoreList.h"    // findScore
+#include "../core/StudentList.h"  // findStudent
+#include "../core/SubjectBST.h"   // findSubject
 
 #include <algorithm>
 #include <cstdio>
+#include <cstring>
+
+static int countStudentsInClass(Class* classroom) {
+    int n = 0;
+    for (Student* s = classroom != nullptr ? classroom->studentList : nullptr; s != nullptr; s = s->next) n++;
+    return n;
+}
 
 void drawAdminTabScores(GuiState& g) {
     Rectangle contentRec = { 260, 85, (float)(GUI_WIDTH - 280), (float)(GUI_HEIGHT - 105) };
 
-    DrawTxt("BANG DIEM MON HOC THEO LOP", contentRec.x + 25, contentRec.y + 25, 20, COLOR_TEXT_DARK, true);
+    Subject* curSub = (g.reviewSubjectId[0] != '\0') ? findSubject(g.root, g.reviewSubjectId) : nullptr;
+    if (g.reviewSubjectId[0] != '\0' && curSub == nullptr) g.reviewSubjectId[0] = '\0';
 
-    DrawTxt("Lop:", contentRec.x + 25, contentRec.y + 68, 15, COLOR_TEXT_DARK, true);
-    for (int i = 0; i < g.classCount && i < 4; ++i) {
-        if (g.classes[i] == nullptr) continue;
-        bool sel = (g.selectedClassIdx == i);
-        if (GuiBtn({ contentRec.x + 75 + i * 130, contentRec.y + 62, 120, 32 }, g.classes[i]->id, sel ? COLOR_PRIMARY : COLOR_SIDEBAR, COLOR_PRIMARY_HOVER, WHITE, 14, sel)) {
-            g.selectedClassIdx = i;
-            g.scorePage = 0;
+    Class* curClass = (g.reviewClassId[0] != '\0') ? findClass(g.classes, g.classCount, g.reviewClassId) : nullptr;
+    if (g.reviewClassId[0] != '\0' && curClass == nullptr) g.reviewClassId[0] = '\0';
+
+    Student* curStudent = nullptr;
+    Score* curScore = nullptr;
+    if (curClass != nullptr && g.reviewStudentId[0] != '\0') {
+        curStudent = findStudent(curClass->studentList, g.reviewStudentId);
+        if (curStudent == nullptr) g.reviewStudentId[0] = '\0';
+    }
+    if (curStudent != nullptr && curSub != nullptr) {
+        curScore = findScore(curStudent, curSub->id);
+    }
+    if (g.reviewDetailOpen && curScore == nullptr) g.reviewDetailOpen = false;
+
+    // ================= SUB-VIEW: CHI TIET BAI THI =================
+    if (g.reviewDetailOpen && curStudent != nullptr && curSub != nullptr && curScore != nullptr) {
+        DrawTxt(TextFormat("CHI TIET BAI THI MON %s", curSub->id), contentRec.x + 25, contentRec.y + 25, 20, COLOR_TEXT_DARK, true);
+        if (GuiBtnOutline({ contentRec.x + contentRec.width - 240, contentRec.y + 20, 210, 36 }, "<- Quay lai bang diem", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
+            g.reviewDetailOpen = false;
+            g.reviewQPage = 0;
         }
-    }
 
-    DrawTxt("Mon:", contentRec.x + 620, contentRec.y + 68, 15, COLOR_TEXT_DARK, true);
-    // 3 nut + 2 moc trang moi vua khoang ben phai; subject thu 4 bi cat di canh cua so
-    int subMax = 3;
-    if (g.scoreSubNavOffset >= (int)g.subjects.size()) g.scoreSubNavOffset = 0;
-    if (g.scoreSubNavOffset > 0 && GuiBtnOutline({ contentRec.x + 666, contentRec.y + 62, 30, 32 }, "<", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
-        g.scoreSubNavOffset--;
-    }
-    for (int c = 0; c < subMax; ++c) {
-        size_t idx = g.scoreSubNavOffset + c;
-        if (idx >= g.subjects.size()) break;
-        bool sel = (g.selectedSubjectIdx == (int)idx);
-        if (GuiBtn({ contentRec.x + 704 + c * 92, contentRec.y + 62, 88, 32 }, g.subjects[idx]->id, sel ? COLOR_PRIMARY : COLOR_SIDEBAR, COLOR_PRIMARY_HOVER, WHITE, 14, sel)) {
-            g.selectedSubjectIdx = (int)idx;
+        DrawTxt(TextFormat("Sinh vien: %s %s %s | Lop: %s | Ket qua: %.2f diem", curStudent->ho, curStudent->ten, curStudent->id, curClass->id, curScore->score),
+                contentRec.x + 25, contentRec.y + 68, 16, COLOR_SUCCESS, true);
+        DrawTxt(TextFormat("Mon: %s - %s", curSub->id, curSub->name), contentRec.x + 25, contentRec.y + 92, 15, COLOR_TEXT_MUTED);
+
+        std::vector<ExamDetail*> details;
+        for (ExamDetail* d = curScore->detailList; d != nullptr; d = d->next) details.push_back(d);
+
+        int totalReviewPages = details.empty() ? 1 : ((int)details.size() + REVIEW_PER_PAGE - 1) / REVIEW_PER_PAGE;
+        if (g.reviewQPage >= totalReviewPages) g.reviewQPage = totalReviewPages - 1;
+        if (g.reviewQPage < 0) g.reviewQPage = 0;
+
+        int startQ = g.reviewQPage * REVIEW_PER_PAGE;
+        int endQ = std::min(startQ + REVIEW_PER_PAGE, (int)details.size());
+        int startY = (int)contentRec.y + 125;
+
+        for (int q = startQ; q < endQ; ++q) {
+            int offset = q - startQ;
+            Rectangle dCard = { contentRec.x + 25, (float)startY + offset * 145, contentRec.width - 50, 135 };
+            DrawCardPanel(dCard, COLOR_ROW_ALT);
+
+            ExamDetail* d = details[q];
+            DrawTxt(TextFormat("Cau %d:", q + 1), dCard.x + 15, dCard.y + 12, 16, COLOR_PRIMARY, true);
+            DrawTxtWrapped(d->content, dCard.x + 75, dCard.y + 12, dCard.width - 90, 16, COLOR_TEXT_DARK, true);
+
+            DrawTxt(TextFormat("A. %s", d->answerA), dCard.x + 25, dCard.y + 42, 14, COLOR_TEXT_MUTED);
+            DrawTxt(TextFormat("B. %s", d->answerB), dCard.x + 25, dCard.y + 68, 14, COLOR_TEXT_MUTED);
+            DrawTxt(TextFormat("C. %s", d->answerC), dCard.x + 450, dCard.y + 42, 14, COLOR_TEXT_MUTED);
+            DrawTxt(TextFormat("D. %s", d->answerD), dCard.x + 450, dCard.y + 68, 14, COLOR_TEXT_MUTED);
+
+            bool isCorrect = (d->selectedAnswer == d->correctAnswer);
+            DrawTxt(TextFormat("Ban chon: %c | Dap an dung: %c", d->selectedAnswer ? d->selectedAnswer : '-', d->correctAnswer), dCard.x + 25, dCard.y + 100, 15, isCorrect ? COLOR_SUCCESS : COLOR_DANGER, true);
+            DrawTxt(isCorrect ? "[ CHINH XAC ]" : "[ SAI ]", dCard.x + 350, dCard.y + 100, 15, isCorrect ? COLOR_SUCCESS : COLOR_DANGER, true);
         }
-    }
-    if (g.scoreSubNavOffset + subMax < (int)g.subjects.size()) {
-        if (GuiBtnOutline({ contentRec.x + 704 + subMax * 92, contentRec.y + 62, 30, 32 }, ">", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
-            g.scoreSubNavOffset++;
+
+        int pageBarY = (int)(contentRec.y + contentRec.height - 45);
+        DrawTxt(TextFormat("Trang %d / %d (Tong: %d cau)", g.reviewQPage + 1, totalReviewPages, (int)details.size()), contentRec.x + 40, (float)pageBarY + 6, 15, COLOR_TEXT_MUTED, true);
+
+        if (GuiBtnOutline({ contentRec.x + contentRec.width - 240, (float)pageBarY, 105, 30 }, "< Trang truoc", COLOR_PRIMARY, COLOR_PRIMARY, 13, false, g.reviewQPage == 0)) {
+            if (g.reviewQPage > 0) g.reviewQPage--;
         }
+        if (GuiBtnOutline({ contentRec.x + contentRec.width - 125, (float)pageBarY, 105, 30 }, "Trang sau >", COLOR_PRIMARY, COLOR_PRIMARY, 13, false, g.reviewQPage >= totalReviewPages - 1)) {
+            if (g.reviewQPage < totalReviewPages - 1) g.reviewQPage++;
+        }
+        return;
     }
 
-    if (g.classCount > 0 && g.selectedClassIdx < g.classCount && g.classes[g.selectedClassIdx] != nullptr && !g.subjects.empty() && g.selectedSubjectIdx < (int)g.subjects.size()) {
-        Class* curC = g.classes[g.selectedClassIdx];
-        Subject* curS = g.subjects[g.selectedSubjectIdx];
+    // ================= BANG DIEM THEO MON + LOP =================
+    DrawTxt("BANG DIEM & CHI TIET BAI THI", contentRec.x + 25, contentRec.y + 25, 20, COLOR_TEXT_DARK, true);
 
+    DrawTxt("Mon:", contentRec.x + 25, contentRec.y + 68, 15, COLOR_TEXT_DARK, true);
+    Rectangle subjectSearchRec = { contentRec.x + 75, contentRec.y + 57, 350, 38 };
+
+    DrawTxt("Lop:", contentRec.x + 460, contentRec.y + 68, 15, COLOR_TEXT_DARK, true);
+    Rectangle classSearchRec = { contentRec.x + 505, contentRec.y + 57, 280, 38 };
+
+    if (curSub == nullptr) {
+        DrawTxt("Chon mon hoc o thanh tim kiem phia tren de bat dau.", contentRec.x + 25, contentRec.y + 118, 16, COLOR_TEXT_MUTED);
+        DrawTxt("Quy trinh: Mon hoc -> Lop hoc -> Sinh vien.", contentRec.x + 25, contentRec.y + 145, 15, COLOR_TEXT_MUTED);
+    } else if (curClass == nullptr) {
+        DrawTxt(TextFormat("Mon: %s - %s. Chon tiep lop hoc.", curSub->id, curSub->name), contentRec.x + 25, contentRec.y + 118, 16, COLOR_TEXT_MUTED);
+    } else {
         std::vector<Student*> sList;
-        collectStudents(curC->studentList, sList);
+        for (Student* s = curClass->studentList; s != nullptr; s = s->next) sList.push_back(s);
 
         int totalScorePages = sList.empty() ? 1 : ((int)sList.size() + SCORES_PER_PAGE - 1) / SCORES_PER_PAGE;
         if (g.scorePage >= totalScorePages) g.scorePage = totalScorePages - 1;
         if (g.scorePage < 0) g.scorePage = 0;
 
-        int tableY = (int)contentRec.y + 115;
+        DrawTxt(TextFormat("Mon: %s - %s | Lop: %s - %s | Si so: %d", curSub->id, curSub->name, curClass->id, curClass->name, countStudentsInClass(curClass)),
+                contentRec.x + 25, contentRec.y + 112, 15, COLOR_SUCCESS, true);
+
+        int tableY = (int)contentRec.y + 140;
         DrawRectangle((int)contentRec.x + 25, tableY, (int)contentRec.width - 50, 40, COLOR_SIDEBAR);
         DrawTxt("STT", contentRec.x + 40, (float)tableY + 11, 15, WHITE, true);
         DrawTxt("MASV", contentRec.x + 120, (float)tableY + 11, 15, WHITE, true);
         DrawTxt("HO VA TEN", contentRec.x + 320, (float)tableY + 11, 15, WHITE, true);
-        DrawTxt("DIEM THI (Thang 10)", contentRec.x + 720, (float)tableY + 11, 15, WHITE, true);
+        DrawTxt("DIEM (Thang 10)", contentRec.x + 720, (float)tableY + 11, 15, WHITE, true);
+        DrawTxt("THAO TAC", contentRec.x + 880, (float)tableY + 11, 15, WHITE, true);
 
         if (sList.empty()) {
             DrawTxt("Lop nay chua co sinh vien.", contentRec.x + 40, (float)tableY + 60, 16, COLOR_TEXT_MUTED);
@@ -78,15 +137,22 @@ void drawAdminTabScores(GuiState& g) {
                 DrawRectangle((int)contentRec.x + 25, rowY, (int)contentRec.width - 50, 42, rowBg);
                 DrawRectangleLines((int)contentRec.x + 25, rowY, (int)contentRec.width - 50, 42, COLOR_BORDER);
 
+                Student* s = sList[i];
+                Score* sc = findScore(s, curSub->id);
                 DrawTxt(TextFormat("%d", i + 1), contentRec.x + 45, (float)rowY + 11, 15, COLOR_TEXT_DARK);
-                DrawTxt(sList[i]->id, contentRec.x + 120, (float)rowY + 11, 15, COLOR_PRIMARY, true);
-                DrawTxt(TextFormat("%s %s", sList[i]->ho, sList[i]->ten), contentRec.x + 320, (float)rowY + 11, 15, COLOR_TEXT_DARK);
-
-                float sc = 0.0f;
-                if (hasStudentTakenExam(sList[i], curS->id, sc)) {
-                    DrawTxt(TextFormat("%.2f diem", sc), contentRec.x + 720, (float)rowY + 11, 16, COLOR_SUCCESS, true);
+                DrawTxt(s->id, contentRec.x + 120, (float)rowY + 11, 15, COLOR_PRIMARY, true);
+                DrawTxt(TextFormat("%s %s", s->ho, s->ten), contentRec.x + 320, (float)rowY + 11, 15, COLOR_TEXT_DARK);
+                if (sc != nullptr) {
+                    DrawTxt(TextFormat("%.2f diem", sc->score), contentRec.x + 720, (float)rowY + 11, 17, COLOR_SUCCESS, true);
                 } else {
                     DrawTxt("Chua thi", contentRec.x + 720, (float)rowY + 11, 15, COLOR_TEXT_MUTED);
+                }
+
+                if (GuiBtnOutline({ contentRec.x + 880, (float)rowY + 6, 65, 30 }, "Xem", COLOR_PRIMARY, COLOR_PRIMARY, 14, false, sc == nullptr)) {
+                    g.reviewStudentId[0] = '\0';
+                    snprintf(g.reviewStudentId, sizeof(g.reviewStudentId), "%s", s->id);
+                    g.reviewDetailOpen = true;
+                    g.reviewQPage = 0;
                 }
             }
 
@@ -101,100 +167,27 @@ void drawAdminTabScores(GuiState& g) {
             }
         }
     }
-}
 
-void drawAdminTabExamReview(GuiState& g) {
-    Rectangle contentRec = { 260, 85, (float)(GUI_WIDTH - 280), (float)(GUI_HEIGHT - 105) };
+    // hai thanh tim kiem ve cuoi de dropdown de len bang ben duoi
+    std::vector<SuggestItem> subItems;
+    GuiMakeSubjectItems(g.subjects, true, subItems);
+    int pickedSub = GuiSearchSuggest(subjectSearchRec, g.searchReviewSubject, sizeof(g.searchReviewSubject),
+                                     g.activeSearchReviewSubject, subItems, -1,
+                                     "Tim mon hoc...");
+    if (pickedSub >= 0 && pickedSub < (int)g.subjects.size()) {
+        snprintf(g.reviewSubjectId, sizeof(g.reviewSubjectId), "%s", g.subjects[pickedSub]->id);
+        g.scorePage = 0;
+        g.reviewDetailOpen = false;
+    }
 
-    DrawTxt("XEM LAI CHI TIET BAI THI CUA SINH VIEN", contentRec.x + 25, contentRec.y + 25, 20, COLOR_TEXT_DARK, true);
-
-    if (g.classCount > 0 && g.selectedClassIdx < g.classCount && g.classes[g.selectedClassIdx] != nullptr) {
-        Class* curC = g.classes[g.selectedClassIdx];
-        std::vector<Student*> sList;
-        collectStudents(curC->studentList, sList);
-
-        DrawTxt("Chon SV:", contentRec.x + 25, contentRec.y + 68, 15, COLOR_TEXT_DARK, true);
-        for (size_t i = 0; i < sList.size() && i < 4; ++i) {
-            bool sel = (g.selectedStudentIdx == (int)i);
-            if (GuiBtn({ contentRec.x + 105 + i * 125, contentRec.y + 62, 115, 32 }, sList[i]->id, sel ? COLOR_PRIMARY : COLOR_SIDEBAR, COLOR_PRIMARY_HOVER, WHITE, 14, sel)) {
-                g.selectedStudentIdx = (int)i;
-                g.reviewQPage = 0;
-            }
-        }
-
-        DrawTxt("Mon:", contentRec.x + 630, contentRec.y + 68, 15, COLOR_TEXT_DARK, true);
-        // hang mon cung phan trang giong tab bang diem, môn thu 4 tro di nam ngoai man hinh
-        int reviewSubMax = 3;
-        if (g.reviewSubNavOffset >= (int)g.subjects.size()) g.reviewSubNavOffset = 0;
-        if (g.reviewSubNavOffset > 0 && GuiBtnOutline({ contentRec.x + 676, contentRec.y + 62, 30, 32 }, "<", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
-            g.reviewSubNavOffset--;
-        }
-        for (int c = 0; c < reviewSubMax; ++c) {
-            size_t idx = g.reviewSubNavOffset + c;
-            if (idx >= g.subjects.size()) break;
-            bool sel = (g.selectedSubjectIdx == (int)idx);
-            if (GuiBtn({ contentRec.x + 714 + c * 84, contentRec.y + 62, 80, 32 }, g.subjects[idx]->id, sel ? COLOR_PRIMARY : COLOR_SIDEBAR, COLOR_PRIMARY_HOVER, WHITE, 14, sel)) {
-                g.selectedSubjectIdx = (int)idx;
-                g.reviewQPage = 0;
-            }
-        }
-        if (g.reviewSubNavOffset + reviewSubMax < (int)g.subjects.size()) {
-            if (GuiBtnOutline({ contentRec.x + 714 + reviewSubMax * 84, contentRec.y + 62, 30, 32 }, ">", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
-                g.reviewSubNavOffset++;
-            }
-        }
-
-        if (!sList.empty() && g.selectedStudentIdx < (int)sList.size() && !g.subjects.empty() && g.selectedSubjectIdx < (int)g.subjects.size()) {
-            Student* curStd = sList[g.selectedStudentIdx];
-            Subject* curSub = g.subjects[g.selectedSubjectIdx];
-            Score* scNode = findScore(curStd, curSub->id);
-
-            if (scNode == nullptr) {
-                DrawTxt(TextFormat("Sinh vien %s chua lam bai thi mon %s.", curStd->id, curSub->id), contentRec.x + 25, contentRec.y + 130, 17, COLOR_WARNING, true);
-            } else {
-                DrawTxt(TextFormat("Sinh vien: %s %s | Mon: %s | Ket qua: %.2f diem", curStd->ho, curStd->ten, curSub->name, scNode->score), contentRec.x + 25, contentRec.y + 115, 17, COLOR_SUCCESS, true);
-
-                std::vector<ExamDetail*> details;
-                ExamDetail* dCur = scNode->detailList;
-                while (dCur != nullptr) { details.push_back(dCur); dCur = dCur->next; }
-
-                int totalReviewPages = details.empty() ? 1 : ((int)details.size() + REVIEW_PER_PAGE - 1) / REVIEW_PER_PAGE;
-                if (g.reviewQPage >= totalReviewPages) g.reviewQPage = totalReviewPages - 1;
-                if (g.reviewQPage < 0) g.reviewQPage = 0;
-
-                int startQ = g.reviewQPage * REVIEW_PER_PAGE;
-                int endQ = std::min(startQ + REVIEW_PER_PAGE, (int)details.size());
-                int startY = (int)contentRec.y + 145;
-
-                for (int q = startQ; q < endQ; ++q) {
-                    int offset = q - startQ;
-                    Rectangle dCard = { contentRec.x + 25, (float)startY + offset * 145, contentRec.width - 50, 135 };
-                    DrawCardPanel(dCard, COLOR_ROW_ALT);
-
-                    ExamDetail* d = details[q];
-                    DrawTxt(TextFormat("Cau %d:", q + 1), dCard.x + 15, dCard.y + 12, 16, COLOR_PRIMARY, true);
-                    DrawTxtWrapped(d->content, dCard.x + 75, dCard.y + 12, dCard.width - 90, 16, COLOR_TEXT_DARK, true);
-
-                    DrawTxt(TextFormat("A. %s", d->answerA), dCard.x + 25, dCard.y + 42, 14, COLOR_TEXT_MUTED);
-                    DrawTxt(TextFormat("B. %s", d->answerB), dCard.x + 25, dCard.y + 68, 14, COLOR_TEXT_MUTED);
-                    DrawTxt(TextFormat("C. %s", d->answerC), dCard.x + 450, dCard.y + 42, 14, COLOR_TEXT_MUTED);
-                    DrawTxt(TextFormat("D. %s", d->answerD), dCard.x + 450, dCard.y + 68, 14, COLOR_TEXT_MUTED);
-
-                    bool isCorrect = (d->selectedAnswer == d->correctAnswer);
-                    DrawTxt(TextFormat("Ban chon: %c | Dap an dung: %c", d->selectedAnswer ? d->selectedAnswer : '-', d->correctAnswer), dCard.x + 25, dCard.y + 100, 15, isCorrect ? COLOR_SUCCESS : COLOR_DANGER, true);
-                    DrawTxt(isCorrect ? "[ CHINH XAC ]" : "[ SAI ]", dCard.x + 350, dCard.y + 100, 15, isCorrect ? COLOR_SUCCESS : COLOR_DANGER, true);
-                }
-
-                int pageBarY = (int)(contentRec.y + contentRec.height - 45);
-                DrawTxt(TextFormat("Trang %d / %d (Tong: %d cau)", g.reviewQPage + 1, totalReviewPages, (int)details.size()), contentRec.x + 40, (float)pageBarY + 6, 15, COLOR_TEXT_MUTED, true);
-
-                if (GuiBtnOutline({ contentRec.x + contentRec.width - 240, (float)pageBarY, 105, 30 }, "< Trang truoc", COLOR_PRIMARY, COLOR_PRIMARY, 13, false, g.reviewQPage == 0)) {
-                    if (g.reviewQPage > 0) g.reviewQPage--;
-                }
-                if (GuiBtnOutline({ contentRec.x + contentRec.width - 125, (float)pageBarY, 105, 30 }, "Trang sau >", COLOR_PRIMARY, COLOR_PRIMARY, 13, false, g.reviewQPage >= totalReviewPages - 1)) {
-                    if (g.reviewQPage < totalReviewPages - 1) g.reviewQPage++;
-                }
-            }
-        }
+    std::vector<SuggestItem> classItems;
+    GuiMakeClassItems(g.classes, g.classCount, classItems);
+    int pickedClass = GuiSearchSuggest(classSearchRec, g.searchReviewClass, sizeof(g.searchReviewClass),
+                                       g.activeSearchReviewClass, classItems, -1,
+                                       "Tim lop hoc...");
+    if (pickedClass >= 0 && pickedClass < g.classCount && g.classes[pickedClass] != nullptr) {
+        snprintf(g.reviewClassId, sizeof(g.reviewClassId), "%s", g.classes[pickedClass]->id);
+        g.scorePage = 0;
+        g.reviewDetailOpen = false;
     }
 }

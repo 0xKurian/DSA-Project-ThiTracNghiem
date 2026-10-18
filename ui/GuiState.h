@@ -12,6 +12,7 @@
 #include "../core/Structures.h"   // Subject, Class, Student, ExamDetail, LoginRole
 
 #include <cstdio>
+#include <cstring>
 #include <string>
 #include <vector>
 
@@ -36,8 +37,23 @@ enum ModalType {
     MODAL_ADD_STUDENT,
     MODAL_EDIT_STUDENT,
     MODAL_DELETE_STUDENT,
+    MODAL_EXAM_CONFIG,
     MODAL_CONFIRM_SUBMIT
 };
+
+// cau hinh thi theo mon: tam thoi giu trong bo nho UI, cho den khi core/business co field that
+struct ExamConfigUi {
+    char subjectId[SUBJECT_ID_LEN];
+    int questionCount;
+    int minutes;
+};
+
+inline ExamConfigUi* findExamConfig(std::vector<ExamConfigUi>& configs, const char* subjectId) {
+    for (ExamConfigUi& cfg : configs) {
+        if (subjectId != nullptr && strcmp(cfg.subjectId, subjectId) == 0) return &cfg;
+    }
+    return nullptr;
+}
 
 struct GuiState {
     Subject* root;                     // goc BST mon hoc
@@ -71,16 +87,38 @@ struct GuiState {
     int scorePage;
     int reviewQPage;
     int selectedSubjectIdx;
-    int selectedClassIdx;
-    int selectedStudentIdx;
-    int teacherSubNavOffset;
-    int teacherClassNavOffset;
-    int scoreSubNavOffset;
-    int reviewSubNavOffset;
+    int selectedClassIdx;              // cot trai master-detail; -1 = chua chon lop
+
+    bool classShowAll;                 // cot phai: xem toan bo sinh vien
+    char searchSubject[64];
+    bool activeSearchSubject;
+    char searchClass[64];
+    bool activeSearchClass;
+    char searchStudent[64];
+    bool activeSearchStudent;
+    char searchQuestion[64];
+    bool activeSearchQuestion;
+    char searchReviewSubject[64];
+    bool activeSearchReviewSubject;
+    char searchReviewClass[64];
+    bool activeSearchReviewClass;
+    char searchPrepare[64];
+    bool activeSearchPrepare;
+
+    char reviewSubjectId[SUBJECT_ID_LEN];   // mon dang chon o tab diem
+    char reviewClassId[CLASS_ID_LEN];       // lop dang chon
+    char reviewStudentId[STUDENT_ID_LEN];   // sinh vien dang chon
+    bool reviewDetailOpen;
+
+    char formClassId[CLASS_ID_LEN + 4];     // lop cua sinh vien trong modal sua/xoa
+    std::vector<ExamConfigUi> examConfigs;  // cau hinh thi tam thoi (xem ExamConfigUi)
+    char configSubjectId[SUBJECT_ID_LEN];
+    char formExamQ[8];
+    char formExamMinutes[16];
 
     int studentTab;
     int studentSubChoice;
-    int studentSubNavOffset;
+    int studentReviewScoreIdx = -1;        // -1: dang xem bang diem, >=0: dang mo chi tiet bai thi
 
     ExamDetail* examHead;                   // DSLK cac cau thi
     std::vector<ExamDetail*> examList;      // cau thi tra theo chi muc
@@ -88,10 +126,6 @@ struct GuiState {
     std::string activeExamSubId;
     int examRemainingSeconds;
     float examTimerClock;
-    char numQuestionsInput[16];
-    char examMinutesInput[16];
-    bool activeNumQ;
-    bool activeMinutes;
 
     float lastScore;
     int lastCorrect;
@@ -122,12 +156,9 @@ void drawLoginScreen(GuiState& g);
 void drawAdminDashboard(GuiState& g);void drawAdminTabSubjects(GuiState& g);
 void drawAdminTabQuestions(GuiState& g);
 void drawAdminTabClasses(GuiState& g);
-void drawAdminTabStudents(GuiState& g);
 void drawAdminTabScores(GuiState& g);
-void drawAdminTabExamReview(GuiState& g);
 
 void drawStudentHome(GuiState& g);void drawStudentTabScores(GuiState& g);
-void drawStudentTabReview(GuiState& g);
 
 void drawExamPrepareTab(GuiState& g);void updateExamSession(GuiState& g, float dt);void drawExamRoom(GuiState& g);void drawExamSubmitConfirmDialog(GuiState& g);void drawExamResult(GuiState& g);
 void renderModalDialogs(GuiState& g);

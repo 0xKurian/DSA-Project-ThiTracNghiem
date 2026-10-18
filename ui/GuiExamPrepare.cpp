@@ -47,31 +47,9 @@ void drawExamPrepareTab(GuiState& g) {
     }
 
     DrawTxt("1. Chon mon hoc:", contentRec.x + 30, (float)formStartY, 17, COLOR_TEXT_DARK, true);
+    Rectangle prepSearchRec = { contentRec.x + 30, (float)formStartY + 30, 420, 40 };
     if (g.subjects.empty()) {
-        DrawTxt("He thong chua co mon hoc nao de thi.", contentRec.x + 30, (float)formStartY + 35, 16, COLOR_TEXT_MUTED);
-    } else {
-        int maxVis = 4;
-        if (g.studentSubNavOffset > 0) {
-            if (GuiBtnOutline({ contentRec.x + 30, (float)formStartY + 30, 35, 36 }, "<", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
-                g.studentSubNavOffset--;
-            }
-        }
-
-        for (int s = 0; s < maxVis; ++s) {
-            int idx = g.studentSubNavOffset + s;
-            if (idx >= (int)g.subjects.size()) break;
-            bool sel = (g.studentSubChoice == idx);
-            Rectangle btnRec = { contentRec.x + 75 + s * 155, (float)formStartY + 30, 145, 36 };
-            if (GuiBtn(btnRec, g.subjects[idx]->id, sel ? COLOR_PRIMARY : COLOR_SIDEBAR, COLOR_PRIMARY_HOVER, WHITE, 15, sel)) {
-                g.studentSubChoice = idx;
-            }
-        }
-
-        if (g.studentSubNavOffset + maxVis < (int)g.subjects.size()) {
-            if (GuiBtnOutline({ contentRec.x + 75 + maxVis * 155, (float)formStartY + 30, 35, 36 }, ">", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
-                g.studentSubNavOffset++;
-            }
-        }
+        DrawTxt("He thong chua co mon hoc nao de thi.", contentRec.x + 30, (float)formStartY + 40, 16, COLOR_TEXT_MUTED);
     }
 
     if (!g.subjects.empty() && g.studentSubChoice < (int)g.subjects.size()) {
@@ -79,32 +57,29 @@ void drawExamPrepareTab(GuiState& g) {
         int totalQ = 0;
         Question* qCur = chosenSub->questionList;
         while (qCur != nullptr) { totalQ++; qCur = qCur->next; }
+
+        ExamConfigUi* cfg = findExamConfig(g.examConfigs, chosenSub->id);
+        bool cfgUsable = (cfg != nullptr && cfg->questionCount > 0 && cfg->minutes > 0 && cfg->questionCount <= totalQ);
+
         DrawTxt(TextFormat("-> Mon: %s | Ngan hang hien co: %d cau hoi", chosenSub->name, totalQ), contentRec.x + 30, (float)formStartY + 85, 15, COLOR_TEXT_MUTED);
 
-        DrawTxt("2. So luong cau hoi thi:", contentRec.x + 30, (float)formStartY + 125, 17, COLOR_TEXT_DARK, true);
-        Rectangle numQRec = { contentRec.x + 30, (float)formStartY + 155, 200, 42 };
-        GuiTextBoxInput(numQRec, g.numQuestionsInput, sizeof(g.numQuestionsInput), g.activeNumQ, "Nhap so cau");
-
-        DrawTxt("3. Thoi gian thi (phut):", contentRec.x + 280, (float)formStartY + 125, 17, COLOR_TEXT_DARK, true);
-        Rectangle minRec = { contentRec.x + 280, (float)formStartY + 155, 200, 42 };
-        GuiTextBoxInput(minRec, g.examMinutesInput, sizeof(g.examMinutesInput), g.activeMinutes, "Nhap so phut");
-
-        if (IsKeyPressed(KEY_TAB)) {
-            if (g.activeNumQ) { g.activeNumQ = false; g.activeMinutes = true; }
-            else if (g.activeMinutes) { g.activeMinutes = false; g.activeNumQ = true; }
+        if (cfg == nullptr) {
+            DrawTxt("Mon nay chua duoc giang vien cau hinh de thi.", contentRec.x + 30, (float)formStartY + 125, 16, COLOR_WARNING, true);
+        } else if (!cfgUsable) {
+            DrawTxt(TextFormat("Cau hinh thi (%d cau) khong hop le voi ngan hang (%d cau).", cfg->questionCount, totalQ), contentRec.x + 30, (float)formStartY + 125, 16, COLOR_WARNING, true);
+        } else {
+            DrawTxt(TextFormat("So cau thi: %d | Thoi gian: %d phut", cfg->questionCount, cfg->minutes), contentRec.x + 30, (float)formStartY + 125, 17, COLOR_TEXT_DARK, true);
+            DrawTxt("(Do giang vien cau hinh, sinh vien khong tu chinh)", contentRec.x + 30, (float)formStartY + 155, 14, COLOR_TEXT_MUTED);
         }
 
-        if (GuiBtn({ contentRec.x + 30, (float)formStartY + 230, 320, 52 }, ">> BAT DAU THI NGAY <<", COLOR_SUCCESS, COLOR_SUCCESS_HOVER, WHITE, 18, true)) {
-            int numQ = atoi(g.numQuestionsInput);
-            int mins = atoi(g.examMinutesInput);
-
-            BusinessResult prepRes = prepareExamWorkflow(g.root, g.loggedStudent, chosenSub->id, numQ, mins, g.examHead);
+        if (GuiBtn({ contentRec.x + 30, (float)formStartY + 220, 320, 52 }, ">> BAT DAU THI NGAY <<", COLOR_SUCCESS, COLOR_SUCCESS_HOVER, WHITE, 18, true, !cfgUsable)) {
+            BusinessResult prepRes = prepareExamWorkflow(g.root, g.loggedStudent, chosenSub->id, cfg->questionCount, cfg->minutes, g.examHead);
             if (prepRes == SUCCESS) {
                 g.examList.clear();
                 ExamDetail* cur = g.examHead;
                 while (cur != nullptr) { g.examList.push_back(cur); cur = cur->next; }
                 g.activeExamSubId = chosenSub->id;
-                g.examRemainingSeconds = mins * 60;
+                g.examRemainingSeconds = cfg->minutes * 60;
                 g.currentExamQuestionIdx = 0;
                 g.currentScreen = SCREEN_STUDENT_EXAM;
             } else {
@@ -113,7 +88,16 @@ void drawExamPrepareTab(GuiState& g) {
         }
 
         if (g.notifyTimer > 0 && g.notifyIsError) {
-            DrawTxt(g.notifyMessage, contentRec.x + 30, (float)formStartY + 300, 15, COLOR_DANGER, true);
+            DrawTxt(g.notifyMessage, contentRec.x + 30, (float)formStartY + 290, 15, COLOR_DANGER, true);
         }
+    }
+
+    if (!g.subjects.empty()) {
+        std::vector<SuggestItem> items;
+        GuiMakeSubjectItems(g.subjects, true, items);
+        int picked = GuiSearchSuggest(prepSearchRec, g.searchPrepare, sizeof(g.searchPrepare),
+                                      g.activeSearchPrepare, items, g.studentSubChoice,
+                                      "Tim theo ma hoac ten mon...");
+        if (picked >= 0) g.studentSubChoice = picked;
     }
 }

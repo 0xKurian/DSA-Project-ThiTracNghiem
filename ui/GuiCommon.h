@@ -3,11 +3,13 @@
 // widget dung chung cho cac man hinh do hoa: palette, chu, textbox, toast
 #include "raylib.h"
 
+#include <string>
 #include <vector>
 
 struct Subject;
 struct Question;
 struct Student;
+struct Class;
 
 constexpr int GUI_WIDTH  = 1280;
 constexpr int GUI_HEIGHT = 768;
@@ -64,6 +66,26 @@ bool GuiBtnOutline(Rectangle rec, const char* text,
 
 void GuiTextBoxInput(Rectangle rec, char textBuffer[], int maxLen, bool& isActive,
                      const char* placeholder = "", bool isPassword = false);
+
+// o tim kiem + danh sach goi y: go ky tu nao thi loc theo ma/ten, xep tang dan theo ma
+struct SuggestItem {
+    int value = -1;         // gia tri tra ve khi chon (thuong la chi muc)
+    std::string id;         // text chinh ben trai
+    std::string name;       // text phu
+    std::string meta;       // chu nho ben phai (vd "20 cau", "3 SV")
+    bool highlight = false; // nen xanh nhat (mon da co cau hoi)
+};
+
+void GuiBeginFrame();  // chot vung chan click cua dropdown o khung hinh truoc
+bool GuiMatchText(const char* text, const char* query);
+
+int GuiSearchSuggest(Rectangle rec, char* query, int capacity, bool& active,
+                     const std::vector<SuggestItem>& items, int currentValue,
+                     const char* placeholder = "", bool* textChanged = nullptr);
+
+void GuiMakeSubjectItems(const std::vector<Subject*>& subjects, bool withCount, std::vector<SuggestItem>& out);
+void GuiMakeClassItems(Class* const classes[], int classCount, std::vector<SuggestItem>& out);
+void GuiMakeStudentItems(const std::vector<Student*>& students, std::vector<SuggestItem>& out);
 
 void DrawCardPanel(Rectangle rec, Color bg = COLOR_CARD, Color border = COLOR_BORDER);
 
