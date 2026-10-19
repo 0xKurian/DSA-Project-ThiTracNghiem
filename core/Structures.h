@@ -37,6 +37,9 @@ struct Subject {
 
     Question* questionList;
 
+    int examQuestionCount; // 0 = chưa cấu hình
+    int examMinutes;       // 0 = chưa cấu hình
+
     Subject* left;
     Subject* right;
 };

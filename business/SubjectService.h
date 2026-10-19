@@ -32,4 +32,11 @@ BusinessResult deleteSubjectWorkflow(
     const char id[]
 );
 
+BusinessResult setExamConfigWorkflow(
+    Subject*& root,
+    const char* subjectId,
+    int questionCount,
+    int minutes
+);
+
 #endif
