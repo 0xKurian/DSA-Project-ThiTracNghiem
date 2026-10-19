@@ -6,7 +6,7 @@
 #include "../business/ClassService.h"     // addClassWorkflow, deleteClassWorkflow
 #include "../business/QuestionService.h"  // addQuestionWorkflow, editQuestionWorkflow, deleteQuestionWorkflow
 #include "../business/StudentService.h"   // addStudentWorkflow, editStudentWorkflow, deleteStudentWorkflow
-#include "../business/SubjectService.h"   // addSubjectWorkflow, editSubjectWorkflow, deleteSubjectWorkflow
+#include "../business/SubjectService.h"   // addSubjectWorkflow, editSubjectWorkflow, deleteSubjectWorkflow, setExamConfigWorkflow
 
 #include "../core/ClassArray.h"     // findClass
 #include "../core/QuestionList.h"   // countQuestions
@@ -388,17 +388,14 @@ static void drawExamConfigModal(GuiState& g) {
         } else if (m <= 0 || m > 180) {
             snprintf(g.modalError, sizeof(g.modalError), "Thoi gian phai tu 1 den 180 phut.");
         } else {
-            ExamConfigUi* cfg = findExamConfig(g.examConfigs, g.configSubjectId);
-            if (cfg == nullptr) {
-                ExamConfigUi fresh = {};
-                snprintf(fresh.subjectId, sizeof(fresh.subjectId), "%s", g.configSubjectId);
-                g.examConfigs.push_back(fresh);
-                cfg = &g.examConfigs.back();
+            // workflow business validate lai va gan vao Subject (luu file khi thoat/luu toan cục)
+            BusinessResult res = setExamConfigWorkflow(g.root, g.configSubjectId, q, m);
+            if (res == SUCCESS) {
+                g.currentModal = MODAL_NONE;
+                g.showToast("Da luu cau hinh de thi cho mon nay!", 3.0f, false);
+            } else {
+                snprintf(g.modalError, sizeof(g.modalError), "%s", getErrorMessage(res));
             }
-            cfg->questionCount = q;
-            cfg->minutes = m;
-            g.currentModal = MODAL_NONE;
-            g.showToast("Da luu cau hinh de thi cho mon nay!", 3.0f, false);
         }
     }
     if (GuiBtnOutline({ rec.x + 270, rec.y + 270, 200, 42 }, "Huy bo", COLOR_PRIMARY, COLOR_PRIMARY, 16, true)) {

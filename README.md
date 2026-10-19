@@ -59,8 +59,8 @@ Mỗi file test có một `main` riêng, vì vậy không ghép tất cả `test
 
 - **Giáo viên**: tab môn học (BST) có tìm kiếm lọc theo mã/tên; ngân hàng câu hỏi mở qua nút `Xem` của từng môn; master-detail "Lop hoc & Sinh vien" (lọc lớp, sĩ số, xem toàn trường, thêm/sửa/xóa SV); "Bang diem & Bai thi" theo flow môn → lớp → sinh viên với chi tiết bài thi ngay trong tab.
 - **Sinh viên**: chọn môn thi (tìm kiếm), phòng thi có đồng hồ + nộp bài, kết quả và xem lại từng câu; bảng điểm cá nhân có cột `[Xem]` mở chi tiết.
-- **Cấu hình thi theo môn**: GV đặt số câu + số phút; SV chỉ xem và không tự nhập. *Hiện lưu tạm trong bộ nhớ UI, đang chờ đội Core/Business thêm field + cột FileStorage.*
-- **Xóa lớp còn sinh viên**: UI có modal cảnh báo số SV; việc mở chặn cascade đang ở team Business (hiện `deleteClassWorkflow` vẫn trả lỗi ràng buộc).
+- **Cấu hình thi theo môn**: GV đặt số câu + số phút, SV chỉ xem và không tự nhập. Cấu hình lưu bền trên môn học (`Subject.examQuestionCount`/`examMinutes`, 2 cột cuối dòng môn trong `data/subjects.txt`; file cũ 3 cột vẫn đọc được, giá trị 0 = chưa cấu hình).
+- **Xóa lớp còn sinh viên**: modal xác nhận hiện số SV, xác nhận xóa kèm toàn bộ sinh viên của lớp.
 - Chi tiết từng phiên bản xem [CHANGELOG.md](CHANGELOG.md).
 
 ## Những điều cần biết khi gọi API

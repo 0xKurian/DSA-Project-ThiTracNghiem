@@ -58,28 +58,30 @@ void drawExamPrepareTab(GuiState& g) {
         Question* qCur = chosenSub->questionList;
         while (qCur != nullptr) { totalQ++; qCur = qCur->next; }
 
-        ExamConfigUi* cfg = findExamConfig(g.examConfigs, chosenSub->id);
-        bool cfgUsable = (cfg != nullptr && cfg->questionCount > 0 && cfg->minutes > 0 && cfg->questionCount <= totalQ);
+        // cau hinh luu tren Subject (FileStorage doc 0 = chua cau hinh)
+        int cfgQ = chosenSub->examQuestionCount;
+        int cfgM = chosenSub->examMinutes;
+        bool cfgUsable = (cfgQ > 0 && cfgM > 0 && cfgM <= 180 && cfgQ <= totalQ);
 
         DrawTxt(TextFormat("-> Mon: %s | Ngan hang hien co: %d cau hoi", chosenSub->name, totalQ), contentRec.x + 30, (float)formStartY + 85, 15, COLOR_TEXT_MUTED);
 
-        if (cfg == nullptr) {
+        if (cfgQ <= 0 || cfgM <= 0) {
             DrawTxt("Mon nay chua duoc giang vien cau hinh de thi.", contentRec.x + 30, (float)formStartY + 125, 16, COLOR_WARNING, true);
         } else if (!cfgUsable) {
-            DrawTxt(TextFormat("Cau hinh thi (%d cau) khong hop le voi ngan hang (%d cau).", cfg->questionCount, totalQ), contentRec.x + 30, (float)formStartY + 125, 16, COLOR_WARNING, true);
+            DrawTxt(TextFormat("Cau hinh thi (%d cau) khong hop le voi ngan hang (%d cau).", cfgQ, totalQ), contentRec.x + 30, (float)formStartY + 125, 16, COLOR_WARNING, true);
         } else {
-            DrawTxt(TextFormat("So cau thi: %d | Thoi gian: %d phut", cfg->questionCount, cfg->minutes), contentRec.x + 30, (float)formStartY + 125, 17, COLOR_TEXT_DARK, true);
+            DrawTxt(TextFormat("So cau thi: %d | Thoi gian: %d phut", cfgQ, cfgM), contentRec.x + 30, (float)formStartY + 125, 17, COLOR_TEXT_DARK, true);
             DrawTxt("(Do giang vien cau hinh, sinh vien khong tu chinh)", contentRec.x + 30, (float)formStartY + 155, 14, COLOR_TEXT_MUTED);
         }
 
         if (GuiBtn({ contentRec.x + 30, (float)formStartY + 220, 320, 52 }, ">> BAT DAU THI NGAY <<", COLOR_SUCCESS, COLOR_SUCCESS_HOVER, WHITE, 18, true, !cfgUsable)) {
-            BusinessResult prepRes = prepareExamWorkflow(g.root, g.loggedStudent, chosenSub->id, cfg->questionCount, cfg->minutes, g.examHead);
+            BusinessResult prepRes = prepareExamWorkflow(g.root, g.loggedStudent, chosenSub->id, cfgQ, cfgM, g.examHead);
             if (prepRes == SUCCESS) {
                 g.examList.clear();
                 ExamDetail* cur = g.examHead;
                 while (cur != nullptr) { g.examList.push_back(cur); cur = cur->next; }
                 g.activeExamSubId = chosenSub->id;
-                g.examRemainingSeconds = cfg->minutes * 60;
+                g.examRemainingSeconds = cfgM * 60;
                 g.currentExamQuestionIdx = 0;
                 g.currentScreen = SCREEN_STUDENT_EXAM;
             } else {

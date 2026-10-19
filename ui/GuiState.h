@@ -41,20 +41,6 @@ enum ModalType {
     MODAL_CONFIRM_SUBMIT
 };
 
-// cau hinh thi theo mon: tam thoi giu trong bo nho UI, cho den khi core/business co field that
-struct ExamConfigUi {
-    char subjectId[SUBJECT_ID_LEN];
-    int questionCount;
-    int minutes;
-};
-
-inline ExamConfigUi* findExamConfig(std::vector<ExamConfigUi>& configs, const char* subjectId) {
-    for (ExamConfigUi& cfg : configs) {
-        if (subjectId != nullptr && strcmp(cfg.subjectId, subjectId) == 0) return &cfg;
-    }
-    return nullptr;
-}
-
 struct GuiState {
     Subject* root;                     // goc BST mon hoc
     Class* classes[MAX_CLASS];         // toi da MAX_CLASS lop
@@ -111,8 +97,7 @@ struct GuiState {
     bool reviewDetailOpen;
 
     char formClassId[CLASS_ID_LEN + 4];     // lop cua sinh vien trong modal sua/xoa
-    std::vector<ExamConfigUi> examConfigs;  // cau hinh thi tam thoi (xem ExamConfigUi)
-    char configSubjectId[SUBJECT_ID_LEN];
+    char configSubjectId[SUBJECT_ID_LEN];   // mon dang cau hinh trong modal
     char formExamQ[8];
     char formExamMinutes[16];
 

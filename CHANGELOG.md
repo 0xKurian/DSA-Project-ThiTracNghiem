@@ -2,6 +2,22 @@
 
 Dòng thời gian so với bản cũ trước khi cập nhật GitHub (mốc so sánh: commit `373b2a6 "Add files via upload"`). Kiểu viết theo Conventional Commits.
 
+## [2.2.0] — 2026-10-19
+
+### Added
+
+- **feat(business): lưu cấu hình thi theo môn** — `Subject` thêm `examQuestionCount`/`examMinutes` (0 = chưa cấu hình, `createSubject` khởi tạo); `setExamConfigWorkflow` validate `1..số câu ngân hàng` và `1..180`; `FileStorage` ghi/đọc 2 cột cuối dòng môn trong `data/subjects.txt`, file cũ 3 cột vẫn đọc được (đọc 0); 2 test mới (`test_subject_exam_config`, `test_class_delete_with_students`); tài liệu tầng business (`business/README.md`, `readme_extension.md`).
+
+### Changed
+
+- **feat(ui): nối cấu hình thi vào data thật** — bỏ vector tạm `examConfigs` trong `ui/GuiState.h`; modal `Cau hinh thi` gọi `setExamConfigWorkflow`, tab chuẩn bị của SV đọc thẳng field của môn (không còn mất cấu hình khi thoát).
+- **feat(business): xóa lớp còn sinh viên** — bỏ chặn `ERR_CONSTRAINT_VIOLATION` trong `deleteClassWorkflow`; `core/deleteClass` tự giải phóng danh sách SV của lớp; UI đã có sẵn cảnh báo sĩ số trong modal xác nhận.
+- Makefile hỗ trợ build trên Windows (MinGW + raylib win64) song song Linux; thêm 2 target test mới.
+
+### Kiểm chứng
+
+- Merge `feat/business` (`62dd858`) vào `main`; `make app` 0 lỗi/0 warning; `make test` PASS (gồm 2 test mới + `test_core_contracts null`).
+
 ## [2.1.0] — 2026-10-18
 
 ### Added

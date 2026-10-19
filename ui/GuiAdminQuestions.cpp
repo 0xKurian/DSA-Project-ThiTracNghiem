@@ -43,10 +43,9 @@ void drawAdminTabQuestions(GuiState& g) {
         if (g.questionPage >= totalQPages) g.questionPage = totalQPages - 1;
         if (g.questionPage < 0) g.questionPage = 0;
 
-        ExamConfigUi* cfg = findExamConfig(g.examConfigs, curSub->id);
         char cfgText[80];
-        if (cfg != nullptr) {
-            snprintf(cfgText, sizeof(cfgText), "Cau hinh thi: %d cau / %d phut", cfg->questionCount, cfg->minutes);
+        if (curSub->examQuestionCount > 0 && curSub->examMinutes > 0) {
+            snprintf(cfgText, sizeof(cfgText), "Cau hinh thi: %d cau / %d phut", curSub->examQuestionCount, curSub->examMinutes);
         } else {
             snprintf(cfgText, sizeof(cfgText), "Chua cau hinh thi");
         }
@@ -55,8 +54,8 @@ void drawAdminTabQuestions(GuiState& g) {
         if (GuiBtnOutline({ contentRec.x + contentRec.width - 180, contentRec.y + 103, 155, 30 }, "Cau hinh thi", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
             g.currentModal = MODAL_EXAM_CONFIG;
             snprintf(g.configSubjectId, sizeof(g.configSubjectId), "%s", curSub->id);
-            snprintf(g.formExamQ, sizeof(g.formExamQ), "%d", cfg != nullptr ? cfg->questionCount : 10);
-            snprintf(g.formExamMinutes, sizeof(g.formExamMinutes), "%d", cfg != nullptr ? cfg->minutes : 15);
+            snprintf(g.formExamQ, sizeof(g.formExamQ), "%d", curSub->examQuestionCount > 0 ? curSub->examQuestionCount : 10);
+            snprintf(g.formExamMinutes, sizeof(g.formExamMinutes), "%d", curSub->examMinutes > 0 ? curSub->examMinutes : 15);
             g.modalError[0] = '\0';
             g.activeFormBox = 1;
         }
