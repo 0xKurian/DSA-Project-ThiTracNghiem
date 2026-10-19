@@ -5,6 +5,7 @@
 
 #include "../business/BusinessErrors.h"
 #include "../business/ExamService.h"   // prepareExamWorkflow, checkExamSession, loadExamSession, removeExamSession
+#include "../core/ScoreList.h"         // findScore: moi SV thi toi da 1 lan cua tung mon
 
 #include <algorithm>
 #include <cstdlib>
@@ -61,20 +62,23 @@ void drawExamPrepareTab(GuiState& g) {
         // cau hinh luu tren Subject (FileStorage doc 0 = chua cau hinh)
         int cfgQ = chosenSub->examQuestionCount;
         int cfgM = chosenSub->examMinutes;
-        bool cfgUsable = (cfgQ > 0 && cfgM > 0 && cfgM <= 180 && cfgQ <= totalQ);
+        // moi SV chi thi moi mon 1 lan: da co diem thi khoa nut bat dau
+        Score* takenScore = findScore(g.loggedStudent, chosenSub->id);
+        bool cfgUsable = (cfgQ > 0 && cfgM > 0 && cfgM <= 180 && cfgQ <= totalQ && takenScore == nullptr);
 
         DrawTxt(TextFormat("-> Mon: %s | Ngan hang hien co: %d cau hoi", chosenSub->name, totalQ), contentRec.x + 30, (float)formStartY + 85, 15, COLOR_TEXT_MUTED);
 
         if (cfgQ <= 0 || cfgM <= 0) {
             DrawTxt("Mon nay chua duoc giang vien cau hinh de thi.", contentRec.x + 30, (float)formStartY + 125, 16, COLOR_WARNING, true);
+        } else if (takenScore != nullptr) {
+            DrawTxt(TextFormat("Ban da thi mon nay (diem %.2f). Khong the thi lai.", takenScore->score), contentRec.x + 30, (float)formStartY + 125, 16, COLOR_WARNING, true);
         } else if (!cfgUsable) {
             DrawTxt(TextFormat("Cau hinh thi (%d cau) khong hop le voi ngan hang (%d cau).", cfgQ, totalQ), contentRec.x + 30, (float)formStartY + 125, 16, COLOR_WARNING, true);
         } else {
             DrawTxt(TextFormat("So cau thi: %d | Thoi gian: %d phut", cfgQ, cfgM), contentRec.x + 30, (float)formStartY + 125, 17, COLOR_TEXT_DARK, true);
-            DrawTxt("(Do giang vien cau hinh, sinh vien khong tu chinh)", contentRec.x + 30, (float)formStartY + 155, 14, COLOR_TEXT_MUTED);
         }
 
-        if (GuiBtn({ contentRec.x + 30, (float)formStartY + 220, 320, 52 }, ">> BAT DAU THI NGAY <<", COLOR_SUCCESS, COLOR_SUCCESS_HOVER, WHITE, 18, true, !cfgUsable)) {
+        if (GuiBtn({ contentRec.x + 30, (float)formStartY + 180, 320, 52 }, ">> BAT DAU THI NGAY <<", COLOR_SUCCESS, COLOR_SUCCESS_HOVER, WHITE, 18, true, !cfgUsable)) {
             BusinessResult prepRes = prepareExamWorkflow(g.root, g.loggedStudent, chosenSub->id, cfgQ, cfgM, g.examHead);
             if (prepRes == SUCCESS) {
                 g.examList.clear();
@@ -84,13 +88,15 @@ void drawExamPrepareTab(GuiState& g) {
                 g.examRemainingSeconds = cfgM * 60;
                 g.currentExamQuestionIdx = 0;
                 g.currentScreen = SCREEN_STUDENT_EXAM;
+            } else if (prepRes == ERR_CONSTRAINT_VIOLATION) {
+                g.showToast("Ban da thi mon nay roi, khong the thi lai.", 3.5f, true);
             } else {
                 g.showToast(getErrorMessage(prepRes), 3.5f, true);
             }
         }
 
         if (g.notifyTimer > 0 && g.notifyIsError) {
-            DrawTxt(g.notifyMessage, contentRec.x + 30, (float)formStartY + 290, 15, COLOR_DANGER, true);
+            DrawTxt(g.notifyMessage, contentRec.x + 30, (float)formStartY + 245, 15, COLOR_DANGER, true);
         }
     }
 

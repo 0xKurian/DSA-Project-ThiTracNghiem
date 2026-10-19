@@ -43,6 +43,10 @@ void GuiMarkInsideModal() {
     gInsideModal = true;
 }
 
+bool GuiModalAbsorbsInput() {
+    return gModalOpen && !gInsideModal;
+}
+
 static std::vector<int> getVietnameseCodepoints() {
     std::vector<int> cps;
     // ASCII co ban: 32..126

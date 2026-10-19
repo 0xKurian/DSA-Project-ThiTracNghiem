@@ -113,23 +113,20 @@ void drawAdminTabClasses(GuiState& g) {
         DrawTxt(cls->name, row.x + 10, row.y + 30, 13, COLOR_TEXT_MUTED);
         EndScissorMode();
 
-        if (GuiBtnOutline({ row.x + 8, row.y + 48, 62, 24 }, "Xem", COLOR_PRIMARY, COLOR_PRIMARY, 13)) {
-            g.classShowAll = false;
-            g.selectedClassIdx = idx;
-            g.studentPage = 0;
-            g.searchStudent[0] = '\0';
-        }
-        if (GuiBtnOutline({ row.x + 76, row.y + 48, 62, 24 }, "Xoa", COLOR_DANGER, COLOR_DANGER, 13)) {
+        // nut Xoa o goc dau hang; khong con nut Xem (click ca hang de chon lop)
+        Rectangle xoaRec = { row.x + 8, row.y + 48, 62, 24 };
+        if (GuiBtnOutline(xoaRec, "Xoa", COLOR_DANGER, COLOR_DANGER, 13)) {
             g.currentModal = MODAL_DELETE_CLASS;
             snprintf(g.formId, sizeof(g.formId), "%s", cls->id);
             snprintf(g.formName, sizeof(g.formName), "%s", cls->name);
             g.modalError[0] = '\0';
         }
 
-        // click vao vung trong cua row cung chon lop
+        // click vao vung trong cua row cung chon lop (khong danh cho nut Xoa)
         Vector2 mouse = GetMousePosition();
-        Rectangle clickArea = { row.x, row.y, row.width, 46 };
-        if (CheckCollisionPointRec(mouse, clickArea) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        Rectangle clickArea = { row.x, row.y, row.width, row.height };
+        if (!GuiModalAbsorbsInput() && CheckCollisionPointRec(mouse, clickArea)
+            && !CheckCollisionPointRec(mouse, xoaRec) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             g.classShowAll = false;
             g.selectedClassIdx = idx;
             g.studentPage = 0;
@@ -227,7 +224,8 @@ void drawAdminTabClasses(GuiState& g) {
     } else if (g.classShowAll && rows.empty() && g.searchStudent[0] == '\0') {
         DrawTxt("Chua co sinh vien nao trong he thong.", rightPane.x + 20, (float)tableY + 60, 16, COLOR_TEXT_MUTED);
     } else if (classHasNoStudents) {
-        DrawTxt(TextFormat("Lop %s hien chua co sinh vien nao. Nhan [+ Them Sinh Vien] de them moi.", curClass->id), rightPane.x + 20, (float)tableY + 60, 16, COLOR_TEXT_MUTED);
+        DrawTxt(TextFormat("Lop %s hien chua co sinh vien nao.", curClass->id), rightPane.x + 20, (float)tableY + 60, 16, COLOR_TEXT_MUTED);
+        DrawTxt("Nhan [+ Them Sinh Vien] o tren de them ngay.", rightPane.x + 20, (float)tableY + 88, 16, COLOR_TEXT_MUTED);
     } else if (filterNoMatch) {
         DrawTxt("Khong tim thay sinh vien khop tu khoa", rightPane.x + 20, (float)tableY + 60, 16, COLOR_TEXT_MUTED);
         if (GuiBtnOutline({ rightPane.x + 20, (float)tableY + 92, 140, 32 }, "Xoa tim kiem", COLOR_PRIMARY, COLOR_PRIMARY, 14)) {

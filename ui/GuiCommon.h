@@ -54,6 +54,7 @@ float DrawTxtWrapped(const char* text, float posX, float posY, float maxWidth, f
 
 void GuiSetModalState(bool modalOpen);
 void GuiMarkInsideModal();  // goi truoc khi ve modal(trong modal widget van hoat dong)
+bool GuiModalAbsorbsInput(); // true khi modal mo: chan widget o tab phia sau + moi click tho (row click)
 
 bool GuiBtn(Rectangle rec, const char* text,
             Color bg = COLOR_PRIMARY, Color hoverBg = COLOR_PRIMARY_HOVER,

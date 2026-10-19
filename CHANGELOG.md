@@ -2,6 +2,23 @@
 
 Dòng thời gian so với bản cũ trước khi cập nhật GitHub (mốc so sánh: commit `373b2a6 "Add files via upload"`). Kiểu viết theo Conventional Commits.
 
+## [2.2.1] — 2026-10-19
+
+### Fixed
+
+- **fix(ui): ấn xuyên modal "Thêm lớp học mới"** — click chọn lớp trong danh sách là code thô (`CheckCollisionPointRec` + `IsMouseButtonPressed`), không đi qua gate chống modal nên bấm vùng trống của modal vẫn chọn được lớp phía sau; giờ mọi click thô phải qua `GuiModalAbsorbsInput()`.
+
+### Changed
+
+- **fix(ui): bỏ nút "Xem" dư thừa trong danh sách lớp** — click cả hàng (trừ ô nút Xoa) đã chọn lớp; đồng thời sửa nút Xoa bị chọn lớp lẫn mở modal khi bấm.
+- **fix(ui): thông báo rõ khi SV đã thi môn** — tab chuẩn bị khoá nút "Bat dau thi ngay" + hiện "Ban da thi mon nay (diem X.X). Khong the thi lai." thay cho toast ràng buộc chung chung; business vẫn giữ luật 1 SV thi 1 môn duy nhất 1 lần.
+- **fix(ui): tràn chữ khi lớp chưa có SV** — thông báo tách 2 dòng, không tràn panel.
+- **fix(ui): bỏ dòng "(Do giảng viên cấu hình, sinh viên không tự chỉnh)"** ở tab chuẩn bị thi (SV thấy không cần thiết).
+
+### Kiểm chứng
+
+- `make app` 0 lỗi/0 warning; `make test` PASS (gồm cả 2 test mới v2.2.0 cùng `test_core_contracts null`); test tay: modal không ấn xuyên, click hàng chọn lớp, Xoa giữ nguyên, môn đã có điểm bị khóa nút, môn chưa thi vẫn vào phòng thi bình thường.
+
 ## [2.2.0] — 2026-10-19
 
 ### Added
