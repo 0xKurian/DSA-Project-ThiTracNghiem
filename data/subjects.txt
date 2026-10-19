@@ -1,6 +1,6 @@
 6
 ATTT|An Toan Thong Tin|0|0|0
-CSDL|Co so du lieu|3|0|0
+CSDL|Co so du lieu|3|3|15
 41|Khoa chinh (Primary Key) trong bang dung de lam gi?|Dinh danh duy nhat moi ban ghi|Lien ket toi bang khac|Luu tru du lieu trung lap|Tang toc do duyet khong can index|A
 42|Cau lenh SQL nao dung de lay du lieu tu bang?|SELECT|INSERT|UPDATE|DELETE|A
 43|Thao tac JOIN dung de lam gi trong SQL?|Ket hop cac hang tu hai hay nhieu bang dua tren cot chung|Xoa du lieu trong bang|Thay doi cau truc bang|Tao mot bang moi hoan toan|A

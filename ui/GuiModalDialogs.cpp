@@ -4,6 +4,8 @@
 
 #include "../business/BusinessErrors.h"
 #include "../business/ClassService.h"     // addClassWorkflow, deleteClassWorkflow
+#include "../business/ExamService.h"      // submitExamWorkflow, checkExamSession, loadExamSession, removeExamSession, cancelExam
+#include "../business/FileStorage.h"      // saveAllData
 #include "../business/QuestionService.h"  // addQuestionWorkflow, editQuestionWorkflow, deleteQuestionWorkflow
 #include "../business/StudentService.h"   // addStudentWorkflow, editStudentWorkflow, deleteStudentWorkflow
 #include "../business/SubjectService.h"   // addSubjectWorkflow, editSubjectWorkflow, deleteSubjectWorkflow, setExamConfigWorkflow
@@ -403,6 +405,56 @@ static void drawExamConfigModal(GuiState& g) {
     }
 }
 
+// huy phien thi do dang = tu dong nop bai (cau chua chon cham SAI), diem ghi vao bang diem va khong thi lai
+static void drawCancelExamSessionModal(GuiState& g) {
+    Rectangle rec = { (float)(GUI_WIDTH / 2 - 250), (float)(GUI_HEIGHT / 2 - 180), 500, 360 };
+    DrawCardPanel(rec);
+    DrawTxt("HUY PHIEN THI DO DANG", rec.x + 30, rec.y + 25, 20, COLOR_DANGER, true);
+
+    DrawTxt("Huy phien = TU DONG NOP BAI dang do dang.", rec.x + 30, rec.y + 85, 15, COLOR_TEXT_DARK);
+    DrawTxt("- Cau chua chon dap an se bi cham la SAI.", rec.x + 30, rec.y + 118, 14, COLOR_TEXT_MUTED);
+    DrawTxt("- Diem duoc ghi vao bang diem, khong the thi lai mon nay.", rec.x + 30, rec.y + 145, 14, COLOR_TEXT_MUTED);
+    DrawTxt("Ban co chac chan?", rec.x + 30, rec.y + 180, 15, COLOR_TEXT_DARK);
+
+    if (GuiBtn({ rec.x + 30, rec.y + 240, 200, 44 }, "Nop bai & Huy", COLOR_DANGER, COLOR_DANGER_HOVER, WHITE, 16, true)) {
+        char pendSub[32] = {};
+        int pendSec = 0;
+        bool ok = checkExamSession(g.loggedStudent->id, pendSub, pendSec)
+                  && loadExamSession(g.loggedStudent->id, pendSub, pendSec, g.examHead, g.root);
+        if (!ok) {
+            // file phien hang/to nen xoa de khong bao treo mai
+            removeExamSession(g.loggedStudent->id);
+            g.examHead = nullptr;
+            g.examList.clear();
+            g.currentModal = MODAL_NONE;
+            g.showToast("Khong khoi phuc duoc phien thi cu, da xoa.", 3.5f, true);
+            return;
+        }
+
+        float finalScore = 0.0f;
+        int correctCount = 0, totalCount = 0;
+        BusinessResult res = submitExamWorkflow(g.loggedStudent, pendSub, g.examHead, finalScore, correctCount, totalCount);
+        g.examHead = nullptr; // submitExamWorkflow nhan quyen so huu danh sach (ca khi loat)
+        g.examList.clear();
+        g.currentModal = MODAL_NONE;
+
+        char msg[160];
+        if (res == SUCCESS) {
+            saveAllData(g.root, g.classes, g.classCount, "data");
+            snprintf(msg, sizeof(msg), "Da nop bai tu dong (diem %.2f - dung %d/%d cau), huy phien thi do dang.", finalScore, correctCount, totalCount);
+            g.showToast(msg, 4.0f, false);
+        } else {
+            // phien khong nop duoc (tu choi/du lieu loi) => giai phong luon de khong treo mai
+            removeExamSession(g.loggedStudent->id);
+            snprintf(msg, sizeof(msg), "Khong nop duoc: %s Da xoa phien thi do dang.", getErrorMessage(res));
+            g.showToast(msg, 4.0f, true);
+        }
+    }
+    if (GuiBtnOutline({ rec.x + 270, rec.y + 240, 200, 44 }, "Quay Lai Thi Tiep", COLOR_PRIMARY, COLOR_PRIMARY, 16, true)) {
+        g.currentModal = MODAL_NONE;
+    }
+}
+
 void renderModalDialogs(GuiState& g) {
     GuiMarkInsideModal();
 
@@ -460,6 +512,9 @@ void renderModalDialogs(GuiState& g) {
         break;
     case MODAL_CONFIRM_SUBMIT:
         drawExamSubmitConfirmDialog(g);
+        break;
+    case MODAL_CANCEL_EXAM:
+        drawCancelExamSessionModal(g);
         break;
     default:
         g.currentModal = MODAL_NONE;

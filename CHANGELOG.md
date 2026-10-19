@@ -2,6 +2,20 @@
 
 Dòng thời gian so với bản cũ trước khi cập nhật GitHub (mốc so sánh: commit `373b2a6 "Add files via upload"`). Kiểu viết theo Conventional Commits.
 
+## [2.2.2] — 2026-10-19
+
+### Added
+
+- **feat(ui): xác nhận hủy phiên thi dở = tự nộp bài** — nút "Huy phien thi do dang" không xóa session trực tiếp nữa; mở modal `MODAL_CANCEL_EXAM` báo rõ hệ quả: hủy phiên → `loadExamSession` + `submitExamWorkflow` nộp bài tự động (câu chưa chọn chấm SAI), điểm ghi vào bảng điểm, **không thể thi lại môn** (luật 1 SV/1 môn/1 lần). Nút "Quay lai thi tiep" quay lại làm tiếp phiên như cũ. Không nộp được (file phiên hỏng/dữ liệu lỗi) → xóa phiên dở + thông báo rõ, không treo phiên mãi.
+
+### Fixed
+
+- **fix(ui): chữ tràn nút "Huy phien thi do dang"** — nút rộng 160 → 200px (src `ui/GuiExamPrepare.cpp`), full text vừa khít không bị tràn.
+
+### Kiểm chứng
+
+- `make app` 0 lỗi/0 warning; `make test` PASS; `temp_*.dat` (file phiên dở runtime) thêm vào `.gitignore`, không dính vào repo.
+
 ## [2.2.1] — 2026-10-19
 
 ### Fixed

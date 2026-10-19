@@ -18,6 +18,9 @@
 .DS_Store
 Thumbs.db
 
+# exam session runtime temp files (temp_<studentId>.dat), never commit live sessions
+/temp_*.dat
+
 # Personal/local docs, never in the repo
 /AGENTS.md
 /PROGRESS.md

@@ -27,6 +27,7 @@ void drawExamPrepareTab(GuiState& g) {
         DrawTxt(TextFormat("[CANH BAO] Ban dang co phien thi do dang mon: %s (con %d phut %d giay)", pendSub, pendSec / 60, pendSec % 60), warnCard.x + 20, warnCard.y + 18, 16, COLOR_WARNING, true);
 
         if (GuiBtn({ warnCard.x + 20, warnCard.y + 50, 230, 34 }, ">> TIEP TUC PHIEN THI <<", COLOR_PRIMARY, COLOR_PRIMARY_HOVER, WHITE, 14, true)) {
+            cancelExam(g.examHead); // phong state thi cua SV khac con trong g.examHead bi gop vao
             if (loadExamSession(g.loggedStudent->id, pendSub, pendSec, g.examHead, g.root)) {
                 g.examList.clear();
                 ExamDetail* cur = g.examHead;
@@ -39,9 +40,9 @@ void drawExamPrepareTab(GuiState& g) {
                 g.showToast("Khong the khoi phuc phien thi cu.", 3.0f, true);
             }
         }
-        if (GuiBtnOutline({ warnCard.x + 270, warnCard.y + 50, 160, 34 }, "Huy phien thi do dang", COLOR_DANGER, COLOR_DANGER, 14, true)) {
-            removeExamSession(g.loggedStudent->id);
-            g.showToast("Da huy phien thi cu.", 2.5f, false);
+        if (GuiBtnOutline({ warnCard.x + 270, warnCard.y + 50, 200, 34 }, "Huy phien thi do dang", COLOR_DANGER, COLOR_DANGER, 14, true)) {
+            // mo modal xac nhan: huy phien = tu dong nop bai dang do dang, khong thi lai mon nay
+            g.currentModal = MODAL_CANCEL_EXAM;
         }
 
         formStartY += 120;
