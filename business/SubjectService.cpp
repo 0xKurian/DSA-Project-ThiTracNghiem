@@ -1,6 +1,7 @@
 #include "SubjectService.h"
 #include "Validation.h"
 #include "../core/SubjectBST.h"
+#include "../core/QuestionList.h"
 #include "../core/ScoreList.h"
 #include "../core/StringUtils.h"
 
@@ -141,5 +142,43 @@ BusinessResult deleteSubjectWorkflow(
     }
 
     root = deleteSubject(root, cleanId);
+    return SUCCESS;
+}
+
+BusinessResult setExamConfigWorkflow(
+    Subject*& root,
+    const char* subjectId,
+    int questionCount,
+    int minutes
+) {
+    if (root == nullptr || subjectId == nullptr) {
+        return ERR_NOT_FOUND;
+    }
+
+    char cleanId[SUBJECT_ID_LEN];
+    stringCopy(cleanId, subjectId, SUBJECT_ID_LEN);
+    trimString(cleanId);
+    toUpperString(cleanId);
+
+    if (stringLength(cleanId) == 0) {
+        return ERR_NOT_FOUND;
+    }
+
+    Subject* subject = findSubject(root, cleanId);
+    if (subject == nullptr) {
+        return ERR_NOT_FOUND;
+    }
+
+    int totalQuestions = countQuestions(subject->questionList);
+    if (questionCount < 1 || questionCount > totalQuestions) {
+        return ERR_CONSTRAINT_VIOLATION;
+    }
+
+    if (minutes < 1 || minutes > 180) {
+        return ERR_CONSTRAINT_VIOLATION;
+    }
+
+    subject->examQuestionCount = questionCount;
+    subject->examMinutes = minutes;
     return SUCCESS;
 }

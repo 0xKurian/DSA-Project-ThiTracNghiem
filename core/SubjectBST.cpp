@@ -21,6 +21,9 @@ Subject* createSubject(
 
     subject->questionList = nullptr;
 
+    subject->examQuestionCount = 0;
+    subject->examMinutes = 0;
+
     subject->left = nullptr;
     subject->right = nullptr;
 

@@ -143,8 +143,9 @@ static void writeSubjectsRecursive(Subject* node, std::ostream& out, const std::
     writeSubjectsRecursive(node->left, out, dir);
 
     int qCount = countQuestions(node->questionList);
-    // Dòng môn học trong subjects.txt: MAMH|TENMH|SO_CAU_HOI
-    out << node->id << "|" << node->name << "|" << qCount << "\n";
+    // Dòng môn học trong subjects.txt: MAMH|TENMH|SO_CAU_HOI|EXAM_QUESTION_COUNT|EXAM_MINUTES
+    out << node->id << "|" << node->name << "|" << qCount << "|"
+        << node->examQuestionCount << "|" << node->examMinutes << "\n";
 
     // Ghi trực tiếp toàn bộ câu hỏi của môn này vào file subjects.txt
     Question* q = node->questionList;
@@ -211,9 +212,10 @@ bool loadSubjectsFromFile(Subject*& root, const char* filepath) {
         if (subLine.empty()) break;
 
         if (subLine.find('|') != std::string::npos) {
-            // Định dạng mới: MAMH|TENMH|SO_CAU_HOI hoặc MAMH|TENMH
-            std::string tokens[3];
-            int cnt = splitPipe(subLine, tokens, 3);
+            // Định dạng mới: MAMH|TENMH|SO_CAU_HOI|EXAM_QUESTION_COUNT|EXAM_MINUTES
+            // Định dạng cũ: MAMH|TENMH|SO_CAU_HOI hoặc MAMH|TENMH
+            std::string tokens[5];
+            int cnt = splitPipe(subLine, tokens, 5);
             std::string subId = tokens[0];
             std::string subName = (cnt >= 2) ? tokens[1] : "";
             int qCountInline = -1;
@@ -224,15 +226,39 @@ bool loadSubjectsFromFile(Subject*& root, const char* filepath) {
                     qCountInline = -1;
                 }
             }
+            int examQCount = 0;
+            int examMins = 0;
+            if (cnt >= 5) {
+                try {
+                    if (!tokens[3].empty()) {
+                        examQCount = std::stoi(tokens[3]);
+                    }
+                } catch (...) {
+                    examQCount = 0;
+                }
+                try {
+                    if (!tokens[4].empty()) {
+                        examMins = std::stoi(tokens[4]);
+                    }
+                } catch (...) {
+                    examMins = 0;
+                }
+            }
             trimLine(subId);
             trimLine(subName);
 
             Subject* sub = createSubject(subId.c_str(), subName.c_str());
             if (sub != nullptr) {
+                sub->examQuestionCount = examQCount;
+                sub->examMinutes = examMins;
                 root = insertSubject(root, sub);
             }
 
             Subject* insertedSub = findSubject(root, subId.c_str());
+            if (insertedSub != nullptr) {
+                insertedSub->examQuestionCount = examQCount;
+                insertedSub->examMinutes = examMins;
+            }
 
             if (qCountInline >= 0) {
                 // Đọc trực tiếp các câu hỏi từ chính file subjects.txt

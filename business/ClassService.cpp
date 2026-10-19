@@ -64,11 +64,6 @@ BusinessResult deleteClassWorkflow(
         return ERR_NOT_FOUND;
     }
 
-    // Khong duoc xoa lop neu dang co sinh vien
-    if (classroom->studentList != nullptr) {
-        return ERR_CONSTRAINT_VIOLATION;
-    }
-
     bool deleted = deleteClass(classes, classCount, cleanId);
     return deleted ? SUCCESS : ERR_UNKNOWN;
 }
