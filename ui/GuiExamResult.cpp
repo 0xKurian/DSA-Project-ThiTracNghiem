@@ -1,9 +1,7 @@
-// man hinh ket qua sau khi cham diem
 #include "GuiCommon.h"
 #include "GuiState.h"
 
 #include <cstdio>
-
 
 void drawExamResult(GuiState& g) {
     DrawRectangle(0, 0, GUI_WIDTH, GUI_HEIGHT, COLOR_BG);

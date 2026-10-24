@@ -1,27 +1,18 @@
-// phong thi: lam bai + dong ho tu dong nop; modal xac nhan nop cung o day
 #include "GuiCommon.h"
 #include "GuiState.h"
 
 #include "../business/BusinessErrors.h"
-#include "../business/ExamService.h"    // saveExamSession, submitExamWorkflow, removeExamSession
-#include "../business/FileStorage.h"    // saveAllData
+#include "../business/ExamService.h"
+#include "../business/FileStorage.h"
 
 #include <cstdio>
 
-
-void updateExamSession(GuiState& g, float dt) {
+void updateExamSession(GuiState& g) {
     if (g.currentScreen != SCREEN_STUDENT_EXAM) return;
 
-    g.examTimerClock += dt;
-    if (g.examTimerClock < 1.0f) return;
-    g.examTimerClock -= 1.0f;
-
-    if (g.examRemainingSeconds > 0) {
-        g.examRemainingSeconds--;
-        // luu moi giay, dong app mo thi van thi lai duoc
-        saveExamSession(g.loggedStudent->id, g.activeExamSubId.c_str(), g.examRemainingSeconds, g.examHead);
-    } else {
-        // Hết giờ: tự động nộp bài
+    int remaining = g.examTimer.getRemainingSeconds();
+    if (g.examTimer.isRunning && g.examTimer.isExpired()) {
+        g.examTimer.stop();
         g.currentModal = MODAL_NONE;
         submitExamWorkflow(g.loggedStudent, g.activeExamSubId.c_str(), g.examHead, g.lastScore, g.lastCorrect, g.lastTotal);
         removeExamSession(g.loggedStudent->id);
@@ -30,25 +21,30 @@ void updateExamSession(GuiState& g, float dt) {
         g.examList.clear();
         g.currentScreen = SCREEN_EXAM_RESULT;
         g.showToast("Het gio lam bai! He thong da tu dong nop bai thi.", 4.0f, false);
+    } else if (remaining != g.examLastSavedSec) {
+        saveExamSession(g.loggedStudent->id, g.activeExamSubId.c_str(), remaining, g.examHead);
+        g.examLastSavedSec = remaining;
     }
 }
 
 void drawExamRoom(GuiState& g) {
-    // Thanh cong cu: mon thi + dong ho + nut nop bai
     DrawRectangle(0, 0, GUI_WIDTH, 70, COLOR_SIDEBAR);
-    DrawTxt(TextFormat("BAI THI MON: %s", g.activeExamSubId.c_str()), 30, 22, 22, WHITE, true);
+    DrawTxt(TextFormat("BAI THI MON: %s", g.activeExamSubId.c_str()), 30, 12, 20, WHITE, true);
+    Class* myClass = GuiFindStudentClass(g.classes, g.classCount, g.loggedStudent->id);
+    DrawTxt(TextFormat("MSSV: %s | Lop: %s", g.loggedStudent->id, myClass != nullptr ? myClass->id : "?"),
+            30, 40, 14, COLOR_BORDER);
 
-    int mins = g.examRemainingSeconds / 60;
-    int secs = g.examRemainingSeconds % 60;
+    int remaining = g.examTimer.getRemainingSeconds();
+    int mins = remaining / 60;
+    int secs = remaining % 60;
     Rectangle timerRec = { (float)(GUI_WIDTH / 2 - 120), 12, 240, 46 };
-    DrawRectangleRounded(timerRec, 0.2f, 4, (g.examRemainingSeconds < 60) ? COLOR_DANGER : COLOR_PRIMARY);
+    DrawRectangleRounded(timerRec, 0.2f, 4, (remaining < 60) ? COLOR_DANGER : COLOR_PRIMARY);
     DrawTxt(TextFormat("THOI GIAN: %02d:%02d", mins, secs), timerRec.x + 30, timerRec.y + 12, 20, WHITE, true);
 
     if (GuiBtn({ (float)(GUI_WIDTH - 160), 15, 130, 40 }, "NOP BAI", COLOR_WARNING, COLOR_PRIMARY_HOVER, WHITE, 17, true)) {
         g.currentModal = MODAL_CONFIRM_SUBMIT;
     }
 
-    // Khung noi dung cau hoi hien thi
     Rectangle qPane = { 30, 95, 840, (float)(GUI_HEIGHT - 125) };
     DrawCardPanel(qPane);
 
@@ -83,11 +79,11 @@ void drawExamRoom(GuiState& g) {
         Vector2 mouse = GetMousePosition();
         if (g.currentModal == MODAL_NONE && CheckCollisionPointRec(mouse, ansRec) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             curQ->selectedAnswer = choices[i].letter;
-            saveExamSession(g.loggedStudent->id, g.activeExamSubId.c_str(), g.examRemainingSeconds, g.examHead);
+            g.examLastSavedSec = g.examTimer.getRemainingSeconds();
+            saveExamSession(g.loggedStudent->id, g.activeExamSubId.c_str(), g.examLastSavedSec, g.examHead);
         }
     }
 
-    // Di chuyen giua cac cau
     if (g.currentExamQuestionIdx > 0) {
         if (GuiBtnOutline({ qPane.x + 30, qPane.y + qPane.height - 60, 150, 42 }, "< Cau truoc", COLOR_PRIMARY, COLOR_PRIMARY, 15, true)) {
             g.currentExamQuestionIdx--;
@@ -99,7 +95,6 @@ void drawExamRoom(GuiState& g) {
         }
     }
 
-    // Luoi danh sach cau hoi ben phai
     Rectangle gridPane = { 890, 95, (float)(GUI_WIDTH - 920), (float)(GUI_HEIGHT - 125) };
     DrawCardPanel(gridPane);
 
@@ -136,7 +131,6 @@ void drawExamRoom(GuiState& g) {
 }
 
 void drawExamSubmitConfirmDialog(GuiState& g) {
-    // The modal dat o trung tam man hinh
     Rectangle modalRec = { (float)(GUI_WIDTH / 2 - 250), (float)(GUI_HEIGHT / 2 - 180), 500, 360 };
     DrawCardPanel(modalRec);
     DrawTxt("XAC NHAN NOP BAI THI", modalRec.x + 30, modalRec.y + 30, 20, COLOR_WARNING, true);
@@ -151,6 +145,7 @@ void drawExamSubmitConfirmDialog(GuiState& g) {
 
     if (GuiBtn({ modalRec.x + 30, modalRec.y + 210, 200, 44 }, "Dong Y Nop Bai", COLOR_SUCCESS, COLOR_SUCCESS_HOVER, WHITE, 16, true)) {
         g.currentModal = MODAL_NONE;
+        g.examTimer.stop();
         submitExamWorkflow(g.loggedStudent, g.activeExamSubId.c_str(), g.examHead, g.lastScore, g.lastCorrect, g.lastTotal);
         removeExamSession(g.loggedStudent->id);
         saveAllData(g.root, g.classes, g.classCount, "data");

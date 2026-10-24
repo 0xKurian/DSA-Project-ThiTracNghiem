@@ -1,11 +1,10 @@
-// tab diem + chi tiet bai thi: chon mon -> lop -> sinh vien (IDs, tranh lech index)
 #include "GuiCommon.h"
 #include "GuiState.h"
 
-#include "../core/ClassArray.h"   // findClass
-#include "../core/ScoreList.h"    // findScore
-#include "../core/StudentList.h"  // findStudent
-#include "../core/SubjectBST.h"   // findSubject
+#include "../core/ClassArray.h"
+#include "../core/ScoreList.h"
+#include "../core/StudentList.h"
+#include "../core/SubjectBST.h"
 
 #include <algorithm>
 #include <cstdio>
@@ -37,7 +36,6 @@ void drawAdminTabScores(GuiState& g) {
     }
     if (g.reviewDetailOpen && curScore == nullptr) g.reviewDetailOpen = false;
 
-    // ================= SUB-VIEW: CHI TIET BAI THI =================
     if (g.reviewDetailOpen && curStudent != nullptr && curSub != nullptr && curScore != nullptr) {
         DrawTxt(TextFormat("CHI TIET BAI THI MON %s", curSub->id), contentRec.x + 25, contentRec.y + 25, 20, COLOR_TEXT_DARK, true);
         if (GuiBtnOutline({ contentRec.x + contentRec.width - 240, contentRec.y + 20, 210, 36 }, "<- Quay lai bang diem", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
@@ -49,7 +47,7 @@ void drawAdminTabScores(GuiState& g) {
                 contentRec.x + 25, contentRec.y + 68, 16, COLOR_SUCCESS, true);
         DrawTxt(TextFormat("Mon: %s - %s", curSub->id, curSub->name), contentRec.x + 25, contentRec.y + 92, 15, COLOR_TEXT_MUTED);
 
-        std::vector<ExamDetail*> details;
+        Arr<ExamDetail*> details;
         for (ExamDetail* d = curScore->detailList; d != nullptr; d = d->next) details.push_back(d);
 
         int totalReviewPages = details.empty() ? 1 : ((int)details.size() + REVIEW_PER_PAGE - 1) / REVIEW_PER_PAGE;
@@ -91,7 +89,6 @@ void drawAdminTabScores(GuiState& g) {
         return;
     }
 
-    // ================= BANG DIEM THEO MON + LOP =================
     DrawTxt("BANG DIEM & CHI TIET BAI THI", contentRec.x + 25, contentRec.y + 25, 20, COLOR_TEXT_DARK, true);
 
     DrawTxt("Mon:", contentRec.x + 25, contentRec.y + 68, 15, COLOR_TEXT_DARK, true);
@@ -106,7 +103,7 @@ void drawAdminTabScores(GuiState& g) {
     } else if (curClass == nullptr) {
         DrawTxt(TextFormat("Mon: %s - %s. Chon tiep lop hoc.", curSub->id, curSub->name), contentRec.x + 25, contentRec.y + 118, 16, COLOR_TEXT_MUTED);
     } else {
-        std::vector<Student*> sList;
+        Arr<Student*> sList;
         for (Student* s = curClass->studentList; s != nullptr; s = s->next) sList.push_back(s);
 
         int totalScorePages = sList.empty() ? 1 : ((int)sList.size() + SCORES_PER_PAGE - 1) / SCORES_PER_PAGE;
@@ -168,8 +165,7 @@ void drawAdminTabScores(GuiState& g) {
         }
     }
 
-    // hai thanh tim kiem ve cuoi de dropdown de len bang ben duoi
-    std::vector<SuggestItem> subItems;
+    Arr<SuggestItem> subItems;
     GuiMakeSubjectItems(g.subjects, true, subItems);
     int pickedSub = GuiSearchSuggest(subjectSearchRec, g.searchReviewSubject, sizeof(g.searchReviewSubject),
                                      g.activeSearchReviewSubject, subItems, -1,
@@ -180,7 +176,7 @@ void drawAdminTabScores(GuiState& g) {
         g.reviewDetailOpen = false;
     }
 
-    std::vector<SuggestItem> classItems;
+    Arr<SuggestItem> classItems;
     GuiMakeClassItems(g.classes, g.classCount, classItems);
     int pickedClass = GuiSearchSuggest(classSearchRec, g.searchReviewClass, sizeof(g.searchReviewClass),
                                        g.activeSearchReviewClass, classItems, -1,

@@ -1,4 +1,3 @@
-// man hinh dang nhap
 #include "GuiCommon.h"
 #include "GuiState.h"
 
@@ -6,8 +5,6 @@
 #include "../business/BusinessErrors.h"
 
 #include <cstdio>
-
-// dang nhap bang tai khoan trong data/classes.txt; loi hien ngay trong the dang nhap
 
 void drawLoginScreen(GuiState& g) {
     DrawRectangle(0, 0, GUI_WIDTH, 180, COLOR_SIDEBAR);

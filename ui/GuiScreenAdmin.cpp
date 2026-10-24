@@ -1,4 +1,3 @@
-// dashboard gv: topbar + sidebar chon tab; noi dung tung tab nam o file rieng
 #include "GuiCommon.h"
 #include "GuiState.h"
 
@@ -22,17 +21,16 @@ void drawAdminDashboard(GuiState& g) {
     }
 
     DrawRectangle(0, 65, 240, GUI_HEIGHT - 65, COLOR_SIDEBAR);
-    // tab "Ngan hang cau hoi" khong con o menu: vao bang nut Xem o dong mon hoc
     const char* tabs[] = {
         "Mon hoc (BST)",
         "Lop hoc & Sinh vien",
-        "Bang diem & Bai thi"
+        "Bang diem & Bai thi",
+        "Cau hinh thi (Lop-Mon)"
     };
-    const int tabIds[] = { 0, 2, 4 };
+    const int tabIds[] = { 0, 2, 4, 5 };
 
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 4; ++i) {
         Rectangle tabRec = { 10, (float)(85 + i * 55), 220, 45 };
-        // man hinh cau hoi (1) van thuoc nhom mon hoc nen tab me duoc to sang
         bool active = (g.teacherTab == tabIds[i]) || (tabIds[i] == 0 && g.teacherTab == 1);
         Color tabBg = active ? COLOR_SIDEBAR_ACTIVE : COLOR_SIDEBAR;
         if (GuiBtn(tabRec, tabs[i], tabBg, COLOR_SIDEBAR_HOVER, WHITE, 15, active)) {
@@ -52,6 +50,9 @@ void drawAdminDashboard(GuiState& g) {
         break;
     case 2:
         drawAdminTabClasses(g);
+        break;
+    case 5:
+        drawAdminTabExamConfigs(g);
         break;
     default:
         drawAdminTabScores(g);

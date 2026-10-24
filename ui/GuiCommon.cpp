@@ -1,4 +1,3 @@
-// cai dat widget trong GuiCommon.h
 #include "GuiCommon.h"
 
 #include "../core/QuestionList.h"
@@ -17,7 +16,6 @@ static Font gFontBold;
 static bool gModalOpen = false;
 static bool gInsideModal = false;
 
-// dropdown goi y ve sau cac widget khac, nen phai chan click cho khung hinh ke tiep
 static bool gShieldPrev = false;
 static bool gShieldCur = false;
 static Rectangle gShieldPrevRec = { 0, 0, 0, 0 };
@@ -47,34 +45,38 @@ bool GuiModalAbsorbsInput() {
     return gModalOpen && !gInsideModal;
 }
 
-static std::vector<int> getVietnameseCodepoints() {
-    std::vector<int> cps;
-    // ASCII co ban: 32..126
-    for (int i = 32; i <= 126; ++i) cps.push_back(i);
-    // Latin-1 Supplement: 160..255 (a, a, a, a, e, e, e, i, i, o, o, o, u, u, y, ...)
-    for (int i = 160; i <= 255; ++i) cps.push_back(i);
-    // Latin Extended-A: 0x0100..0x017F (D = 0x0110, d = 0x0111, a, A, ...)
-    for (int i = 0x0100; i <= 0x017F; ++i) cps.push_back(i);
-    // Latin Extended-B: 0x01A0..0x01B0 (o, u, O, U)
-    for (int i = 0x01A0; i <= 0x01B0; ++i) cps.push_back(i);
-    // Latin Extended Additional: 0x1EA0..0x1EF9 (ky tu tieng Viet co dau to hop san)
-    for (int i = 0x1EA0; i <= 0x1EF9; ++i) cps.push_back(i);
-    // Dau cau thong dung: 0x2010..0x2026
-    for (int i = 0x2010; i <= 0x2026; ++i) cps.push_back(i);
+static int* getVietnameseCodepoints(int& count) {
+    static int cps[449];
+    static int total = 0;
+    if (total == 0) {
+        static const int ranges[][2] = {
+            {32, 126},
+            {160, 255},
+            {0x0100, 0x017F},
+            {0x01A0, 0x01B0},
+            {0x1EA0, 0x1EF9},
+            {0x2010, 0x2026}
+        };
+        for (int r = 0; r < 6; ++r) {
+            for (int i = ranges[r][0]; i <= ranges[r][1]; ++i) cps[total++] = i;
+        }
+    }
+    count = total;
     return cps;
 }
 
 void loadVietnameseFonts() {
-    std::vector<int> cps = getVietnameseCodepoints();
+    int cpCount = 0;
+    int* cps = getVietnameseCodepoints(cpCount);
     if (FileExists("assets/fonts/regular.ttf")) {
-        gFontRegular = LoadFontEx("assets/fonts/regular.ttf", 36, cps.data(), (int)cps.size());
+        gFontRegular = LoadFontEx("assets/fonts/regular.ttf", 36, cps, cpCount);
         SetTextureFilter(gFontRegular.texture, TEXTURE_FILTER_BILINEAR);
     } else {
         gFontRegular = GetFontDefault();
     }
 
     if (FileExists("assets/fonts/bold.ttf")) {
-        gFontBold = LoadFontEx("assets/fonts/bold.ttf", 40, cps.data(), (int)cps.size());
+        gFontBold = LoadFontEx("assets/fonts/bold.ttf", 40, cps, cpCount);
         SetTextureFilter(gFontBold.texture, TEXTURE_FILTER_BILINEAR);
     } else {
         gFontBold = GetFontDefault();
@@ -190,7 +192,6 @@ bool GuiBtnOutline(Rectangle rec, const char* text, Color borderColor, Color tex
     return false;
 }
 
-// do dai byte cua ky tu utf8 bat dau tai s
 static int utf8CharLen(const char* s) {
     unsigned char c = (unsigned char)s[0];
     if (c < 0x80) return 1;
@@ -223,7 +224,6 @@ static int utf8CountBefore(const char* s, int pos) {
     return cps;
 }
 
-// do rong hien thi cua phan chuoi truoc vi tri byte (mat khau thay bang '*')
 static float displayWidthBefore(const char* buf, int bytePos, bool isPassword) {
     if (!isPassword) {
         std::string prefix(buf, bytePos);
@@ -232,7 +232,6 @@ static float displayWidthBefore(const char* buf, int bytePos, bool isPassword) {
     return (float)utf8CountBefore(buf, bytePos) * MeasureTxt("*", 16.0f);
 }
 
-// moi luc chi co 1 o nhap active nen chi can 1 con tro
 static char* gCaretBuf = nullptr;
 static int gCaretByte = 0;
 
@@ -250,7 +249,6 @@ void GuiTextBoxInput(Rectangle rec, char textBuffer[], int maxLen, bool& isActiv
                 float scroll = caretW > textMaxW ? caretW - textMaxW : 0.0f;
                 float localX = mouse.x - (rec.x + 12.0f) + scroll;
 
-                // chon diem chen gan vi tri chuot nhat
                 int chosen = 0;
                 float bestDist = -1.0f;
                 int i = 0;
@@ -391,14 +389,14 @@ void DrawToastNotification(const char* message, float timer, bool isError) {
     DrawTxt(fullMsg.c_str(), cardX + (cardW - fullW) / 2.0f, cardY + (cardH - fontSize) / 2.0f, fontSize, textC, true);
 }
 
-void collectSubjects(Subject* root, std::vector<Subject*>& list) {
+void collectSubjects(Subject* root, Arr<Subject*>& list) {
     if (root == nullptr) return;
     collectSubjects(root->left, list);
     list.push_back(root);
     collectSubjects(root->right, list);
 }
 
-void collectQuestions(Question* head, std::vector<Question*>& list) {
+void collectQuestions(Question* head, Arr<Question*>& list) {
     Question* cur = head;
     while (cur != nullptr) {
         list.push_back(cur);
@@ -406,12 +404,22 @@ void collectQuestions(Question* head, std::vector<Question*>& list) {
     }
 }
 
-void collectStudents(Student* head, std::vector<Student*>& list) {
+void collectStudents(Student* head, Arr<Student*>& list) {
     Student* cur = head;
     while (cur != nullptr) {
         list.push_back(cur);
         cur = cur->next;
     }
+}
+
+Class* GuiFindStudentClass(Class* const classes[], int classCount, const char* studentId) {
+    if (classes == nullptr || studentId == nullptr) return nullptr;
+    for (int i = 0; i < classCount; ++i) {
+        if (classes[i] != nullptr && findStudent(classes[i]->studentList, studentId) != nullptr) {
+            return classes[i];
+        }
+    }
+    return nullptr;
 }
 
 bool GuiMatchText(const char* text, const char* query) {
@@ -433,18 +441,16 @@ bool GuiMatchText(const char* text, const char* query) {
 }
 
 int GuiSearchSuggest(Rectangle rec, char* query, int capacity, bool& active,
-                     const std::vector<SuggestItem>& items, int currentValue,
+                     const Arr<SuggestItem>& items, int currentValue,
                      const char* placeholder, bool* textChanged) {
-    // click vao dong goi y lam textbox mat focus ngay trong frame; nho trang thai truoc do
-    // de van xu ly duoc click chon dong ben duoi
     bool wasActive = active;
-    (void)currentValue; // khong to mau rieng cho muc dang chon nua
+    (void)currentValue;
     size_t lenBefore = strlen(query);
     GuiTextBoxInput(rec, query, capacity, active, placeholder);
     if (textChanged != nullptr) *textChanged = (strlen(query) != lenBefore);
     if (!active && !wasActive) return -1;
 
-    std::vector<const SuggestItem*> matches;
+    Arr<const SuggestItem*> matches;
     for (const SuggestItem& it : items) {
         if (GuiMatchText(it.id.c_str(), query) || GuiMatchText(it.name.c_str(), query)) {
             matches.push_back(&it);
@@ -463,7 +469,6 @@ int GuiSearchSuggest(Rectangle rec, char* query, int capacity, bool& active,
     Rectangle panel = { rec.x, rec.y + rec.height + 2.0f, panelW, shown * rowH + 8.0f };
     if (matches.empty()) panel.height = rowH + 8.0f;
 
-    // vung chan click chi co hieu luc tu khung hinh sau (widget ve sau cac nut)
     gShieldCur = true;
     gShieldCurRec = panel;
 
@@ -515,7 +520,7 @@ int GuiSearchSuggest(Rectangle rec, char* query, int capacity, bool& active,
     return picked;
 }
 
-void GuiMakeSubjectItems(const std::vector<Subject*>& subjects, bool withCount, std::vector<SuggestItem>& out) {
+void GuiMakeSubjectItems(const Arr<Subject*>& subjects, bool withCount, Arr<SuggestItem>& out) {
     out.clear();
     for (size_t i = 0; i < subjects.size(); ++i) {
         SuggestItem it;
@@ -533,7 +538,7 @@ void GuiMakeSubjectItems(const std::vector<Subject*>& subjects, bool withCount, 
     }
 }
 
-void GuiMakeClassItems(Class* const classes[], int classCount, std::vector<SuggestItem>& out) {
+void GuiMakeClassItems(Class* const classes[], int classCount, Arr<SuggestItem>& out) {
     out.clear();
     for (int i = 0; i < classCount; ++i) {
         if (classes[i] == nullptr) continue;
@@ -553,7 +558,7 @@ void GuiMakeClassItems(Class* const classes[], int classCount, std::vector<Sugge
                      [](const SuggestItem& a, const SuggestItem& b) { return a.id < b.id; });
 }
 
-void GuiMakeStudentItems(const std::vector<Student*>& students, std::vector<SuggestItem>& out) {
+void GuiMakeStudentItems(const Arr<Student*>& students, Arr<SuggestItem>& out) {
     out.clear();
     for (size_t i = 0; i < students.size(); ++i) {
         SuggestItem it;

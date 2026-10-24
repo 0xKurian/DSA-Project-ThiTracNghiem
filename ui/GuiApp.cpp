@@ -1,4 +1,3 @@
-// main loop: khoi tao, goi tung man hinh theo state, luu + giai phong khi thoat
 #include "GraphicUI.h"
 
 #include "GuiCommon.h"
@@ -14,7 +13,7 @@
 void runGraphicApp() {
     SetConfigFlags(FLAG_MSAA_4X_HINT);
     InitWindow(GUI_WIDTH, GUI_HEIGHT, "HE THONG QUAN LY VA THI TRAC NGHIEM - C++ DSA PROJECT");
-    SetExitKey(KEY_NULL);   // ESC chi de dong modal, khong thoat chuong trinh
+    SetExitKey(KEY_NULL);
     SetTargetFPS(60);
 
     loadVietnameseFonts();
@@ -36,14 +35,12 @@ void runGraphicApp() {
         GuiBeginFrame();
         if (g.notifyTimer > 0) g.notifyTimer -= dt;
 
-        // duyet lai BST moi khung hinh de phan trang du lieu moi; xoa di khong thi mon bi nhan doi
         g.subjects.clear();
         collectSubjects(g.root, g.subjects);
 
-        // widget ben ngoai modal khong nhan click
         GuiSetModalState(g.currentModal != MODAL_NONE);
 
-        updateExamSession(g, dt);
+        updateExamSession(g);
 
         BeginDrawing();
         ClearBackground(COLOR_BG);
@@ -73,13 +70,14 @@ void runGraphicApp() {
 
     saveAllData(g.root, g.classes, g.classCount, "data");
 
-    // giai phong tung lop (free sinh vien + diem ben trong)
     while (g.classCount > 0) {
         deleteClass(g.classes, g.classCount, g.classes[0]->id);
     }
     while (g.root != nullptr) {
         g.root = deleteSubject(g.root, g.root->id);
     }
+
+    GuiFreeExamConfigs(g);
 
     unloadVietnameseFonts();
     CloseWindow();

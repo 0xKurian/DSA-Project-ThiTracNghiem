@@ -1,13 +1,10 @@
-// tab mon hoc (BST, duyet in-order)
 #include "GuiCommon.h"
 #include "GuiState.h"
 
-#include "../core/QuestionList.h"   // countQuestions
+#include "../core/QuestionList.h"
 
 #include <algorithm>
 #include <cstdio>
-
-// mon hoc hien thi theo thu tu duyet cay (LNR)
 
 void drawAdminTabSubjects(GuiState& g) {
     Rectangle contentRec = { 260, 85, (float)(GUI_WIDTH - 280), (float)(GUI_HEIGHT - 105) };
@@ -21,8 +18,7 @@ void drawAdminTabSubjects(GuiState& g) {
         g.activeFormBox = 1;
     }
 
-    // loc theo ma hoac ten, giu nguyen thu tu duyet cay (LNR) = tang dan theo ma
-    std::vector<Subject*> view;
+    Arr<Subject*> view;
     for (Subject* s : g.subjects) {
         if (GuiMatchText(s->id, g.searchSubject) || GuiMatchText(s->name, g.searchSubject)) {
             view.push_back(s);
@@ -100,7 +96,7 @@ void drawAdminTabSubjects(GuiState& g) {
         }
     }
 
-    std::vector<SuggestItem> items;
+    Arr<SuggestItem> items;
     GuiMakeSubjectItems(g.subjects, true, items);
     GuiSearchSuggest(searchRec, g.searchSubject, sizeof(g.searchSubject), g.activeSearchSubject,
                      items, g.selectedSubjectIdx, "Tim theo ma hoac ten mon...");

@@ -1,11 +1,8 @@
-// tab cau hoi (DSLK don trong Subject.questionList)
 #include "GuiCommon.h"
 #include "GuiState.h"
 
 #include <algorithm>
 #include <cstdio>
-
-// id cau hoi moi do generateQuestionId sinh (khong nhap tay)
 
 void drawAdminTabQuestions(GuiState& g) {
     Rectangle contentRec = { 260, 85, (float)(GUI_WIDTH - 280), (float)(GUI_HEIGHT - 105) };
@@ -36,7 +33,7 @@ void drawAdminTabQuestions(GuiState& g) {
             g.activeFormBox = 1;
         }
 
-        std::vector<Question*> qList;
+        Arr<Question*> qList;
         collectQuestions(curSub->questionList, qList);
 
         int totalQPages = qList.empty() ? 1 : ((int)qList.size() + QUESTIONS_PER_PAGE - 1) / QUESTIONS_PER_PAGE;
@@ -45,13 +42,13 @@ void drawAdminTabQuestions(GuiState& g) {
 
         char cfgText[80];
         if (curSub->examQuestionCount > 0 && curSub->examMinutes > 0) {
-            snprintf(cfgText, sizeof(cfgText), "Cau hinh thi: %d cau / %d phut", curSub->examQuestionCount, curSub->examMinutes);
+            snprintf(cfgText, sizeof(cfgText), "Cau hinh console: %d cau / %d phut", curSub->examQuestionCount, curSub->examMinutes);
         } else {
             snprintf(cfgText, sizeof(cfgText), "Chua cau hinh thi");
         }
         DrawTxt(TextFormat("Mon: %s - Tong so: %d cau hoi | %s", curSub->id, (int)qList.size(), cfgText), contentRec.x + 25, contentRec.y + 110, 15, COLOR_TEXT_MUTED, true);
 
-        if (GuiBtnOutline({ contentRec.x + contentRec.width - 180, contentRec.y + 103, 155, 30 }, "Cau hinh thi", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
+        if (GuiBtnOutline({ contentRec.x + contentRec.width - 180, contentRec.y + 103, 155, 30 }, "Cau hinh console", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
             g.currentModal = MODAL_EXAM_CONFIG;
             snprintf(g.configSubjectId, sizeof(g.configSubjectId), "%s", curSub->id);
             snprintf(g.formExamQ, sizeof(g.formExamQ), "%d", curSub->examQuestionCount > 0 ? curSub->examQuestionCount : 10);
@@ -114,7 +111,7 @@ void drawAdminTabQuestions(GuiState& g) {
     }
 
     if (!g.subjects.empty()) {
-        std::vector<SuggestItem> items;
+        Arr<SuggestItem> items;
         GuiMakeSubjectItems(g.subjects, true, items);
         int picked = GuiSearchSuggest(questionSearchRec, g.searchQuestion, sizeof(g.searchQuestion),
                                       g.activeSearchQuestion, items, g.selectedSubjectIdx,
