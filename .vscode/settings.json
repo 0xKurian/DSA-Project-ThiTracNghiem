@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "*.h": "cpp"
+    },
+    "clangd.fallbackFlags": [
+        "-xc++",
+        "-std=c++17",
+        "-I${workspaceFolder}",
+        "--target=x86_64-w64-mingw32",
+        "--sysroot=C:/msys64/ucrt64"
+    ]
+}

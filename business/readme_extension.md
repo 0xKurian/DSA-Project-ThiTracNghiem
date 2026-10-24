@@ -49,6 +49,8 @@ graph TD
 2. **Ngăn chặn rò rỉ bộ nhớ (Zero Memory Leak)**: Nếu một thao tác nghiệp vụ thất bại giữa chừng (ví dụ: xác thực không thành công sau khi đã `new`), toàn bộ vùng nhớ cấp phát tạm thời **phải** được dọn dẹp trước khi trả quyền điều khiển về UI.
 3. **Bất biến khóa chính (Primary Key Immutability)**: Mã sinh viên (`MASV`), Mã câu hỏi (`ID`) là các trường định danh duy nhất và không được phép chỉnh sửa sau khi khởi tạo. Mã môn học (`MAMH`) chỉ được sửa khi môn học đó chưa phát sinh bất kỳ điểm thi nào trên toàn hệ thống.
 4. **Độc lập bản ghi thi (Exam Snapshot Independence)**: Khi sinh viên thi, các câu hỏi được sao chép sâu (Deep Copy) sang cấu trúc `ExamDetail`. Do đó, sau này giảng viên có sửa nội dung hoặc xóa câu hỏi trong ngân hàng đề, bài thi lịch sử của sinh viên vẫn giữ nguyên 100% nội dung tại thời điểm thi.
+5. **Cấu hình thi gắn liền với thực thể môn học (Subject Exam Configuration)**: Môn học lưu trực tiếp cấu hình thi (`examQuestionCount`, `examMinutes`). Cấu hình hợp lệ khi số câu nằm trong `1..tổng số câu trong ngân hàng` và thời gian thi `1..180` phút. Mặc định là `0` (chưa cấu hình); môn chưa cấu hình sẽ không thể bắt đầu thi.
+6. **Thu hồi bộ nhớ phân cấp an toàn (Safe Cascading Deletion)**: Hệ thống cho phép xóa lớp học kể cả khi lớp đang có sinh viên; tầng Core tự động thu hồi toàn bộ cây dữ liệu phụ thuộc (Sinh viên -> Bảng điểm -> Chi tiết đề thi) một cách an toàn mà không gây rò rỉ bộ nhớ (Zero Leak).
 
 ---
 
@@ -67,10 +69,11 @@ enum BusinessResult {
     ERR_NOT_FOUND,             // Khong tim thay doi tuong (lop, mon, sinh vien, cau hoi)
     ERR_DUPLICATE,             // Du lieu bi trung khoa chinh (trung MAMH, MALOP, MASV)
     ERR_LIST_FULL,             // Danh sach mang tinh da day (lop dat MAX_CLASS = 10000)
-    ERR_CONSTRAINT_VIOLATION,  // Vi pham rang buoc toan ven (xoa mon da co diem, xoa lop co SV)
+    ERR_CONSTRAINT_VIOLATION,  // Vi pham rang buoc toan ven (xoa/sua mon da co diem, cau hinh thi ngoai pham vi)
     ERR_UNKNOWN                // Loi khong xac dinh (cap phat bo nho that bai, loi he thong)
 };
 ```
+*(Ghi chú: Kể từ bản cập nhật v2.2.0, thao tác xóa lớp đang có sinh viên không còn bị chặn bởi `ERR_CONSTRAINT_VIOLATION` nữa mà cho phép xóa và tự động giải phóng dây chuyền toàn bộ sinh viên, điểm số và bài thi của lớp).*
 
 ### 2.3 Hàm chuyển đổi chuỗi `getErrorMessage()`
 ```cpp
@@ -210,6 +213,46 @@ graph TD
 2. Kiểm tra ràng buộc toàn vẹn: `isSubjectUsedInScores(classes, classCount, cleanId)`. Nếu môn đã phát sinh điểm thi -> lập tức trả về `ERR_CONSTRAINT_VIOLATION`.
 3. Nếu an toàn -> gọi `root = deleteSubject(root, cleanId)`. Hàm này sẽ tự động giải phóng toàn bộ danh sách liên kết câu hỏi thuộc môn học đó trước khi giải phóng node môn học.
 
+### 4.5 Thuật toán Cấu hình thi theo môn học (`setExamConfigWorkflow`)
+
+Kể từ bản cập nhật v2.2.0, cấu hình số câu thi và thời gian thi được gắn trực tiếp vào thực thể `Subject` trên cây BST thay vì lưu tạm trên bộ nhớ giao diện. Điều này đảm bảo cấu hình tồn tại bền vững qua các lần lưu file và đồng bộ giữa vai trò Giảng viên và Sinh viên.
+
+- **Chữ ký hàm**:
+  ```cpp
+  BusinessResult setExamConfigWorkflow(
+      Subject*& root,
+      const char* subjectId,
+      int questionCount,
+      int minutes
+  );
+  ```
+
+- **Luồng xử lý chi tiết**:
+  1. **Kiểm tra đầu vào phòng thủ**: Nếu `root == nullptr` hoặc `subjectId == nullptr` -> trả về `ERR_NOT_FOUND`.
+  2. **Chuẩn hóa mã môn**: Sử dụng `trimString` và `toUpperString`. Nếu sau chuẩn hóa chuỗi rỗng (`stringLength == 0`) -> trả về `ERR_NOT_FOUND`.
+  3. **Định vị môn học**: Gọi `findSubject(root, cleanId)` trên cây BST. Nếu không tìm thấy -> trả về `ERR_NOT_FOUND`.
+  4. **Kiểm tra ràng buộc số câu hỏi**:
+     - Đếm tổng số câu hỏi thực tế đang có trong ngân hàng đề của môn: `int totalQuestions = countQuestions(subject->questionList);`.
+     - Số câu cấu hình phải thỏa mãn: `1 <= questionCount <= totalQuestions`.
+     - Nếu vi phạm (ví dụ: đặt 0 câu, số âm, hoặc vượt quá số câu ngân hàng có) -> trả về `ERR_CONSTRAINT_VIOLATION`.
+  5. **Kiểm tra ràng buộc thời gian thi**:
+     - Thời gian thi quy định: `1 <= minutes <= 180` phút.
+     - Nếu vi phạm (ví dụ: đặt 0 phút hoặc vượt quá 3 tiếng) -> trả về `ERR_CONSTRAINT_VIOLATION`.
+  6. **Gán cấu hình an toàn**:
+     ```cpp
+     subject->examQuestionCount = questionCount;
+     subject->examMinutes = minutes;
+     return SUCCESS;
+     ```
+  7. **Bảo toàn dữ liệu**: Nếu có bất kỳ lỗi nào xảy ra trong các bước validate, cấu hình cũ của môn học được giữ nguyên 100%. Hàm không tự ý ghi file mà để tầng điều phối hoặc UI gọi `saveAllData()`.
+
+- **Phân tích độ phức tạp**:
+  - Thời gian: `O(log N + K)` trung bình (với N là số node môn học trên BST, K là số câu hỏi trong DSLK của môn đó để tính `countQuestions`). Trường hợp xấu nhất là `O(N + K)` khi cây BST bị lệch.
+  - Không gian bổ trợ: `O(1)` (cập nhật trực tiếp trên node môn học trong RAM, không cấp phát heap).
+
+> [!NOTE]
+> **Lưu ý về đổi mã môn học (`editSubject`)**: Khi đổi mã môn học (`oldId != newId`), do tính chất BST cần tái cấu trúc node, hàm Core tạo một node mới với 2 trường cấu hình mặc định là `0`. Vì vậy sau khi đổi mã môn học, giảng viên cần cấu hình lại số câu và thời gian thi cho môn mới.
+
 ---
 
 ## 5. FILE 4: [QuestionService.h](file:///d:/Download/DSA-Project-ThiTracNghiem/business/QuestionService.h) & [QuestionService.cpp](file:///d:/Download/DSA-Project-ThiTracNghiem/business/QuestionService.cpp) – QUẢN LÝ CÂU HỎI & SNAPSHOT
@@ -255,20 +298,40 @@ Danh sách lớp học được tổ chức dưới dạng **Mảng con trỏ tu
 5. Đưa vào mảng: `addClass(classes, classCount, newClass)`. Lớp học được gán vào `classes[classCount]` và `classCount++`.
 6. Nếu có lỗi bất ngờ, tự động gọi `delete newClass` để chống rò rỉ bộ nhớ.
 
-### 6.3 Thuật toán Xóa Lớp Học An Toàn (`deleteClassWorkflow`)
-1. Tìm kiếm lớp học trong mảng theo `id`. Nếu không thấy -> `ERR_NOT_FOUND`.
-2. **Kiểm tra ràng buộc sinh viên**:
-   ```cpp
-   if (classroom->studentList != nullptr) {
-       return ERR_CONSTRAINT_VIOLATION; // Khong duoc xoa lop dang co sinh vien
-   }
-   ```
-   *Mục đích*: Ngăn chặn việc làm mất dữ liệu sinh viên một cách vô ý và loại bỏ hoàn toàn nguy cơ rò rỉ bộ nhớ các danh sách con.
-3. Nếu lớp rỗng: Gọi `deleteClass(classes, classCount, cleanId)`.
-   - Hàm core giải phóng bộ nhớ `delete classroom`.
-   - Dồn toàn bộ các con trỏ từ vị trí xóa về bên trái một nấc: `classes[j] = classes[j + 1]`.
-   - Giảm số lượng lớp: `classCount--`.
-- **Độ phức tạp**: `O(N)` thời gian thao tác dồn mảng.
+### 6.3 Thuật toán Xóa Lớp Học An Toàn & Cascade Giải Phóng (`deleteClassWorkflow`)
+
+Kể từ bản cập nhật v2.2.0, quy chế xóa lớp đã được điều chỉnh: **Cho phép xóa lớp học kể cả khi lớp đang có sinh viên**, nhằm nâng cao trải nghiệm quản trị (không bắt buộc giảng viên phải xóa thủ công từng sinh viên trước khi xóa lớp).
+
+- **Chữ ký hàm**:
+  ```cpp
+  BusinessResult deleteClassWorkflow(
+      Class* classes[],
+      int& classCount,
+      const char id[]
+  );
+  ```
+
+- **Luồng xử lý chi tiết**:
+  1. **Kiểm tra đầu vào**: Nếu `id == nullptr` -> trả về `ERR_NOT_FOUND`.
+  2. **Chuẩn hóa mã lớp**: Sử dụng `trimString` và `toUpperString`.
+  3. **Định vị lớp học**: Tìm kiếm lớp trong mảng `findClass(classes, classCount, cleanId)`. Nếu không tìm thấy -> trả về `ERR_NOT_FOUND`.
+  4. **Bãi bỏ kiểm tra chặn sinh viên**: Đoạn code cũ `if (classroom->studentList != nullptr) return ERR_CONSTRAINT_VIOLATION;` đã được gỡ bỏ hoàn toàn.
+  5. **Bàn giao cho tầng Core thực thi giải phóng Cascade**:
+     - Gọi `deleteClass(classes, classCount, cleanId)`.
+     - Tầng Core (`core/ClassArray.cpp`) duyệt qua toàn bộ danh sách liên kết sinh viên (`studentList`) của lớp.
+     - Với mỗi sinh viên, giải phóng danh sách điểm thi `ScoreList`.
+     - Với mỗi điểm thi, giải phóng danh sách chi tiết bài thi snapshot `ExamDetail`.
+     - Thu hồi bộ nhớ node `Student` và struct `Class`.
+     - Dồn toàn bộ các con trỏ từ vị trí xóa về bên trái một nấc: `classes[j] = classes[j + 1]`.
+     - Giảm số lượng lớp: `classCount--`.
+  6. Trả về `SUCCESS` nếu xóa thành công, ngược lại `ERR_UNKNOWN`.
+
+- **Độ phức tạp**:
+  - Thời gian: `O(C + S * M * D)` với C là số lớp (dồn mảng), S là số sinh viên của lớp bị xóa, M là số môn sinh viên đã thi, D là số câu hỏi trong bài thi chi tiết được giải phóng.
+  - Không gian bổ trợ: `O(1)` (không cấp phát thêm bộ nhớ).
+
+> [!TIP]
+> **Biện pháp an toàn phía Giao diện (UI UX)**: Để tránh việc giảng viên vô tình xóa nhầm lớp có đông sinh viên, tầng UI đã hiển thị cảnh báo sĩ số rõ ràng trong hộp thoại xác nhận xóa (Modal Confirm): *"Lớp đang có N sinh viên. Bạn có chắc chắn muốn xóa kèm toàn bộ sinh viên của lớp?"*.
 
 ---
 
@@ -517,8 +580,18 @@ graph TD
     D -->|UI hoi sinh vien| E{Tiep tuc lam bai?}
     E -->|Co| F[loadExamSession: Tai tao DSLK ExamDetail va resume Timer]
     F --> A
-    E -->|Khong / Nop bai thanh cong| G[removeExamSession: Xoa sach temp_MASV.dat]
+    E -->|Huy phien: Tu dong nop bai| H[submitExamWorkflow: Cham diem do dang, khoa thi lai mon]
+    H --> G[removeExamSession: Xoa sach temp_MASV.dat]
+    A -->|Nop bai thanh cong| G
 ```
+
+> [!IMPORTANT]
+> **Cơ chế Hủy Phiên Thi Dở Dang = Tự Động Nộp Bài (Cập nhật v2.2.2)**:
+> Để ngăn chặn hành vi lách luật (sinh viên thấy đề khó hoặc làm dở điểm thấp liền 'hủy phiên' để được làm lại đề mới), hệ thống quy định:
+> - Nút *"Huy phien thi do dang"* sẽ kích hoạt modal cảnh báo `MODAL_CANCEL_EXAM`.
+> - Xác nhận hủy đồng nghĩa với việc **hệ thống tự động nạp đề và nộp bài dở dang** qua `loadExamSession` + `submitExamWorkflow`. Các câu chưa trả lời được chấm SAI (0 điểm).
+> - Điểm số được lưu chính thức vào bảng điểm cá nhân của sinh viên và môn học bị khóa thi lại (**Retake Guard**).
+> - Chỉ khi file session bị hỏng (corrupt data) không thể khôi phục để nộp, hệ thống mới xóa file và hiển thị thông báo lỗi rõ ràng.
 
 #### 2. Cơ chế Tuần Tự Hóa (Serialization) `saveExamSession`
 Khi gọi `saveExamSession()`, hệ thống tạo file tạm định danh theo mã sinh viên: `temp_<MASV>.dat` (được làm sạch và chuẩn hóa hoa `toUpperString(cleanStdId)`):
@@ -613,7 +686,7 @@ Mọi hàm in ấn đều nhận tham số mặc định: `std::ostream& out = s
 
 Hệ thống sử dụng cơ chế lưu trữ file văn bản phân tách độc lập (Decoupled File Storage) kết hợp chuẩn hóa dữ liệu dòng bằng dấu gạch đứng (`|`), không phụ thuộc vào bất kỳ thư viện ngoài nào (như JSON, XML hay Protocol Buffers).
 
-### 11.1 Thuật toán Lưu Môn Học Bằng In-Order BST Traversal & Tách File Câu Hỏi (`saveSubjectsToFile`)
+### 11.1 Thuật toán Lưu Môn Học Bằng In-Order BST Traversal & Cấu Hình Thi 5 Cột (`saveSubjectsToFile`)
 Cây BST lưu trữ các môn học. Khi lưu file, để danh mục môn học luôn có thứ tự từ điển tự nhiên, `FileStorage` áp dụng **Thuật toán Duyệt Trung Thứ Tự (In-Order Traversal: Trái -> Gốc -> Phải)**:
 
 ```cpp
@@ -622,29 +695,44 @@ static void writeSubjectsRecursive(Subject* node, std::ostream& out, const std::
 
     writeSubjectsRecursive(node->left, out, dir);  // 1. Duyệt toàn bộ nhánh trái
 
-    // 2. Ghi danh mục môn học vào subjects.txt (MAMH|TENMH)
-    out << node->id << "|" << node->name << "\n";
+    int qCount = countQuestions(node->questionList);
+    // 2. Ghi thông tin môn học kèm cấu hình thi (5 cột):
+    // MAMH|TENMH|SO_CAU_HOI|EXAM_QUESTION_COUNT|EXAM_MINUTES
+    out << node->id << "|" << node->name << "|" << qCount << "|"
+        << node->examQuestionCount << "|" << node->examMinutes << "\n";
 
-    // 3. Tách toàn bộ câu hỏi của môn này ra file riêng dir/<MAMH>.txt
-    std::string qPath = getSubjectQuestionFilePath(dir, node->id);
-    std::ofstream qOut(qPath);
-    if (qOut.is_open()) {
-        Question* q = node->questionList;
-        while (q != nullptr) {
-            // ID|Nội dung|Đáp án A|Đáp án B|Đáp án C|Đáp án D|Đáp án đúng
-            qOut << q->id << "|" << q->content << "|"
-                 << q->answerA << "|" << q->answerB << "|"
-                 << q->answerC << "|" << q->answerD << "|"
-                 << q->correctAnswer << "\n";
-            q = q->next;
-        }
-        qOut.close();
+    // 3. Ghi trực tiếp toàn bộ câu hỏi của môn này vào ngay sau dòng môn học trong subjects.txt
+    Question* q = node->questionList;
+    while (q != nullptr) {
+        // ID|Nội dung|Đáp án A|Đáp án B|Đáp án C|Đáp án D|Đáp án đúng
+        out << q->id << "|" << q->content << "|"
+            << q->answerA << "|" << q->answerB << "|"
+            << q->answerC << "|" << q->answerD << "|"
+            << q->correctAnswer << "\n";
+        q = q->next;
     }
 
-    writeSubjectsRecursive(node->right, out, dir); // 4. Duyệt toàn bộ nhánh phải
+    // 4. Nếu có thư mục tách riêng (dir != ""), đồng thời ghi ra file riêng dir/<MAMH>.txt
+    if (!dir.empty()) {
+        std::string qPath = getSubjectQuestionFilePath(dir, node->id);
+        std::ofstream qOut(qPath);
+        if (qOut.is_open()) {
+            Question* qSub = node->questionList;
+            while (qSub != nullptr) {
+                qOut << qSub->id << "|" << qSub->content << "|"
+                     << qSub->answerA << "|" << qSub->answerB << "|"
+                     << qSub->answerC << "|" << qSub->answerD << "|"
+                     << qSub->correctAnswer << "\n";
+                qSub = qSub->next;
+            }
+            qOut.close();
+        }
+    }
+
+    writeSubjectsRecursive(node->right, out, dir); // 5. Duyệt toàn bộ nhánh phải
 }
 ```
-- **Lợi ích**: Danh mục môn học trong `subjects.txt` được sắp xếp tăng dần theo mã môn học (`MAMH`). Mỗi môn quản lý ngân hàng đề riêng biệt trong `<dir>/<MAMH>.txt`, giảm kích thước file tổng thể và tránh xung đột dữ liệu.
+- **Lợi ích**: Danh mục môn học trong `subjects.txt` được sắp xếp tăng dần theo mã môn học (`MAMH`). Mỗi dòng môn học chứa đủ 5 cột lưu bền vững cấu hình thi (`examQuestionCount`, `examMinutes`) mà không làm lệch con trỏ đọc các câu hỏi bên dưới.
 - **Độ phức tạp**: `O(S_tree + Q_total)` thời gian, `O(H)` không gian ngăn xếp đệ quy với H là chiều cao cây BST.
 
 ### 11.2 Định Dạng Lưu Trữ Phân Cấp & Gom Dòng Bằng Dấu `|` Trong `classes.txt`
@@ -670,7 +758,11 @@ Khi giảng viên thao tác trên giao diện, hệ thống tự động đồng
 
 ### 11.4 Cơ Chế Phòng Thủ & Tương Thích Ngược Khi Đọc File (Defensive & Backward-Compatible Deserialization)
 Khi đọc file, hệ thống áp dụng các nguyên tắc phòng thủ cao cấp:
-- **Tương thích ngược (Backward-Compatible)**: Parser kiểm tra sự tồn tại của ký tự phân cách `|`. Nếu có, xử lý theo chuẩn gom dòng mới bằng hàm nội bộ `splitPipe()`. Nếu không, tự động chuyển sang đọc định dạng nhiều dòng cũ, đảm bảo không làm gãy các bộ dữ liệu lịch sử.
+- **Tương thích ngược định dạng môn học (5 cột & 3 cột)**: 
+  Khi gọi `loadSubjectsFromFile()`, parser tách dòng bằng `splitPipe(subLine, tokens, 5)`:
+  - Nếu dòng có đủ 5 cột: Trích xuất `tokens[3]` làm `examQuestionCount` và `tokens[4]` làm `examMinutes`.
+  - Nếu file định dạng cũ (3 cột `MAMH|TENMH|SO_CAU_HOI` hoặc 2 cột): Tự động gán mặc định `examQuestionCount = 0` và `examMinutes = 0` (môn chưa cấu hình). Không yêu cầu người dùng chuyển đổi file thủ công.
+- **Tương thích ngược (Backward-Compatible) các dòng gom pipe**: Parser kiểm tra sự tồn tại của ký tự phân cách `|`. Nếu có, xử lý theo chuẩn gom dòng mới bằng hàm nội bộ `splitPipe()`. Nếu không, tự động chuyển sang đọc định dạng nhiều dòng cũ, đảm bảo không làm gãy các bộ dữ liệu lịch sử.
 - **Kiểm tra tính duy nhất của ID câu hỏi (`isQuestionIdUsedAnywhere`)**: Duyệt cây BST kiểm tra nếu ID câu hỏi đã tồn tại trên bất kỳ môn nào, tự động gọi `generateQuestionId()` để sinh ID mới duy nhất, ngược lại gọi `updateQuestionIdCounter(id)` để đồng bộ counter.
 - **Làm sạch chuỗi (`trimLine`)**: Tự động loại bỏ các ký tự xuống dòng `\r`, `\n` và khoảng trắng dư thừa, đảm bảo chạy ổn định trên cả Windows và Linux.
 - **Dọn dẹp rò rỉ bộ nhớ khi load dữ liệu lỗi**:
@@ -713,11 +805,12 @@ Dưới đây là bảng phân tích độ phức tạp thời gian và không g
 | `addSubjectWorkflow` | BST Search & Insert | `O(log N)` | `O(N)` | `O(1)` | Cấp phát 1 node |
 | `editSubjectWorkflow` | BST Re-balancing / In-place update | `O(log N)` | `O(N)` | `O(1)` | Bảo toàn cây |
 | `deleteSubjectWorkflow` | Referential Check & BST Delete | `O(C * S * M)` | `O(C * S * M)` | `O(1)` | Giải phóng toàn bộ QList |
+| `setExamConfigWorkflow` | BST Search & Question Count | `O(log N + K)` | `O(N + K)` | `O(1)` | Cập nhật cấu hình Subject |
 | `addQuestionWorkflow` | BST Find + SLL Insert Tail | `O(log N + K)` | `O(N + K)` | `O(1)` | Cấp phát 1 Question |
 | `editQuestionWorkflow` | SLL Linear Search & Update | `O(K)` | `O(K)` | `O(1)` | Cập nhật tại chỗ |
 | `deleteQuestionWorkflow` | SLL Linear Search & Delete Node | `O(K)` | `O(K)` | `O(1)` | Thu hồi bộ nhớ |
 | `addClassWorkflow` | Linear Search & Dynamic Array Insert | `O(C)` | `O(C)` | `O(1)` | Tự delete nếu mảng đầy |
-| `deleteClassWorkflow` | Constraint Check & Array Shifting | `O(C)` | `O(C)` | `O(1)` | Thu hồi bộ nhớ |
+| `deleteClassWorkflow` | Cascade SLL Free & Shifting | `O(C + S * M * D)` | `O(C + S * M * D)` | `O(1)` | Thu hồi toàn bộ SV, Score, Detail |
 | `addStudentWorkflow` | Global Search & SLL Insert | `O(N_student)` | `O(N_student)` | `O(1)` | Tự delete nếu trùng |
 | `editStudentWorkflow` | Global Search & In-place update | `O(N_student)` | `O(N_student)` | `O(1)` | Khóa chính bất biến |
 | `deleteStudentWorkflow` | Pre-check & Cascade SLL Delete | `O(S)` | `O(S)` | `O(1)` | Thu hồi SV, Score, Detail |
@@ -764,14 +857,31 @@ Mọi thao tác thay đổi dữ liệu đều trả về `BusinessResult`. Tuy�
 - Nếu sinh viên làm xong và nộp bài: Gọi `submitExamWorkflow(...)`. Lúc này quyền sở hữu bộ nhớ **đã được chuyển giao** cho sinh viên. UI không được phép đụng vào vùng nhớ này nữa.
 - Nếu sinh viên bấm Thoát / Hủy / Đóng ứng dụng giữa chừng: UI **BẮT BUỘC** phải gọi `cancelExam(examQuestionsHead)`. Nếu không gọi hàm này, toàn bộ danh sách câu hỏi đề thi sẽ bị rò rỉ (Memory Leak) trong RAM.
 
-### 3. Vòng lặp làm bài thi và kiểm tra hết giờ
+### 3. Vòng lặp làm bài thi, kiểm tra cấu hình & khóa thi lại (Retake Guard)
 ```cpp
+// 1. Kiểm tra ràng buộc thi lại (Retake Guard)
+float previousScore = 0.0f;
+if (hasStudentTakenExam(student, "CTDL", previousScore)) {
+    std::cout << "[KHOA THI]: Ban da thi mon nay (diem " << previousScore << "). Khong the thi lai!\n";
+    return; // Khóa nút bắt đầu thi
+}
+
+// 2. Đọc cấu hình thi trực tiếp từ thực thể Subject (Bền vững từ v2.2.0)
+Subject* subject = findSubject(root, "CTDL");
+if (subject == nullptr || subject->examQuestionCount <= 0 || subject->examMinutes <= 0) {
+    std::cout << "[THONG BAO]: Mon hoc chua duoc Giang vien cau hinh so cau va thoi gian thi!\n";
+    return; // Khóa nút bắt đầu thi
+}
+
+int durationMinutes = subject->examMinutes;
+int questionCount = subject->examQuestionCount;
+
+// 3. Khởi tạo đề thi ngẫu nhiên bằng cấu hình đã lưu
 ExamDetail* examHead = nullptr;
-BusinessResult res = prepareExamWorkflow(root, student, "CTDL", 20, 15, examHead);
+BusinessResult res = prepareExamWorkflow(root, student, "CTDL", questionCount, durationMinutes, examHead);
 
 if (res == SUCCESS) {
     time_t startTime = time(nullptr);
-    int durationMinutes = 15;
 
     while (true) {
         // 1. Kiem tra het gio khong block
@@ -789,7 +899,7 @@ if (res == SUCCESS) {
         }
     }
 
-    // 4. Nop bai va lay diem
+    // 4. Nop bai va lay diem (chuyen quyen so huu examHead sang Score)
     float score;
     int correct, total;
     submitExamWorkflow(student, "CTDL", examHead, score, correct, total);
@@ -809,8 +919,8 @@ saveAllData(rootSubject, classes, classCount, "data");
 ```
 để đảm bảo dữ liệu được ghi bền vững xuống ổ cứng.
 
-### 6. Quy trình hoàn chỉnh xử lý phiên thi dở dang (Fault-Tolerant Exam Workflow)
-Khi sinh viên đăng nhập vào hệ thống, UI nên thực hiện theo quy trình 5 bước sau:
+### 6. Quy trình hoàn chỉnh xử lý phiên thi dở dang (Fault-Tolerant Exam Workflow v2.2.2)
+Khi sinh viên đăng nhập vào hệ thống, UI thực hiện theo quy trình chuẩn sau:
 
 ```cpp
 // 1. Kiểm tra bài thi dở dang khi sinh viên vào hệ thống
@@ -819,12 +929,17 @@ int remainingSec = 0;
 if (checkExamSession(loggedStudent->id, ongoingSubjectId, remainingSec)) {
     std::cout << "[CANH BAO]: Phat hien bai thi mon " << ongoingSubjectId 
               << " dang lam do voi con lai " << remainingSec << " giay.\n";
-    std::cout << "Ban co muon tiep tuc lam bai thi nay? (Y/N): ";
-    char choice;
+    std::cout << "1. Tiep tuc thi\n";
+    std::cout << "2. Huy phien thi do dang (Tu dong nop bai tinh diem do, khoa thi lai)\n";
+    std::cout << "Chon thao tac: ";
+    int choice;
     std::cin >> choice;
     
-    if (choice == 'Y' || choice == 'y') {
-        ExamDetail* examHead = nullptr;
+    if (choice == 1) {
+        // Phòng thủ: giải phóng đề thi cũ còn sót trên UI nếu có
+        cancelExam(examHead);
+        examHead = nullptr;
+
         if (loadExamSession(loggedStudent->id, ongoingSubjectId, remainingSec, examHead, rootSubject)) {
             // 2. Khởi tạo đồng hồ đếm ngược từ thời gian còn lại
             ExamTimer timer;
@@ -848,7 +963,18 @@ if (checkExamSession(loggedStudent->id, ongoingSubjectId, remainingSec)) {
             return;
         }
     } else {
-        // Sinh viên từ chối tiếp tục -> Xóa bài thi dở dang cũ
+        // Quy chế v2.2.2: Hủy phiên thi = Tự động nộp bài dở dang
+        cancelExam(examHead);
+        examHead = nullptr;
+
+        if (loadExamSession(loggedStudent->id, ongoingSubjectId, remainingSec, examHead, rootSubject)) {
+            float score = 0.0f;
+            int correct = 0, total = 0;
+            // Nộp bài ngay: các câu chưa chọn đáp án sẽ chấm SAI (0 điểm)
+            submitExamWorkflow(loggedStudent, ongoingSubjectId, examHead, score, correct, total);
+            std::cout << "[DA NOP BAI]: Diem thi: " << score << ". Mon nay da bi khoa thi lai!\n";
+        }
+        // Xóa sạch file session tạm
         removeExamSession(loggedStudent->id);
     }
 }

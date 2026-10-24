@@ -26,7 +26,7 @@ CTDL|Cau truc du lieu va Giai thuat|20|0|0
 19|Thuat toan duyet do thi theo chieu sau (DFS) thuong su dung cau truc du lieu nao?|Stack (hoac de quy)|Queue|Bang bam|Cay AVL|A
 20|Thuat toan Dijkstra duoc dung de giai quyet bai toan nao sau day?|Tim duong di ngan nhat tu 1 dinh toi tat ca cac dinh tren do thi trong so khong am|Tim cay khung nho nhat|Dem so thanh phan lien thong|Kiem tra tinh 2 phia cua do thi|A
 DSTT|Dai So Tuyen Tinh|0|0|0
-OOP|LAP TRINH HUONG DOI TUONG|22|10|15
+OOP|LAP TRINH HUONG DOI TUONG|22|10|1
 21|Bon tinh chat co ban cua Lap trinh huong doi tuong la gi?|Dong goi, Ke thua, Da hinh, Truu tuong|Dong goi, Bien dich, Thuc thi, Toi uu|Lien ket, Con tro, Vung nho, Giai phong|Lop, Doi tuong, Ham, Bien|A
 22|Muc dich chinh cua tinh Dong goi (Encapsulation) la gi?|Che giau thong tin noi bo va bao ve du lieu|Tang toc do thuc thi chuong trinh|Cho phep mot ham co nhieu cach cai dat|Giam dung luong bo nho|A
 23|Pham vi truy cap 'private' trong C++ co y nghia gi?|Chi co the truy cap tu ben trong chinh class do hoac ham friend|Co the truy cap tu bat ky dau trong chuong trinh|Chi co the truy cap tu class con ke thua|Tu do truy cap khong can tao doi tuong|A

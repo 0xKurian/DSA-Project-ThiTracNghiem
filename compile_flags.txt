@@ -1,0 +1,4 @@
+-std=c++17
+-xc++
+-I.
+--target=x86_64-w64-mingw32

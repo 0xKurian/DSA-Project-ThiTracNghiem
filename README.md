@@ -13,7 +13,9 @@ assets/fonts/  Font dùng trong GUI
 examples/      Demo sử dụng core
 tests/         Kiểm tra hồi quy (mỗi file một main riêng)
 docs/          Hợp đồng API và tài liệu lịch sử
-third_party/   raylib 6.2 prebuilt (Linux amd64, link tĩnh)
+third_party/   raylib 6.2 prebuilt (Linux amd64 & Win64 MinGW, link tĩnh)
+chay_gui.bat   Script chạy nhanh GUI trên Windows
+chay_console.bat Script chạy nhanh Console trên Windows
 Makefile       Build app, core_demo và các test
 ```
 
@@ -21,7 +23,7 @@ Makefile       Build app, core_demo và các test
 
 | Dữ liệu | Cấu trúc |
 |---|---|
-| Môn học | Cây nhị phân tìm kiếm theo mã môn |
+| Môn học | Cây nhị phân tìm kiếm theo mã môn (lưu cấu hình thi: examQuestionCount, examMinutes) |
 | Câu hỏi của môn | Danh sách liên kết đơn |
 | Lớp | Mảng con trỏ, tối đa 10.000 lớp |
 | Sinh viên của lớp | Danh sách liên kết đơn |
@@ -32,8 +34,22 @@ Các cấu trúc chính dùng `char[]`, con trỏ và `new/delete`, không dùng
 
 ## Build và chạy
 
-Cần GCC/Clang hỗ trợ C++17 và GNU Make (các lệnh dưới đây dùng trên Linux; GUI cần display X11).
+Hỗ trợ cả môi trường **Linux** và **Windows** (GCC/Clang hỗ trợ C++17 và GNU Make).
 
+### Chạy trên Windows (MinGW-w64)
+- **Cách nhanh nhất:** Nhấp đúp hoặc chạy script batch có sẵn:
+  ```cmd
+  chay_gui.bat       # Tự động biên dịch và khởi chạy giao diện đồ họa Raylib
+  chay_console.bat   # Tự động biên dịch và khởi chạy giao diện dòng lệnh Console
+  ```
+- **Hoặc qua Make:**
+  ```cmd
+  make app
+  .\build\app.exe
+  .\build\app.exe --console
+  ```
+
+### Chạy trên Linux (cần display X11 cho GUI)
 ```bash
 make -j2
 make app && ./build/app          # GUI raylib
@@ -43,7 +59,9 @@ make app && ./build/app          # GUI raylib
 
 - Chạy binary từ thư mục gốc repo: đường dẫn đọc/ghi đều tương đối (`data/subjects.txt`, `assets/fonts/*.ttf`).
 - Tài khoản chạy thử (lấy từ `data/classes.txt`): giáo viên `GV` / `GV`, sinh viên `SV001` / `pass123`.
-- Link GUI dùng raylib tĩnh: `third_party/raylib-6.2_linux_amd64/lib/libraylib.a -lGL -lm -lpthread -ldl -lrt -lX11`.
+- Link GUI dùng raylib tĩnh:
+  - Linux: `third_party/raylib-6.2_linux_amd64/lib/libraylib.a -lGL -lm -lpthread -ldl -lrt -lX11`
+  - Windows: `third_party/raylib-6.2_win64_mingw-w64/lib/libraylib.a -lopengl32 -lgdi32 -lwinmm`
 
 Kiểm tra bản tối ưu hóa trong thư mục riêng:
 
@@ -55,13 +73,24 @@ make BUILD_DIR=build-release CXXFLAGS="-std=c++17 -Wall -Wextra -Wpedantic -O2 -
 
 Mỗi file test có một `main` riêng, vì vậy không ghép tất cả `tests/*.cpp` vào cùng executable. Makefile đã tạo target riêng. Assert trong các test cũ được giữ hoạt động cả khi build Release.
 
-## Tính năng chính (tính tới v2.1.0)
+## Tính năng chính (tính tới v2.2.2)
 
-- **Giáo viên**: tab môn học (BST) có tìm kiếm lọc theo mã/tên; ngân hàng câu hỏi mở qua nút `Xem` của từng môn; master-detail "Lop hoc & Sinh vien" (lọc lớp, sĩ số, xem toàn trường, thêm/sửa/xóa SV); "Bang diem & Bai thi" theo flow môn → lớp → sinh viên với chi tiết bài thi ngay trong tab.
-- **Sinh viên**: chọn môn thi (tìm kiếm), phòng thi có đồng hồ + nộp bài, kết quả và xem lại từng câu; bảng điểm cá nhân có cột `[Xem]` mở chi tiết.
-- **Cấu hình thi theo môn**: GV đặt số câu + số phút, SV chỉ xem và không tự nhập. Cấu hình lưu bền trên môn học (`Subject.examQuestionCount`/`examMinutes`, 2 cột cuối dòng môn trong `data/subjects.txt`; file cũ 3 cột vẫn đọc được, giá trị 0 = chưa cấu hình).
-- **Xóa lớp còn sinh viên**: modal xác nhận hiện số SV, xác nhận xóa kèm toàn bộ sinh viên của lớp.
-- Chi tiết từng phiên bản xem [CHANGELOG.md](CHANGELOG.md).
+- **Giáo viên**:
+  - **Quản lý Môn học (BST)**: Tìm kiếm lọc theo mã/tên giữ thứ tự duyệt BST; ngân hàng câu hỏi tích hợp trực tiếp qua nút `Xem` kèm nút `Quay lại`.
+  - **Cấu hình thi theo môn học bền vững (v2.2.0)**: Giáo viên cấu hình số câu hỏi và thời gian thi (phút) gắn liền với môn học (`Subject.examQuestionCount`/`examMinutes`). Lưu file 5 cột trong `data/subjects.txt`, tương thích ngược file cũ 3 cột (giá trị 0 = chưa cấu hình).
+  - **Master-detail Lớp học & Sinh viên (v2.1.0 - v2.2.1)**: Cột trái quản lý danh mục lớp (lọc mã, sĩ số, chọn xem toàn trường); cột phải quản lý danh sách sinh viên theo lớp với tìm kiếm MASV/họ tên, phân trang và CRUD tức thì.
+  - **Xóa lớp có sinh viên (v2.2.0)**: Modal xác nhận hiển thị cảnh báo sĩ số; cho phép xóa lớp kèm cascade giải phóng an toàn toàn bộ sinh viên, điểm số và chi tiết bài thi trong Core.
+  - **Bảng điểm & Bài thi (v2.1.0)**: Flow chuẩn môn → lớp → sinh viên, tra cứu điểm và bấm `[Xem]` mở chi tiết bài thi trực tiếp trong tab.
+- **Sinh viên**:
+  - **Chuẩn bị thi & Khóa thi lại (Retake Guard - v2.2.1)**: Đọc cấu hình thi read-only từ môn học; nếu môn chưa được GV cấu hình hoặc sinh viên đã có điểm thi thì nút `Bắt đầu thi ngay` bị khóa kèm hiển thị điểm số đã đạt (quy chế: mỗi SV chỉ thi 1 lần/môn).
+  - **Phòng thi & Đồng hồ đếm ngược**: Hiển thị thời gian thực theo giây, tự động nộp bài khi hết giờ, xác nhận nộp bài.
+  - **Xác nhận hủy phiên dở dang = Tự động nộp bài (v2.2.2)**: Bấm "Hủy phiên thi dở dang" mở modal `MODAL_CANCEL_EXAM` cảnh báo rõ: Hủy phiên sẽ tự động nạp đề và nộp bài qua `submitExamWorkflow` (câu chưa làm chấm SAI), ghi điểm vào hệ thống và khóa quyền thi lại môn học.
+  - **Bảng điểm & Xem lại bài thi**: Bảng điểm cá nhân tích hợp nút `[Xem]` mở chi tiết từng câu hỏi, phương án đã chọn và đáp án đúng.
+- **Tối ưu hóa UI/UX & Nền tảng**:
+  - Widget tìm kiếm gợi ý (`GuiSearchSuggest`) và ô nhập văn bản có con trỏ UTF-8 (click đặt caret, phím Home/End/Arrows).
+  - Chống click xuyên modal (`GuiModalAbsorbsInput`), click chọn hàng lớp thông minh, xử lý chống tràn chữ.
+  - Hỗ trợ biên dịch và chạy test trên cả Windows (MinGW w64) và Linux.
+- Chi tiết từng phiên bản xem [CHANGELOG.md](CHANGELOG.md) và [BAO_CAO_CAP_NHAT.md](BAO_CAO_CAP_NHAT.md).
 
 ## Những điều cần biết khi gọi API
 
