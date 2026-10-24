@@ -3,13 +3,9 @@
 
 #include "BusinessErrors.h"
 
-// ==================== STRING SANITIZATION ====================
-
 void trimString(char str[]);
 void toUpperString(char str[]);
 bool containsWhitespace(const char str[]);
-
-// ==================== VALIDATION HELPERS ====================
 
 BusinessResult validateSubjectId(const char id[]);
 BusinessResult validateSubjectName(const char name[]);

@@ -34,16 +34,14 @@ LoginRole login(
     stringCopy(cleanPassword, password, PASSWORD_LEN);
     trimString(cleanPassword);
 
-    // 1. Kiem tra tai khoan Giang vien co dinh: GV / GV
     if (stringEqual(cleanUsername, "GV") && stringEqual(cleanPassword, "GV")) {
         return LOGIN_TEACHER;
     }
 
-    // 2. Kiem tra tai khoan Sinh vien (tim toan cuc theo MASV)
     if (classes != nullptr && classCount > 0) {
         Student* found = findStudentGlobal(classes, classCount, cleanUsername);
         if (found != nullptr) {
-            // Mat khau duoc so sanh chinh xac (case-sensitive)
+
             if (stringEqual(found->password, cleanPassword)) {
                 loggedStudent = found;
                 return LOGIN_STUDENT;
@@ -92,28 +90,26 @@ BusinessResult loginWorkflow(
 
     toUpperString(cleanUsername);
 
-    // 1. Kiem tra Giang vien
     if (stringEqual(cleanUsername, "GV")) {
         if (stringEqual(cleanPassword, "GV")) {
             role = LOGIN_TEACHER;
             return SUCCESS;
         } else {
-            return ERR_INVALID_FORMAT; // Sai mat khau
+            return ERR_INVALID_FORMAT;
         }
     }
 
-    // 2. Kiem tra Sinh vien
     if (classes == nullptr || classCount <= 0) {
         return ERR_NOT_FOUND;
     }
 
     Student* found = findStudentGlobal(classes, classCount, cleanUsername);
     if (found == nullptr) {
-        return ERR_NOT_FOUND; // Khong tim thay MASV
+        return ERR_NOT_FOUND;
     }
 
     if (!stringEqual(found->password, cleanPassword)) {
-        return ERR_INVALID_FORMAT; // Sai mat khau sinh vien
+        return ERR_INVALID_FORMAT;
     }
 
     role = LOGIN_STUDENT;

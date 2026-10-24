@@ -7,8 +7,6 @@
 #include <cstddef>
 #include <ctime>
 
-// ==================== CORE EXAM PROTOTYPES ====================
-
 bool canTakeExam(
     Subject* subject,
     int numberOfQuestions,
@@ -24,8 +22,6 @@ bool isExamTimeExpired(
     time_t startTime,
     int minutes
 );
-
-// ==================== EXAM TIMER & CLOCK ====================
 
 struct ExamTimer {
     time_t startTime;
@@ -62,8 +58,6 @@ void formatExamTime(
     int bufferSize
 );
 
-// ==================== WORKFLOWS ====================
-
 BusinessResult prepareExamWorkflow(
     Subject* root,
     Student* student,
@@ -85,8 +79,6 @@ BusinessResult submitExamWorkflow(
 void cancelExam(
     ExamDetail*& examQuestionsHead
 );
-
-// ==================== EXAM SESSION PERSISTENCE ====================
 
 bool saveExamSession(
     const char studentId[],
@@ -177,7 +169,6 @@ bool loadExamSession(
     const char* filepath = nullptr
 );
 
-// nullptr_t overloads to resolve literal nullptr ambiguities cleanly
 inline bool saveExamSession(std::nullptr_t, const char*, int, ExamDetail*, const char* = nullptr) {
     return false;
 }
@@ -191,5 +182,3 @@ inline bool removeExamSession(std::nullptr_t, const char* = nullptr) {
 }
 
 #endif
-
-

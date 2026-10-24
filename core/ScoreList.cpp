@@ -7,8 +7,6 @@
 
 using namespace std;
 
-// ==================== EXAM DETAIL HELPERS ====================
-
 static void initializeRandomOnce() {
     static bool initialized = false;
 
@@ -32,7 +30,7 @@ static void swapAnswerText(
 void shuffleExamDetailAnswers(
     ExamDetail* detail
 ) {
-    // A selected letter refers to the current order: never change that order.
+
     if (detail == nullptr || detail->selectedAnswer != '\0') {
         return;
     }
@@ -52,7 +50,6 @@ void shuffleExamDetailAnswers(
         detail->answerD
     };
 
-    // Fisher-Yates shuffle.
     for (int i = 3; i > 0; --i) {
         int j = rand() % (i + 1);
 
@@ -65,8 +62,6 @@ void shuffleExamDetailAnswers(
             answers[j]
         );
 
-        // The text of the correct answer moved with the swap,
-        // so its A/B/C/D position must move as well.
         if (correctIndex == i) {
             correctIndex = j;
         }
@@ -131,8 +126,6 @@ ExamDetail* createExamDetail(
     detail->selectedAnswer = '\0';
     detail->next = nullptr;
 
-    // Shuffle only the copy used for this exam.
-    // The original Question in the subject's question bank is unchanged.
     shuffleExamDetailAnswers(detail);
 
     return detail;
@@ -171,8 +164,6 @@ void deleteExamDetailList(
         delete temp;
     }
 }
-
-// ==================== SCORE ====================
 
 Score* createScore(
     const char subjectId[],
@@ -249,7 +240,6 @@ bool addScore(
         return false;
     }
 
-    // A student may take a subject only once.
     if (findScore(student, subjectId) != nullptr) {
         return false;
     }
@@ -350,7 +340,6 @@ bool deleteScore(
         return false;
     }
 
-    // Xoa node dau
     if (stringEqual(head->subjectId, subjectId)) {
         Score* temp = head;
 
@@ -393,4 +382,3 @@ bool deleteScore(
 
     return true;
 }
-

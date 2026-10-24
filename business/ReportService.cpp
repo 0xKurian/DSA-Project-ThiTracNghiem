@@ -140,11 +140,11 @@ BusinessResult printExamDetailReview(
 
     Score* score = findScore(student, cleanSubId);
     if (score == nullptr) {
-        return ERR_NOT_FOUND; // Sinh vien chua thi mon nay
+        return ERR_NOT_FOUND;
     }
 
     if (score->detailList == nullptr) {
-        return ERR_NOT_FOUND; // Khong co chi tiet bai thi
+        return ERR_NOT_FOUND;
     }
 
     out << "=============================================================\n";

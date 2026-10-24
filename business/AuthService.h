@@ -4,7 +4,6 @@
 #include "../core/Structures.h"
 #include "BusinessErrors.h"
 
-// Ham dang nhap chuan theo FunctionPrototype
 LoginRole login(
     Class* classes[],
     int classCount,
@@ -13,7 +12,6 @@ LoginRole login(
     Student*& loggedStudent
 );
 
-// Workflow dang nhap mo rong tra ve ma loi nghiep vu chi tiet cho UI
 BusinessResult loginWorkflow(
     Class* classes[],
     int classCount,

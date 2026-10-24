@@ -9,9 +9,6 @@
 using namespace std;
 
 int main() {
-    // ==================================================
-    // 1. SUBJECT BST
-    // ==================================================
 
     cout << "=== SUBJECT BST ===\n";
 
@@ -42,11 +39,6 @@ int main() {
     );
 
     printSubjects(root);
-
-
-    // ==================================================
-    // 2. QUESTION LIST + GLOBAL QUESTION ID
-    // ==================================================
 
     cout << "\n=== QUESTION LIST ===\n";
 
@@ -121,11 +113,6 @@ int main() {
         oop->questionList
     );
 
-
-    // ==================================================
-    // 3. EDIT SUBJECT + PRESERVE QUESTIONS
-    // ==================================================
-
     cout << "\n=== EDIT SUBJECT OOP -> AI ===\n";
 
     if (editSubject(
@@ -158,11 +145,6 @@ int main() {
         );
     }
 
-
-    // ==================================================
-    // 4. CLASS ARRAY
-    // ==================================================
-
     cout << "\n=== CLASS ARRAY ===\n";
 
     Class* classes[MAX_CLASS] = {};
@@ -194,11 +176,6 @@ int main() {
         classes,
         classCount
     );
-
-
-    // ==================================================
-    // 5. STUDENT LIST
-    // ==================================================
 
     cout << "\n=== STUDENT LIST ===\n";
 
@@ -247,11 +224,6 @@ int main() {
     cout << "Class D23CQCN02:\n";
     printStudents(c2);
 
-
-    // ==================================================
-    // 6. GLOBAL STUDENT SEARCH
-    // ==================================================
-
     cout << "\n=== GLOBAL STUDENT SEARCH ===\n";
 
     Student* foundStudent =
@@ -270,11 +242,6 @@ int main() {
              << foundStudent->ten
              << '\n';
     }
-
-
-    // ==================================================
-    // 7. GLOBAL DUPLICATE STUDENT CHECK
-    // ==================================================
 
     cout << "\n=== GLOBAL DUPLICATE STUDENT ===\n";
 
@@ -304,11 +271,6 @@ int main() {
             duplicateStudent
         );
     }
-
-
-    // ==================================================
-    // 8. SCORE LIST
-    // ==================================================
 
     cout << "\n=== SCORE LIST ===\n";
 
@@ -343,11 +305,6 @@ int main() {
 
     printScores(s1);
 
-
-    // ==================================================
-    // 9. FIND SCORE
-    // ==================================================
-
     cout << "\n=== FIND SCORE ===\n";
 
     Score* foundScore =
@@ -361,11 +318,6 @@ int main() {
              << foundScore->score
              << '\n';
     }
-
-
-    // ==================================================
-    // 10. DELETE QUESTION
-    // ==================================================
 
     cout << "\n=== DELETE QUESTION ===\n";
 
@@ -385,11 +337,6 @@ int main() {
     printQuestions(
         ctdl->questionList
     );
-
-
-    // ==================================================
-    // 11. DELETE STUDENT WITH SCORE LIST
-    // ==================================================
 
     cout << "\n=== DELETE STUDENT SV001 ===\n";
 
@@ -413,11 +360,6 @@ int main() {
 
     cout << "Remaining students in D23CQCN01:\n";
     printStudents(c1);
-
-
-    // ==================================================
-    // 12. DELETE CLASS WITH STUDENTS + SCORES
-    // ==================================================
 
     cout << "\n=== DELETE CLASS D23CQCN02 ===\n";
 
@@ -445,11 +387,6 @@ int main() {
         cout << "SV003 no longer exists\n";
     }
 
-
-    // ==================================================
-    // 13. CLEANUP CLASSES
-    // ==================================================
-
     cout << "\n=== CLEANUP CLASSES ===\n";
 
     while (classCount > 0) {
@@ -464,11 +401,6 @@ int main() {
         classes,
         classCount
     );
-
-
-    // ==================================================
-    // 14. CLEANUP SUBJECT BST
-    // ==================================================
 
     cout << "\n=== CLEANUP SUBJECTS ===\n";
 
@@ -490,11 +422,6 @@ int main() {
     if (root == nullptr) {
         cout << "Subject tree is empty\n";
     }
-
-
-    // ==================================================
-    // END
-    // ==================================================
 
     cout << "\n=== CORE INTEGRATION TEST PASSED ===\n";
 

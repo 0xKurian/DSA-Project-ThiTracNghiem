@@ -2,8 +2,6 @@
 #include "../core/Constants.h"
 #include "../core/StringUtils.h"
 
-// ==================== STRING SANITIZATION ====================
-
 static bool isSpace(char c) {
   return c == ' ' || c == '\t' || c == '\n' || c == '\r';
 }
@@ -71,8 +69,6 @@ bool containsWhitespace(const char str[]) {
   }
   return false;
 }
-
-// ==================== VALIDATION HELPERS ====================
 
 BusinessResult validateSubjectId(const char id[]) {
   if (id == nullptr || isAllWhitespace(id)) {

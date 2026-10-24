@@ -65,4 +65,3 @@ bool stringEqual(
 ) {
     return stringCompare(a, b) == 0;
 }
-
