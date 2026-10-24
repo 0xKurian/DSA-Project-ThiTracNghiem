@@ -15,15 +15,12 @@
 #include "../core/StudentList.h"
 #include "../core/SubjectBST.h"
 
-
 #include <iostream>
 #include <string>
 #include <limits>
 #include <ctime>
 
 using namespace std;
-
-// ==================== CONSOLE HELPER FUNCTIONS ====================
 
 static void pauseScreen() {
     cout << "\nNhan Enter de tiep tuc...";
@@ -56,8 +53,6 @@ static int readInt(const char* prompt) {
     }
 }
 
-// ==================== SUBJECT SELECTION HELPER ====================
-
 static int countSubjects(Subject* root) {
     if (root == nullptr) return 0;
     return 1 + countSubjects(root->left) + countSubjects(root->right);
@@ -85,8 +80,8 @@ static Subject* selectSubjectFromList(Subject* root) {
     cout << "                    DANH SACH MON HOC                        \n";
     cout << "=============================================================\n";
     for (int i = 0; i < count; ++i) {
-        cout << "[" << (i + 1) << "] " 
-             << subjectList[i]->id << " - " 
+        cout << "[" << (i + 1) << "] "
+             << subjectList[i]->id << " - "
              << subjectList[i]->name << "\n";
     }
     cout << "[0] Huy bo / Quay lai\n";
@@ -111,8 +106,6 @@ static Subject* selectSubjectFromList(Subject* root) {
     return selected;
 }
 
-// ==================== CLASS SELECTION HELPER ====================
-
 static Class* selectClassFromList(Class* classes[], int classCount) {
     if (classes == nullptr || classCount == 0) {
         cout << "-> Danh sach lop hoc hien dang trong!\n";
@@ -124,8 +117,8 @@ static Class* selectClassFromList(Class* classes[], int classCount) {
     cout << "=============================================================\n";
     for (int i = 0; i < classCount; ++i) {
         if (classes[i] != nullptr) {
-            cout << "[" << (i + 1) << "] " 
-                 << classes[i]->id << " - " 
+            cout << "[" << (i + 1) << "] "
+                 << classes[i]->id << " - "
                  << classes[i]->name << "\n";
         }
     }
@@ -148,8 +141,6 @@ static Class* selectClassFromList(Class* classes[], int classCount) {
 
     return selected;
 }
-
-// ==================== STUDENT SELECTION HELPER ====================
 
 static int countStudentsInClass(const Class* c) {
     if (c == nullptr) return 0;
@@ -181,9 +172,9 @@ static Student* selectStudentFromClass(Class* c) {
     cout << "          DANH SACH SINH VIEN LOP " << c->id << "\n";
     cout << "=============================================================\n";
     for (int i = 0; i < total; ++i) {
-        cout << "[" << (i + 1) << "] " 
-             << studentArr[i]->id << " - " 
-             << studentArr[i]->ho << " " << studentArr[i]->ten 
+        cout << "[" << (i + 1) << "] "
+             << studentArr[i]->id << " - "
+             << studentArr[i]->ho << " " << studentArr[i]->ten
              << " (" << studentArr[i]->gender << ")\n";
     }
     cout << "[0] Huy bo / Quay lai\n";
@@ -207,8 +198,6 @@ static Student* selectStudentFromClass(Class* c) {
     delete[] studentArr;
     return selected;
 }
-
-// ==================== TEACHER SUB-MENUS ====================
 
 static void teacherSubjectMenu(Subject*& root, Class* classes[], int classCount) {
     while (true) {
@@ -691,10 +680,8 @@ static void teacherMenu(Subject*& root, Class* classes[], int& classCount) {
     }
 }
 
-// ==================== STUDENT MENU & EXAM SESSION ====================
-
 static void runExamLoop(
-    Subject* /*root*/,
+    Subject* ,
     Student* student,
     const string& subId,
     ExamDetail* examHead,
@@ -704,11 +691,10 @@ static void runExamLoop(
     ExamTimer timer;
     timer.resume(initialRemainingSeconds);
 
-    cout << "\n>>> DANG THI MON " << subId << " (" << totalQuestions << " cau, con " 
+    cout << "\n>>> DANG THI MON " << subId << " (" << totalQuestions << " cau, con "
          << (initialRemainingSeconds / 60) << " phut " << (initialRemainingSeconds % 60) << " giay) <<<\n";
     cout << "Nhap A, B, C, D de chon dap an. Nhap N (Next), P (Prev), S (Submit - Nop bai).\n";
 
-    // Chuyen linked list thanh mang con tro de de dang dieu huong Cau tiep / Cau truoc
     ExamDetail** questionRefs = new ExamDetail*[totalQuestions];
     ExamDetail* cur = examHead;
     int count = 0;
@@ -717,7 +703,6 @@ static void runExamLoop(
         cur = cur->next;
     }
 
-    // Luu trang thai phien thi ban dau
     saveExamSession(student->id, subId.c_str(), timer.getRemainingSeconds(), examHead);
 
     int currentIdx = 0;
@@ -790,13 +775,12 @@ static void runExamLoop(
 
     delete[] questionRefs;
 
-    // Nop bai va tinh diem
     float finalScore = 0.0f;
     int correctCount = 0;
     int totalCount = 0;
 
     BusinessResult subRes = submitExamWorkflow(student, subId.c_str(), examHead, finalScore, correctCount, totalCount);
-    // removeExamSession tu dong xoa file tam ngay khi nop bai thanh cong
+
     removeExamSession(student->id);
 
     if (subRes == SUCCESS) {
@@ -815,13 +799,13 @@ static void runExamLoop(
 }
 
 static void takeExamSession(Subject* root, Student* student) {
-    // 1. Kiem tra xem SV co file thi do dang tu truoc khong
+
     char pendSubId[SUBJECT_ID_LEN] = {};
     int pendSeconds = 0;
     if (checkExamSession(student->id, pendSubId, pendSeconds)) {
         cout << "\n=============================================================\n";
         cout << " [THONG BAO] Tim thay phien thi do dang chua hoan thanh:\n";
-        cout << " Mon thi: " << pendSubId << " | Thoi gian con lai: " 
+        cout << " Mon thi: " << pendSubId << " | Thoi gian con lai: "
              << (pendSeconds / 60) << " phut " << (pendSeconds % 60) << " giay\n";
         cout << "=============================================================\n";
         string resumeChoice = readLine("Ban co muon tiep tuc lam tiep phien thi nay? (Y/N): ");
@@ -851,7 +835,6 @@ static void takeExamSession(Subject* root, Student* student) {
         }
     }
 
-    // 2. Chuan bi bat dau bai thi moi
     Subject* targetSub = selectSubjectFromList(root);
     if (targetSub == nullptr) {
         pauseScreen();
@@ -894,7 +877,6 @@ static void takeExamSession(Subject* root, Student* student) {
     runExamLoop(root, student, subId, examHead, minutes * 60, numQuestions);
 }
 
-
 static void studentMenu(Subject* root, Student* student) {
     while (true) {
         cout << "\n=============================================================\n";
@@ -935,8 +917,6 @@ static void studentMenu(Subject* root, Student* student) {
         }
     }
 }
-
-// ==================== MAIN APPLICATION RUNNER ====================
 
 void runConsoleApp() {
     Subject* root = nullptr;
@@ -993,7 +973,6 @@ void runConsoleApp() {
             } else if (role == LOGIN_STUDENT && loggedStudent != nullptr) {
                 cout << "\n-> Xin chao Sinh vien: " << loggedStudent->ho << " " << loggedStudent->ten << "!\n";
 
-                // Kiem tra xem SV nay co file thi do dang khong khi vua dang nhap
                 char pendSub[SUBJECT_ID_LEN] = {};
                 int pendSec = 0;
                 if (checkExamSession(loggedStudent->id, pendSub, pendSec)) {
@@ -1010,7 +989,6 @@ void runConsoleApp() {
         }
     }
 
-    // Giai phong bo nho dong truoc khi ket thuc (Deep Cleanup)
     cout << "Dang giai phong bo nho RAM...\n";
     while (classCount > 0) {
         deleteClass(classes, classCount, classes[0]->id);

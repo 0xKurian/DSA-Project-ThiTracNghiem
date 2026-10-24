@@ -5,7 +5,6 @@
 #include "../core/ClassArray.h"
 #include "../core/StudentList.h"
 
-
 int main() {
     Class* classes[MAX_CLASS] = {};
     int classCount = 0;

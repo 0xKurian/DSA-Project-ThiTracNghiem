@@ -1,13 +1,11 @@
-// phong thi: lam bai + dong ho tu dong nop; modal xac nhan nop cung o day
 #include "GuiCommon.h"
 #include "GuiState.h"
 
 #include "../business/BusinessErrors.h"
-#include "../business/ExamService.h"    // saveExamSession, submitExamWorkflow, removeExamSession
-#include "../business/FileStorage.h"    // saveAllData
+#include "../business/ExamService.h"
+#include "../business/FileStorage.h"
 
 #include <cstdio>
-
 
 void updateExamSession(GuiState& g, float dt) {
     if (g.currentScreen != SCREEN_STUDENT_EXAM) return;
@@ -18,10 +16,10 @@ void updateExamSession(GuiState& g, float dt) {
 
     if (g.examRemainingSeconds > 0) {
         g.examRemainingSeconds--;
-        // luu moi giay, dong app mo thi van thi lai duoc
+
         saveExamSession(g.loggedStudent->id, g.activeExamSubId.c_str(), g.examRemainingSeconds, g.examHead);
     } else {
-        // Hết giờ: tự động nộp bài
+
         g.currentModal = MODAL_NONE;
         submitExamWorkflow(g.loggedStudent, g.activeExamSubId.c_str(), g.examHead, g.lastScore, g.lastCorrect, g.lastTotal);
         removeExamSession(g.loggedStudent->id);
@@ -34,7 +32,7 @@ void updateExamSession(GuiState& g, float dt) {
 }
 
 void drawExamRoom(GuiState& g) {
-    // Thanh cong cu: mon thi + dong ho + nut nop bai
+
     DrawRectangle(0, 0, GUI_WIDTH, 70, COLOR_SIDEBAR);
     DrawTxt(TextFormat("BAI THI MON: %s", g.activeExamSubId.c_str()), 30, 22, 22, WHITE, true);
 
@@ -48,7 +46,6 @@ void drawExamRoom(GuiState& g) {
         g.currentModal = MODAL_CONFIRM_SUBMIT;
     }
 
-    // Khung noi dung cau hoi hien thi
     Rectangle qPane = { 30, 95, 840, (float)(GUI_HEIGHT - 125) };
     DrawCardPanel(qPane);
 
@@ -87,7 +84,6 @@ void drawExamRoom(GuiState& g) {
         }
     }
 
-    // Di chuyen giua cac cau
     if (g.currentExamQuestionIdx > 0) {
         if (GuiBtnOutline({ qPane.x + 30, qPane.y + qPane.height - 60, 150, 42 }, "< Cau truoc", COLOR_PRIMARY, COLOR_PRIMARY, 15, true)) {
             g.currentExamQuestionIdx--;
@@ -99,7 +95,6 @@ void drawExamRoom(GuiState& g) {
         }
     }
 
-    // Luoi danh sach cau hoi ben phai
     Rectangle gridPane = { 890, 95, (float)(GUI_WIDTH - 920), (float)(GUI_HEIGHT - 125) };
     DrawCardPanel(gridPane);
 
@@ -136,7 +131,7 @@ void drawExamRoom(GuiState& g) {
 }
 
 void drawExamSubmitConfirmDialog(GuiState& g) {
-    // The modal dat o trung tam man hinh
+
     Rectangle modalRec = { (float)(GUI_WIDTH / 2 - 250), (float)(GUI_HEIGHT / 2 - 180), 500, 360 };
     DrawCardPanel(modalRec);
     DrawTxt("XAC NHAN NOP BAI THI", modalRec.x + 30, modalRec.y + 30, 20, COLOR_WARNING, true);

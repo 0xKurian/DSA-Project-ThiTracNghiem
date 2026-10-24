@@ -1,15 +1,9 @@
 #ifndef GUI_STATE_H
 #define GUI_STATE_H
 
-// trang thai cua UI do hoa, truyen tham chieu GuiState& cho cac module man hinh.
-//phan chia man hinh theo file (ten ham cung ten):
-//   dang nhap : GuiScreenLogin.cpp
-//   gv        : GuiScreenAdmin.cpp + GuiAdmin<tab>.cpp (moi tab 1 cau truc du lieu)
-//   sinh vien : GuiScreenStudent.cpp + GuiExam<buoc>.cpp
-//   modal      : GuiModalDialogs.cpp | main loop: GuiApp.cpp
 #include "../core/Constants.h"
-#include "../core/ClassArray.h"   // MAX_CLASS
-#include "../core/Structures.h"   // Subject, Class, Student, ExamDetail, LoginRole
+#include "../core/ClassArray.h"
+#include "../core/Structures.h"
 
 #include <cstdio>
 #include <cstring>
@@ -43,10 +37,10 @@ enum ModalType {
 };
 
 struct GuiState {
-    Subject* root;                     // goc BST mon hoc
-    Class* classes[MAX_CLASS];         // toi da MAX_CLASS lop
+    Subject* root;
+    Class* classes[MAX_CLASS];
     int classCount;
-    std::vector<Subject*> subjects;    // danh sach mon xay dung moi frame (dung de phan trang)
+    std::vector<Subject*> subjects;
 
     ScreenState currentScreen;
     LoginRole currentRole;
@@ -74,9 +68,9 @@ struct GuiState {
     int scorePage;
     int reviewQPage;
     int selectedSubjectIdx;
-    int selectedClassIdx;              // cot trai master-detail; -1 = chua chon lop
+    int selectedClassIdx;
 
-    bool classShowAll;                 // cot phai: xem toan bo sinh vien
+    bool classShowAll;
     char searchSubject[64];
     bool activeSearchSubject;
     char searchClass[64];
@@ -92,22 +86,22 @@ struct GuiState {
     char searchPrepare[64];
     bool activeSearchPrepare;
 
-    char reviewSubjectId[SUBJECT_ID_LEN];   // mon dang chon o tab diem
-    char reviewClassId[CLASS_ID_LEN];       // lop dang chon
-    char reviewStudentId[STUDENT_ID_LEN];   // sinh vien dang chon
+    char reviewSubjectId[SUBJECT_ID_LEN];
+    char reviewClassId[CLASS_ID_LEN];
+    char reviewStudentId[STUDENT_ID_LEN];
     bool reviewDetailOpen;
 
-    char formClassId[CLASS_ID_LEN + 4];     // lop cua sinh vien trong modal sua/xoa
-    char configSubjectId[SUBJECT_ID_LEN];   // mon dang cau hinh trong modal
+    char formClassId[CLASS_ID_LEN + 4];
+    char configSubjectId[SUBJECT_ID_LEN];
     char formExamQ[8];
     char formExamMinutes[16];
 
     int studentTab;
     int studentSubChoice;
-    int studentReviewScoreIdx = -1;        // -1: dang xem bang diem, >=0: dang mo chi tiet bai thi
+    int studentReviewScoreIdx = -1;
 
-    ExamDetail* examHead;                   // DSLK cac cau thi
-    std::vector<ExamDetail*> examList;      // cau thi tra theo chi muc
+    ExamDetail* examHead;
+    std::vector<ExamDetail*> examList;
     int currentExamQuestionIdx;
     std::string activeExamSubId;
     int examRemainingSeconds;

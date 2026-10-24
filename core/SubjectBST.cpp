@@ -51,8 +51,7 @@ Subject* insertSubject(
         root->right = insertSubject(root->right, subject);
     }
     else if (subject != root) {
-        // insertSubject nhan quyen so huu node duoc truyen vao.
-        // Neu trung ma mon, giai phong node moi de tranh memory leak.
+
         deleteQuestionList(subject->questionList);
         delete subject;
     }
@@ -147,7 +146,7 @@ Subject* deleteSubject(
         );
     }
     else {
-        // Khong co con trai
+
         if (root->left == nullptr) {
             Subject* temp = root->right;
 
@@ -160,7 +159,6 @@ Subject* deleteSubject(
             return temp;
         }
 
-        // Khong co con phai
         if (root->right == nullptr) {
             Subject* temp = root->left;
 
@@ -173,7 +171,6 @@ Subject* deleteSubject(
             return temp;
         }
 
-        // Co 2 con
         Subject* successor =
             findMinSubject(root->right);
 
@@ -213,7 +210,7 @@ bool editSubject(
     const char newId[],
     const char newName[]
 ) {
-    // Never truncate a key after checking uniqueness or deleting the old node.
+
     if (!isValidIdentifier(newId, SUBJECT_ID_LEN)) {
         return false;
     }
@@ -224,7 +221,6 @@ bool editSubject(
         return false;
     }
 
-    // Khong doi ma mon, chi cap nhat ten.
     if (stringEqual(oldId, newId)) {
         stringCopy(
             subject->name,
@@ -234,12 +230,10 @@ bool editSubject(
         return true;
     }
 
-    // Khong cho doi sang ma mon da ton tai.
     if (findSubject(root, newId) != nullptr) {
         return false;
     }
 
-    // Tao node moi va giu lai danh sach cau hoi.
     Subject* newSubject = createSubject(
         newId,
         newName
@@ -248,16 +242,13 @@ bool editSubject(
     newSubject->questionList =
         subject->questionList;
 
-    // Khong cho deleteSubject xoa questionList nay.
     subject->questionList = nullptr;
 
-    // Xoa node cu khoi BST.
     root = deleteSubject(
         root,
         oldId
     );
 
-    // Chen node moi vao dung vi tri BST.
     root = insertSubject(
         root,
         newSubject
@@ -265,5 +256,3 @@ bool editSubject(
 
     return true;
 }
-
-

@@ -1,4 +1,3 @@
-// cai dat widget trong GuiCommon.h
 #include "GuiCommon.h"
 
 #include "../core/QuestionList.h"
@@ -17,7 +16,6 @@ static Font gFontBold;
 static bool gModalOpen = false;
 static bool gInsideModal = false;
 
-// dropdown goi y ve sau cac widget khac, nen phai chan click cho khung hinh ke tiep
 static bool gShieldPrev = false;
 static bool gShieldCur = false;
 static Rectangle gShieldPrevRec = { 0, 0, 0, 0 };
@@ -49,17 +47,17 @@ bool GuiModalAbsorbsInput() {
 
 static std::vector<int> getVietnameseCodepoints() {
     std::vector<int> cps;
-    // ASCII co ban: 32..126
+
     for (int i = 32; i <= 126; ++i) cps.push_back(i);
-    // Latin-1 Supplement: 160..255 (a, a, a, a, e, e, e, i, i, o, o, o, u, u, y, ...)
+
     for (int i = 160; i <= 255; ++i) cps.push_back(i);
-    // Latin Extended-A: 0x0100..0x017F (D = 0x0110, d = 0x0111, a, A, ...)
+
     for (int i = 0x0100; i <= 0x017F; ++i) cps.push_back(i);
-    // Latin Extended-B: 0x01A0..0x01B0 (o, u, O, U)
+
     for (int i = 0x01A0; i <= 0x01B0; ++i) cps.push_back(i);
-    // Latin Extended Additional: 0x1EA0..0x1EF9 (ky tu tieng Viet co dau to hop san)
+
     for (int i = 0x1EA0; i <= 0x1EF9; ++i) cps.push_back(i);
-    // Dau cau thong dung: 0x2010..0x2026
+
     for (int i = 0x2010; i <= 0x2026; ++i) cps.push_back(i);
     return cps;
 }
@@ -190,7 +188,6 @@ bool GuiBtnOutline(Rectangle rec, const char* text, Color borderColor, Color tex
     return false;
 }
 
-// do dai byte cua ky tu utf8 bat dau tai s
 static int utf8CharLen(const char* s) {
     unsigned char c = (unsigned char)s[0];
     if (c < 0x80) return 1;
@@ -223,7 +220,6 @@ static int utf8CountBefore(const char* s, int pos) {
     return cps;
 }
 
-// do rong hien thi cua phan chuoi truoc vi tri byte (mat khau thay bang '*')
 static float displayWidthBefore(const char* buf, int bytePos, bool isPassword) {
     if (!isPassword) {
         std::string prefix(buf, bytePos);
@@ -232,7 +228,6 @@ static float displayWidthBefore(const char* buf, int bytePos, bool isPassword) {
     return (float)utf8CountBefore(buf, bytePos) * MeasureTxt("*", 16.0f);
 }
 
-// moi luc chi co 1 o nhap active nen chi can 1 con tro
 static char* gCaretBuf = nullptr;
 static int gCaretByte = 0;
 
@@ -250,7 +245,6 @@ void GuiTextBoxInput(Rectangle rec, char textBuffer[], int maxLen, bool& isActiv
                 float scroll = caretW > textMaxW ? caretW - textMaxW : 0.0f;
                 float localX = mouse.x - (rec.x + 12.0f) + scroll;
 
-                // chon diem chen gan vi tri chuot nhat
                 int chosen = 0;
                 float bestDist = -1.0f;
                 int i = 0;
@@ -435,10 +429,9 @@ bool GuiMatchText(const char* text, const char* query) {
 int GuiSearchSuggest(Rectangle rec, char* query, int capacity, bool& active,
                      const std::vector<SuggestItem>& items, int currentValue,
                      const char* placeholder, bool* textChanged) {
-    // click vao dong goi y lam textbox mat focus ngay trong frame; nho trang thai truoc do
-    // de van xu ly duoc click chon dong ben duoi
+
     bool wasActive = active;
-    (void)currentValue; // khong to mau rieng cho muc dang chon nua
+    (void)currentValue;
     size_t lenBefore = strlen(query);
     GuiTextBoxInput(rec, query, capacity, active, placeholder);
     if (textChanged != nullptr) *textChanged = (strlen(query) != lenBefore);
@@ -463,7 +456,6 @@ int GuiSearchSuggest(Rectangle rec, char* query, int capacity, bool& active,
     Rectangle panel = { rec.x, rec.y + rec.height + 2.0f, panelW, shown * rowH + 8.0f };
     if (matches.empty()) panel.height = rowH + 8.0f;
 
-    // vung chan click chi co hieu luc tu khung hinh sau (widget ve sau cac nut)
     gShieldCur = true;
     gShieldCurRec = panel;
 

@@ -19,8 +19,6 @@
 #define CREATE_DIR(d) mkdir(d, 0755)
 #endif
 
-// ==================== INTERNAL HELPER FUNCTIONS ====================
-
 static void trimLine(std::string& s) {
     while (!s.empty() && (s.back() == '\r' || s.back() == '\n' || s.back() == ' ' || s.back() == '\t')) {
         s.pop_back();
@@ -84,8 +82,6 @@ static int countSubjectsInTree(Subject* root) {
     return 1 + countSubjectsInTree(root->left) + countSubjectsInTree(root->right);
 }
 
-// ==================== SUBJECT QUESTION FILE UTILITIES ====================
-
 bool createEmptyQuestionFile(const char* dir, const char* subjectId) {
     if (subjectId == nullptr || stringLength(subjectId) == 0) return false;
     if (dir != nullptr && stringLength(dir) > 0) {
@@ -94,7 +90,7 @@ bool createEmptyQuestionFile(const char* dir, const char* subjectId) {
     std::string path = getSubjectQuestionFilePath(dir ? dir : "", subjectId);
     std::ifstream check(path);
     if (check.is_open()) {
-        return true; // Already exists
+        return true;
     }
     std::ofstream out(path);
     return out.is_open();
@@ -107,7 +103,6 @@ bool renameSubjectQuestionFile(const char* dir, const char* oldId, const char* n
     std::string oldPath = getSubjectQuestionFilePath(dir ? dir : "", oldId);
     std::string newPath = getSubjectQuestionFilePath(dir ? dir : "", newId);
 
-    // If new file already exists, remove it before rename (needed on Windows)
     std::ifstream checkNew(newPath);
     if (checkNew.is_open()) {
         checkNew.close();
@@ -116,7 +111,7 @@ bool renameSubjectQuestionFile(const char* dir, const char* oldId, const char* n
 
     std::ifstream checkOld(oldPath);
     if (!checkOld.is_open()) {
-        // If old file did not exist, just create the new empty file
+
         return createEmptyQuestionFile(dir, newId);
     }
     checkOld.close();
@@ -129,13 +124,11 @@ bool deleteSubjectQuestionFile(const char* dir, const char* subjectId) {
     std::string path = getSubjectQuestionFilePath(dir ? dir : "", subjectId);
     std::ifstream check(path);
     if (!check.is_open()) {
-        return true; // File does not exist, consider deleted
+        return true;
     }
     check.close();
     return (std::remove(path.c_str()) == 0);
 }
-
-// ==================== SUBJECT & QUESTION PERSISTENCE ====================
 
 static void writeSubjectsRecursive(Subject* node, std::ostream& out, const std::string& dir) {
     if (node == nullptr) return;
@@ -143,14 +136,13 @@ static void writeSubjectsRecursive(Subject* node, std::ostream& out, const std::
     writeSubjectsRecursive(node->left, out, dir);
 
     int qCount = countQuestions(node->questionList);
-    // Dòng môn học trong subjects.txt: MAMH|TENMH|SO_CAU_HOI|EXAM_QUESTION_COUNT|EXAM_MINUTES
+
     out << node->id << "|" << node->name << "|" << qCount << "|"
         << node->examQuestionCount << "|" << node->examMinutes << "\n";
 
-    // Ghi trực tiếp toàn bộ câu hỏi của môn này vào file subjects.txt
     Question* q = node->questionList;
     while (q != nullptr) {
-        // ID|Nội dung|Đáp án A|Đáp án B|Đáp án C|Đáp án D|Đáp án đúng
+
         out << q->id << "|"
             << q->content << "|"
             << q->answerA << "|"
@@ -212,8 +204,7 @@ bool loadSubjectsFromFile(Subject*& root, const char* filepath) {
         if (subLine.empty()) break;
 
         if (subLine.find('|') != std::string::npos) {
-            // Định dạng mới: MAMH|TENMH|SO_CAU_HOI|EXAM_QUESTION_COUNT|EXAM_MINUTES
-            // Định dạng cũ: MAMH|TENMH|SO_CAU_HOI hoặc MAMH|TENMH
+
             std::string tokens[5];
             int cnt = splitPipe(subLine, tokens, 5);
             std::string subId = tokens[0];
@@ -261,7 +252,7 @@ bool loadSubjectsFromFile(Subject*& root, const char* filepath) {
             }
 
             if (qCountInline >= 0) {
-                // Đọc trực tiếp các câu hỏi từ chính file subjects.txt
+
                 for (int j = 0; j < qCountInline; ++j) {
                     std::string qLine;
                     if (!std::getline(in, qLine)) break;
@@ -317,7 +308,7 @@ bool loadSubjectsFromFile(Subject*& root, const char* filepath) {
                     }
                 }
             } else {
-                // Tương thích ngược: Đọc câu hỏi từ file riêng dir/<MAMH>.txt
+
                 std::string qPath = getSubjectQuestionFilePath(dir, subId.c_str());
                 std::ifstream qIn(qPath);
                 if (qIn.is_open()) {
@@ -375,7 +366,7 @@ bool loadSubjectsFromFile(Subject*& root, const char* filepath) {
                 }
             }
         } else {
-            // Backward-compatible: Old multi-line format
+
             std::string subId = subLine;
             std::string subName, qCountStr;
             if (!std::getline(in, subName)) break;
@@ -454,8 +445,6 @@ bool loadSubjectsFromFile(Subject*& root, const char* filepath) {
     return true;
 }
 
-// ==================== CLASS, STUDENT & SCORE PERSISTENCE ====================
-
 bool saveClassesToFile(Class* classes[], int classCount, const char* filepath) {
     if (filepath == nullptr) return false;
 
@@ -476,7 +465,6 @@ bool saveClassesToFile(Class* classes[], int classCount, const char* filepath) {
         out << c->id << "\n";
         out << c->name << "\n";
 
-        // Đếm sinh viên
         int studentCount = 0;
         Student* s = c->studentList;
         while (s != nullptr) {
@@ -487,7 +475,7 @@ bool saveClassesToFile(Class* classes[], int classCount, const char* filepath) {
 
         s = c->studentList;
         while (s != nullptr) {
-            // Đếm số môn đã thi
+
             int scoreCount = 0;
             Score* sc = s->scoreList;
             while (sc != nullptr) {
@@ -495,7 +483,6 @@ bool saveClassesToFile(Class* classes[], int classCount, const char* filepath) {
                 sc = sc->next;
             }
 
-            // Ghi sinh viên dạng: MASV|Ho|Ten|Phai|Pass|ScoreCount
             out << s->id << "|"
                 << s->ho << "|"
                 << s->ten << "|"
@@ -508,7 +495,6 @@ bool saveClassesToFile(Class* classes[], int classCount, const char* filepath) {
                 out << sc->subjectId << "\n";
                 out << sc->score << "\n";
 
-                // Đếm exam detail snapshot
                 int detailCount = 0;
                 ExamDetail* d = sc->detailList;
                 while (d != nullptr) {
@@ -520,7 +506,7 @@ bool saveClassesToFile(Class* classes[], int classCount, const char* filepath) {
                 d = sc->detailList;
                 while (d != nullptr) {
                     char sel = (d->selectedAnswer == '\0') ? '-' : d->selectedAnswer;
-                    // Ghi câu hỏi snapshot dạng: ID|Content|A|B|C|D|Correct|Selected
+
                     out << d->questionId << "|"
                         << d->content << "|"
                         << d->answerA << "|"
@@ -601,7 +587,7 @@ bool loadClassesFromFile(Class* classes[], int& classCount, const char* filepath
 
             std::string sId, ho, ten, gender, pass, scoreCountStr;
             if (sLine.find('|') != std::string::npos) {
-                // Định dạng mới: MASV|Ho|Ten|Phai|Pass|ScoreCount (6 tokens)
+
                 std::string sTokens[6];
                 int sTokCount = splitPipe(sLine, sTokens, 6);
                 sId = sTokens[0];
@@ -611,7 +597,7 @@ bool loadClassesFromFile(Class* classes[], int& classCount, const char* filepath
                 pass = (sTokCount > 4) ? sTokens[4] : "";
                 scoreCountStr = (sTokCount > 5) ? sTokens[5] : "0";
             } else {
-                // Định dạng cũ: 6 dòng rời rạc
+
                 sId = sLine;
                 if (!std::getline(in, ho)) break;
                 if (!std::getline(in, ten)) break;
@@ -691,7 +677,7 @@ bool loadClassesFromFile(Class* classes[], int& classCount, const char* filepath
 
                     std::string qIdStr, content, a, b, c, d, correctStr, selectedStr;
                     if (dLine.find('|') != std::string::npos) {
-                        // Định dạng mới: ID|Content|A|B|C|D|Correct|Selected (8 tokens)
+
                         std::string dTokens[8];
                         int dTokCount = splitPipe(dLine, dTokens, 8);
                         qIdStr = dTokens[0];
@@ -703,7 +689,7 @@ bool loadClassesFromFile(Class* classes[], int& classCount, const char* filepath
                         correctStr = (dTokCount > 6) ? dTokens[6] : "A";
                         selectedStr = (dTokCount > 7) ? dTokens[7] : "-";
                     } else {
-                        // Định dạng cũ: 8 dòng
+
                         qIdStr = dLine;
                         if (!std::getline(in, content)) break;
                         if (!std::getline(in, a)) break;
@@ -757,8 +743,6 @@ bool loadClassesFromFile(Class* classes[], int& classCount, const char* filepath
     in.close();
     return true;
 }
-
-// ==================== GLOBAL PERSISTENCE ====================
 
 bool saveAllData(
     Subject* root,

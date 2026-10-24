@@ -20,7 +20,6 @@ static void cleanupTree(Subject*& root) {
 int main() {
     cout << "=== Running test_subject_exam_config ===\n";
 
-    // 1. createSubject initializes both fields to 0
     Subject* s1 = createSubject("MATH", "Toan hoc");
     assert(s1 != nullptr);
     assert(s1->examQuestionCount == 0);
@@ -29,7 +28,6 @@ int main() {
     Subject* root = nullptr;
     root = insertSubject(root, s1);
 
-    // Add 20 questions to MATH
     for (int i = 1; i <= 20; ++i) {
         Question* q = createQuestion(
             i,
@@ -42,13 +40,11 @@ int main() {
     }
     assert(countQuestions(s1->questionList) == 20);
 
-    // 2. Setting 10 questions / 15 minutes returns SUCCESS and saves values
     BusinessResult r = setExamConfigWorkflow(root, "MATH", 10, 15);
     assert(r == SUCCESS);
     assert(s1->examQuestionCount == 10);
     assert(s1->examMinutes == 15);
 
-    // 3. questionCount: 0, -5, 21 return ERR_CONSTRAINT_VIOLATION and do not alter old config
     r = setExamConfigWorkflow(root, "MATH", 0, 15);
     assert(r == ERR_CONSTRAINT_VIOLATION);
     assert(s1->examQuestionCount == 10);
@@ -64,7 +60,6 @@ int main() {
     assert(s1->examQuestionCount == 10);
     assert(s1->examMinutes == 15);
 
-    // 4. minutes: 0, 181 return ERR_CONSTRAINT_VIOLATION and do not alter old config
     r = setExamConfigWorkflow(root, "MATH", 10, 0);
     assert(r == ERR_CONSTRAINT_VIOLATION);
     assert(s1->examQuestionCount == 10);
@@ -75,7 +70,6 @@ int main() {
     assert(s1->examQuestionCount == 10);
     assert(s1->examMinutes == 15);
 
-    // 5. Non-existent ID, nullptr, empty string, and root == nullptr return ERR_NOT_FOUND without crash
     r = setExamConfigWorkflow(root, "NONEXIST", 10, 15);
     assert(r == ERR_NOT_FOUND);
 
@@ -92,12 +86,10 @@ int main() {
     r = setExamConfigWorkflow(nullRoot, "MATH", 10, 15);
     assert(r == ERR_NOT_FOUND);
 
-    // 6. Save and re-read 5-column file preserves config and questions
     const char* temp5ColPath = "test_fixture_5col.txt";
     bool saved = saveSubjectsToFile(root, temp5ColPath);
     assert(saved);
 
-    // Verify 5 columns in file content
     {
         ifstream checkFile(temp5ColPath);
         assert(checkFile.is_open());
@@ -120,7 +112,6 @@ int main() {
     cleanupTree(loadedRoot5);
     remove(temp5ColPath);
 
-    // 7. Read 3-column fixture sets config to 0; saving creates 5-column line and questions can still be read
     const char* temp3ColPath = "test_fixture_3col.txt";
     {
         ofstream out(temp3ColPath);

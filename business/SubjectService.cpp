@@ -102,7 +102,6 @@ BusinessResult editSubjectWorkflow(
     stringCopy(cleanNewName, newName, SUBJECT_NAME_LEN);
     trimString(cleanNewName);
 
-    // Neu thay doi ma mon, kiem tra rang buoc toan ven va trung lap
     if (!stringEqual(cleanOldId, cleanNewId)) {
         if (isSubjectUsedInScores(classes, classCount, cleanOldId)) {
             return ERR_CONSTRAINT_VIOLATION;
@@ -136,7 +135,6 @@ BusinessResult deleteSubjectWorkflow(
         return ERR_NOT_FOUND;
     }
 
-    // Khong duoc xoa mon hoc khi da phat sinh diem thi trong he thong
     if (isSubjectUsedInScores(classes, classCount, cleanId)) {
         return ERR_CONSTRAINT_VIOLATION;
     }

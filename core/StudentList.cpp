@@ -114,7 +114,6 @@ bool deleteStudent(
         return false;
     }
 
-    // Xoa node dau
     if (stringEqual(head->id, studentId)) {
         Student* temp = head;
 

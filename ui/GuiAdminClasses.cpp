@@ -1,13 +1,9 @@
-// tab lop hoc + sinh vien theo lop: master-detail 2 cot (mang con tro classes[])
 #include "GuiCommon.h"
 #include "GuiState.h"
 
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
-
-// cot trai: danh muc lop (loc + phan trang), cot phai: sinh vien cua lop dang chon
-// hoac toan bo sinh vien khi bat "Tat ca cac lop"
 
 static int countStudents(Class* classroom) {
     int n = 0;
@@ -40,7 +36,6 @@ void drawAdminTabClasses(GuiState& g) {
     DrawCardPanel(leftPane);
     DrawCardPanel(rightPane);
 
-    // ================= COT TRAI: DANH MUC LOP =================
     DrawTxt("DANH MUC LOP", leftPane.x + 12, leftPane.y + 14, 16, COLOR_TEXT_DARK, true);
     if (GuiBtn({ leftPane.x + 10, leftPane.y + 40, leftPane.width - 20, 34 }, "+ Them Lop Hoc", COLOR_SUCCESS, COLOR_SUCCESS_HOVER, WHITE, 14, true)) {
         g.currentModal = MODAL_ADD_CLASS;
@@ -55,7 +50,6 @@ void drawAdminTabClasses(GuiState& g) {
     GuiTextBoxInput(classSearchRec, g.searchClass, sizeof(g.searchClass), g.activeSearchClass, "Tim theo ma hoac ten lop...");
     if (strlen(g.searchClass) != classLenBefore) g.classPage = 0;
 
-    // loc + xep tang dan theo ma lop
     std::vector<int> classView;
     for (int i = 0; i < g.classCount; ++i) {
         if (g.classes[i] == nullptr) continue;
@@ -113,7 +107,6 @@ void drawAdminTabClasses(GuiState& g) {
         DrawTxt(cls->name, row.x + 10, row.y + 30, 13, COLOR_TEXT_MUTED);
         EndScissorMode();
 
-        // nut Xoa o goc dau hang; khong con nut Xem (click ca hang de chon lop)
         Rectangle xoaRec = { row.x + 8, row.y + 48, 62, 24 };
         if (GuiBtnOutline(xoaRec, "Xoa", COLOR_DANGER, COLOR_DANGER, 13)) {
             g.currentModal = MODAL_DELETE_CLASS;
@@ -122,7 +115,6 @@ void drawAdminTabClasses(GuiState& g) {
             g.modalError[0] = '\0';
         }
 
-        // click vao vung trong cua row cung chon lop (khong danh cho nut Xoa)
         Vector2 mouse = GetMousePosition();
         Rectangle clickArea = { row.x, row.y, row.width, row.height };
         if (!GuiModalAbsorbsInput() && CheckCollisionPointRec(mouse, clickArea)
@@ -143,7 +135,6 @@ void drawAdminTabClasses(GuiState& g) {
         if (g.classPage < totalClassPages - 1) g.classPage++;
     }
 
-    // ================= COT PHAI: SINH VIEN =================
     bool haveClass = (!g.classShowAll && g.selectedClassIdx >= 0 && g.selectedClassIdx < g.classCount && g.classes[g.selectedClassIdx] != nullptr);
     Class* curClass = haveClass ? g.classes[g.selectedClassIdx] : nullptr;
 
@@ -260,7 +251,7 @@ void drawAdminTabClasses(GuiState& g) {
                 snprintf(g.formPass, sizeof(g.formPass), "%s", s->password);
                 snprintf(g.formClassId, sizeof(g.formClassId), "%s", rows[i].classroom->id);
                 g.modalError[0] = '\0';
-                g.activeFormBox = 2; // khong sua ID
+                g.activeFormBox = 2;
             }
             if (GuiBtnOutline({ rightPane.x + xActions + 65, (float)rowY + 6, 55, 30 }, "Xoa", COLOR_DANGER, COLOR_DANGER, 14)) {
                 g.currentModal = MODAL_DELETE_STUDENT;

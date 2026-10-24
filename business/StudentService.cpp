@@ -55,7 +55,6 @@ BusinessResult addStudentWorkflow(
     stringCopy(cleanTen, ten, TEN_LEN);
     trimString(cleanTen);
 
-    // Kiem tra trung lap MASV tren TOAN BO he thong (khong chi trong lop)
     if (findStudentGlobal(classes, classCount, cleanId) != nullptr) {
         return ERR_DUPLICATE;
     }

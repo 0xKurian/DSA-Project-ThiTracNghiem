@@ -1,6 +1,6 @@
 #ifndef GUI_COMMON_H
 #define GUI_COMMON_H
-// widget dung chung cho cac man hinh do hoa: palette, chu, textbox, toast
+
 #include "raylib.h"
 
 #include <string>
@@ -23,20 +23,20 @@ constexpr int REVIEW_PER_PAGE     = 3;
 
 inline const Color COLOR_BG             = { 245, 247, 250, 255 };
 inline const Color COLOR_CARD           = { 255, 255, 255, 255 };
-inline const Color COLOR_SIDEBAR        = { 30, 41, 59, 255 };    // Slate 800
-inline const Color COLOR_SIDEBAR_HOVER  = { 51, 65, 85, 255 };    // Slate 700
-inline const Color COLOR_SIDEBAR_ACTIVE = { 37, 99, 235, 255 };   // Blue 600
-inline const Color COLOR_PRIMARY        = { 37, 99, 235, 255 };   // Blue 600
-inline const Color COLOR_PRIMARY_HOVER  = { 29, 78, 216, 255 };   // Blue 700
-inline const Color COLOR_SUCCESS        = { 22, 163, 74, 255 };   // Green 600
-inline const Color COLOR_SUCCESS_HOVER  = { 21, 128, 61, 255 };   // Green 700
-inline const Color COLOR_DANGER         = { 220, 38, 38, 255 };   // Red 600
-inline const Color COLOR_DANGER_HOVER   = { 185, 28, 28, 255 };   // Red 700
-inline const Color COLOR_WARNING        = { 234, 88, 12, 255 };   // Orange 600
-inline const Color COLOR_TEXT_DARK      = { 15, 23, 42, 255 };    // Slate 900
-inline const Color COLOR_TEXT_MUTED     = { 100, 116, 139, 255 }; // Slate 500
-inline const Color COLOR_BORDER         = { 226, 232, 240, 255 }; // Slate 200
-inline const Color COLOR_ROW_ALT        = { 248, 250, 252, 255 }; // dong le cho bang
+inline const Color COLOR_SIDEBAR        = { 30, 41, 59, 255 };
+inline const Color COLOR_SIDEBAR_HOVER  = { 51, 65, 85, 255 };
+inline const Color COLOR_SIDEBAR_ACTIVE = { 37, 99, 235, 255 };
+inline const Color COLOR_PRIMARY        = { 37, 99, 235, 255 };
+inline const Color COLOR_PRIMARY_HOVER  = { 29, 78, 216, 255 };
+inline const Color COLOR_SUCCESS        = { 22, 163, 74, 255 };
+inline const Color COLOR_SUCCESS_HOVER  = { 21, 128, 61, 255 };
+inline const Color COLOR_DANGER         = { 220, 38, 38, 255 };
+inline const Color COLOR_DANGER_HOVER   = { 185, 28, 28, 255 };
+inline const Color COLOR_WARNING        = { 234, 88, 12, 255 };
+inline const Color COLOR_TEXT_DARK      = { 15, 23, 42, 255 };
+inline const Color COLOR_TEXT_MUTED     = { 100, 116, 139, 255 };
+inline const Color COLOR_BORDER         = { 226, 232, 240, 255 };
+inline const Color COLOR_ROW_ALT        = { 248, 250, 252, 255 };
 
 inline Color MakeColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255) {
     Color c;
@@ -53,8 +53,8 @@ float DrawTxtWrapped(const char* text, float posX, float posY, float maxWidth, f
                      Color color = COLOR_TEXT_DARK, bool bold = false, float lineSpacing = 4.0f);
 
 void GuiSetModalState(bool modalOpen);
-void GuiMarkInsideModal();  // goi truoc khi ve modal(trong modal widget van hoat dong)
-bool GuiModalAbsorbsInput(); // true khi modal mo: chan widget o tab phia sau + moi click tho (row click)
+void GuiMarkInsideModal();
+bool GuiModalAbsorbsInput();
 
 bool GuiBtn(Rectangle rec, const char* text,
             Color bg = COLOR_PRIMARY, Color hoverBg = COLOR_PRIMARY_HOVER,
@@ -68,16 +68,15 @@ bool GuiBtnOutline(Rectangle rec, const char* text,
 void GuiTextBoxInput(Rectangle rec, char textBuffer[], int maxLen, bool& isActive,
                      const char* placeholder = "", bool isPassword = false);
 
-// o tim kiem + danh sach goi y: go ky tu nao thi loc theo ma/ten, xep tang dan theo ma
 struct SuggestItem {
-    int value = -1;         // gia tri tra ve khi chon (thuong la chi muc)
-    std::string id;         // text chinh ben trai
-    std::string name;       // text phu
-    std::string meta;       // chu nho ben phai (vd "20 cau", "3 SV")
-    bool highlight = false; // nen xanh nhat (mon da co cau hoi)
+    int value = -1;
+    std::string id;
+    std::string name;
+    std::string meta;
+    bool highlight = false;
 };
 
-void GuiBeginFrame();  // chot vung chan click cua dropdown o khung hinh truoc
+void GuiBeginFrame();
 bool GuiMatchText(const char* text, const char* query);
 
 int GuiSearchSuggest(Rectangle rec, char* query, int capacity, bool& active,

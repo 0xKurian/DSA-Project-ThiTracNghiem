@@ -1,11 +1,10 @@
-// tab diem + chi tiet bai thi: chon mon -> lop -> sinh vien (IDs, tranh lech index)
 #include "GuiCommon.h"
 #include "GuiState.h"
 
-#include "../core/ClassArray.h"   // findClass
-#include "../core/ScoreList.h"    // findScore
-#include "../core/StudentList.h"  // findStudent
-#include "../core/SubjectBST.h"   // findSubject
+#include "../core/ClassArray.h"
+#include "../core/ScoreList.h"
+#include "../core/StudentList.h"
+#include "../core/SubjectBST.h"
 
 #include <algorithm>
 #include <cstdio>
@@ -37,7 +36,6 @@ void drawAdminTabScores(GuiState& g) {
     }
     if (g.reviewDetailOpen && curScore == nullptr) g.reviewDetailOpen = false;
 
-    // ================= SUB-VIEW: CHI TIET BAI THI =================
     if (g.reviewDetailOpen && curStudent != nullptr && curSub != nullptr && curScore != nullptr) {
         DrawTxt(TextFormat("CHI TIET BAI THI MON %s", curSub->id), contentRec.x + 25, contentRec.y + 25, 20, COLOR_TEXT_DARK, true);
         if (GuiBtnOutline({ contentRec.x + contentRec.width - 240, contentRec.y + 20, 210, 36 }, "<- Quay lai bang diem", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
@@ -91,7 +89,6 @@ void drawAdminTabScores(GuiState& g) {
         return;
     }
 
-    // ================= BANG DIEM THEO MON + LOP =================
     DrawTxt("BANG DIEM & CHI TIET BAI THI", contentRec.x + 25, contentRec.y + 25, 20, COLOR_TEXT_DARK, true);
 
     DrawTxt("Mon:", contentRec.x + 25, contentRec.y + 68, 15, COLOR_TEXT_DARK, true);
@@ -168,7 +165,6 @@ void drawAdminTabScores(GuiState& g) {
         }
     }
 
-    // hai thanh tim kiem ve cuoi de dropdown de len bang ben duoi
     std::vector<SuggestItem> subItems;
     GuiMakeSubjectItems(g.subjects, true, subItems);
     int pickedSub = GuiSearchSuggest(subjectSearchRec, g.searchReviewSubject, sizeof(g.searchReviewSubject),

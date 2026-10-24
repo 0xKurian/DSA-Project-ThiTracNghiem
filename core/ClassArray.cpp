@@ -6,9 +6,6 @@
 
 using namespace std;
 
-
-// ==================== CREATE ====================
-
 Class* createClass(
     const char id[],
     const char name[]
@@ -36,9 +33,6 @@ Class* createClass(
     return classroom;
 }
 
-
-// ==================== FIND ====================
-
 Class* findClass(
     Class* classes[],
     int classCount,
@@ -55,9 +49,6 @@ Class* findClass(
 
     return nullptr;
 }
-
-
-// ==================== ADD ====================
 
 bool addClass(
     Class* classes[],
@@ -86,9 +77,6 @@ bool addClass(
 
     return true;
 }
-
-
-// ==================== CLEANUP HELPERS ====================
 
 static void deleteExamDetailList(
     ExamDetail*& head
@@ -130,9 +118,6 @@ static void deleteStudentListOfClass(
         delete temp;
     }
 }
-
-
-// ==================== DELETE ====================
 
 bool deleteClass(
     Class* classes[],
@@ -176,9 +161,6 @@ bool deleteClass(
     return true;
 }
 
-
-// ==================== PRINT ====================
-
 void printClasses(
     Class* classes[],
     int classCount
@@ -197,9 +179,6 @@ void printClasses(
         }
     }
 }
-
-
-// ==================== FIND STUDENT GLOBAL ====================
 
 Student* findStudentGlobal(
     Class* classes[],
@@ -223,8 +202,6 @@ Student* findStudentGlobal(
 
     return nullptr;
 }
-
-// ==================== ADD STUDENT GLOBAL ====================
 
 bool addStudentGlobal(
     Class* classes[],
@@ -261,4 +238,3 @@ bool addStudentGlobal(
         student
     );
 }
-

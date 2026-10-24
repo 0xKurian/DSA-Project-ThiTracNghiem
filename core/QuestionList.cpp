@@ -94,7 +94,6 @@ bool deleteQuestion(
         return false;
     }
 
-    // Xoa node dau
     if (head->id == id) {
         Question* temp = head;
         head = head->next;
@@ -113,12 +112,10 @@ bool deleteQuestion(
         current = current->next;
     }
 
-    // Khong tim thay
     if (current->next == nullptr) {
         return false;
     }
 
-    // Xoa node current->next
     Question* temp = current->next;
 
     current->next = temp->next;

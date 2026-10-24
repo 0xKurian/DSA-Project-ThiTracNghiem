@@ -1,12 +1,10 @@
-// dashboard sv: vao thi / bang diem ca nhan (kem xem lai chi tiet tung bai thi)
 #include "GuiCommon.h"
 #include "GuiState.h"
 
-#include "../core/SubjectBST.h"   // findSubject (hien ten mon trong bang diem)
+#include "../core/SubjectBST.h"
 
 #include <algorithm>
 #include <cstdio>
-
 
 void drawStudentHome(GuiState& g) {
     DrawRectangle(0, 0, GUI_WIDTH, 65, COLOR_SIDEBAR);
@@ -16,7 +14,7 @@ void drawStudentHome(GuiState& g) {
         g.currentScreen = SCREEN_LOGIN;
         g.currentRole = LOGIN_FAILED;
         g.loggedStudent = nullptr;
-        // ve tiep trong frame nay se doc loggedStudent (null) va sap, nen thoat ngay
+
         return;
     }
 
@@ -102,7 +100,6 @@ void drawStudentTabScores(GuiState& g) {
 
     Rectangle contentRec = { 260, 85, (float)(GUI_WIDTH - 280), (float)(GUI_HEIGHT - 105) };
 
-    // dang mo chi tiet mot bai thi: tim score theo chi muc da luu
     if (g.studentReviewScoreIdx >= 0) {
         Score* openScore = nullptr;
         int i = 0;

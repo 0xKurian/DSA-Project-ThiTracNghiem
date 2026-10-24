@@ -1,11 +1,8 @@
-// tab cau hoi (DSLK don trong Subject.questionList)
 #include "GuiCommon.h"
 #include "GuiState.h"
 
 #include <algorithm>
 #include <cstdio>
-
-// id cau hoi moi do generateQuestionId sinh (khong nhap tay)
 
 void drawAdminTabQuestions(GuiState& g) {
     Rectangle contentRec = { 260, 85, (float)(GUI_WIDTH - 280), (float)(GUI_HEIGHT - 105) };

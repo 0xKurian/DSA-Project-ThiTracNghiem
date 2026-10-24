@@ -1,16 +1,13 @@
-// tab vao thi: neu ton tai session thi chua nop -> hoi tiep tuc / huy,
-// khong thi chon mon + so cau + so phut roi vao phong thi
 #include "GuiCommon.h"
 #include "GuiState.h"
 
 #include "../business/BusinessErrors.h"
-#include "../business/ExamService.h"   // prepareExamWorkflow, checkExamSession, loadExamSession, removeExamSession
-#include "../core/ScoreList.h"         // findScore: moi SV thi toi da 1 lan cua tung mon
+#include "../business/ExamService.h"
+#include "../core/ScoreList.h"
 
 #include <algorithm>
 #include <cstdlib>
 #include <cstdio>
-
 
 void drawExamPrepareTab(GuiState& g) {
     Rectangle contentRec = { 260, 85, (float)(GUI_WIDTH - 280), (float)(GUI_HEIGHT - 105) };
@@ -27,7 +24,7 @@ void drawExamPrepareTab(GuiState& g) {
         DrawTxt(TextFormat("[CANH BAO] Ban dang co phien thi do dang mon: %s (con %d phut %d giay)", pendSub, pendSec / 60, pendSec % 60), warnCard.x + 20, warnCard.y + 18, 16, COLOR_WARNING, true);
 
         if (GuiBtn({ warnCard.x + 20, warnCard.y + 50, 230, 34 }, ">> TIEP TUC PHIEN THI <<", COLOR_PRIMARY, COLOR_PRIMARY_HOVER, WHITE, 14, true)) {
-            cancelExam(g.examHead); // phong state thi cua SV khac con trong g.examHead bi gop vao
+            cancelExam(g.examHead);
             if (loadExamSession(g.loggedStudent->id, pendSub, pendSec, g.examHead, g.root)) {
                 g.examList.clear();
                 ExamDetail* cur = g.examHead;
@@ -41,7 +38,7 @@ void drawExamPrepareTab(GuiState& g) {
             }
         }
         if (GuiBtnOutline({ warnCard.x + 270, warnCard.y + 50, 200, 34 }, "Huy phien thi do dang", COLOR_DANGER, COLOR_DANGER, 14, true)) {
-            // mo modal xac nhan: huy phien = tu dong nop bai dang do dang, khong thi lai mon nay
+
             g.currentModal = MODAL_CANCEL_EXAM;
         }
 
@@ -60,10 +57,9 @@ void drawExamPrepareTab(GuiState& g) {
         Question* qCur = chosenSub->questionList;
         while (qCur != nullptr) { totalQ++; qCur = qCur->next; }
 
-        // cau hinh luu tren Subject (FileStorage doc 0 = chua cau hinh)
         int cfgQ = chosenSub->examQuestionCount;
         int cfgM = chosenSub->examMinutes;
-        // moi SV chi thi moi mon 1 lan: da co diem thi khoa nut bat dau
+
         Score* takenScore = findScore(g.loggedStudent, chosenSub->id);
         bool cfgUsable = (cfgQ > 0 && cfgM > 0 && cfgM <= 180 && cfgQ <= totalQ && takenScore == nullptr);
 

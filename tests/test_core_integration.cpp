@@ -14,7 +14,7 @@
 using namespace std;
 
 int main() {
-    // ==================== SUBJECT + QUESTION ====================
+
     Subject* root = nullptr;
 
     root = insertSubject(root, createSubject("CTDL", "Cau truc du lieu"));
@@ -38,8 +38,6 @@ int main() {
     insertQuestion(oop->questionList, q1);
     assert(countQuestions(oop->questionList) == 1);
 
-    // Hieu chinh mon hoc: cho phep doi ma va ten,
-    // dong thoi giu lai danh sach cau hoi cua mon.
     assert(editSubject(root, "OOP", "AI", "Artificial Intelligence"));
     assert(findSubject(root, "OOP") == nullptr);
     assert(findSubject(root, "AI") != nullptr);
@@ -56,11 +54,9 @@ int main() {
         "Artificial Intelligence - updated"
     ));
 
-    // Insert trung ma mon khong tao them node.
     root = insertSubject(root, createSubject("CTDL", "Duplicate"));
     assert(findSubject(root, "CTDL") != nullptr);
 
-    // ==================== CLASS + STUDENT ====================
     Class* classes[MAX_CLASS] = {};
     int classCount = 0;
 
@@ -83,7 +79,6 @@ int main() {
     assert(findStudentGlobal(classes, classCount, "SV001") == s1);
     assert(findStudentGlobal(classes, classCount, "SV002") == s2);
 
-    // ==================== SCORE ====================
     assert(addScore(s1, "CTDL", 8.5f));
     assert(!addScore(s1, "CTDL", 9.0f));
     assert(findScore(s1, "CTDL") != nullptr);
@@ -92,7 +87,6 @@ int main() {
     assert(deleteScore(s1, "CTDL"));
     assert(findScore(s1, "CTDL") == nullptr);
 
-    // ==================== SAFE FIXED-SIZE STRING ====================
     const char longId[] =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     Student* longIdStudent = createStudent(
@@ -105,7 +99,6 @@ int main() {
     assert(longIdStudent == nullptr);
     delete longIdStudent;
 
-    // ==================== CLEANUP ====================
     while (classCount > 0) {
         assert(deleteClass(classes, classCount, classes[0]->id));
     }

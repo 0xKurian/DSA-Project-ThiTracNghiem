@@ -1,22 +1,20 @@
-// modal them/sua/xoa mon hoc, lop, sinh vien, cau hoi; ESC tat, TAB chuyen o
 #include "GuiCommon.h"
 #include "GuiState.h"
 
 #include "../business/BusinessErrors.h"
-#include "../business/ClassService.h"     // addClassWorkflow, deleteClassWorkflow
-#include "../business/ExamService.h"      // submitExamWorkflow, checkExamSession, loadExamSession, removeExamSession, cancelExam
-#include "../business/FileStorage.h"      // saveAllData
-#include "../business/QuestionService.h"  // addQuestionWorkflow, editQuestionWorkflow, deleteQuestionWorkflow
-#include "../business/StudentService.h"   // addStudentWorkflow, editStudentWorkflow, deleteStudentWorkflow
-#include "../business/SubjectService.h"   // addSubjectWorkflow, editSubjectWorkflow, deleteSubjectWorkflow, setExamConfigWorkflow
+#include "../business/ClassService.h"
+#include "../business/ExamService.h"
+#include "../business/FileStorage.h"
+#include "../business/QuestionService.h"
+#include "../business/StudentService.h"
+#include "../business/SubjectService.h"
 
-#include "../core/ClassArray.h"     // findClass
-#include "../core/QuestionList.h"   // countQuestions
-#include "../core/SubjectBST.h"     // findSubject
+#include "../core/ClassArray.h"
+#include "../core/QuestionList.h"
+#include "../core/SubjectBST.h"
 
 #include <cstdio>
 #include <cstdlib>
-
 
 static Rectangle modalRec() {
     return { (float)(GUI_WIDTH / 2 - 250), (float)(GUI_HEIGHT / 2 - 180), 500, 360 };
@@ -390,7 +388,7 @@ static void drawExamConfigModal(GuiState& g) {
         } else if (m <= 0 || m > 180) {
             snprintf(g.modalError, sizeof(g.modalError), "Thoi gian phai tu 1 den 180 phut.");
         } else {
-            // workflow business validate lai va gan vao Subject (luu file khi thoat/luu toan cục)
+
             BusinessResult res = setExamConfigWorkflow(g.root, g.configSubjectId, q, m);
             if (res == SUCCESS) {
                 g.currentModal = MODAL_NONE;
@@ -405,7 +403,6 @@ static void drawExamConfigModal(GuiState& g) {
     }
 }
 
-// huy phien thi do dang = tu dong nop bai (cau chua chon cham SAI), diem ghi vao bang diem va khong thi lai
 static void drawCancelExamSessionModal(GuiState& g) {
     Rectangle rec = { (float)(GUI_WIDTH / 2 - 250), (float)(GUI_HEIGHT / 2 - 180), 500, 360 };
     DrawCardPanel(rec);
@@ -422,7 +419,7 @@ static void drawCancelExamSessionModal(GuiState& g) {
         bool ok = checkExamSession(g.loggedStudent->id, pendSub, pendSec)
                   && loadExamSession(g.loggedStudent->id, pendSub, pendSec, g.examHead, g.root);
         if (!ok) {
-            // file phien hang/to nen xoa de khong bao treo mai
+
             removeExamSession(g.loggedStudent->id);
             g.examHead = nullptr;
             g.examList.clear();
@@ -434,7 +431,7 @@ static void drawCancelExamSessionModal(GuiState& g) {
         float finalScore = 0.0f;
         int correctCount = 0, totalCount = 0;
         BusinessResult res = submitExamWorkflow(g.loggedStudent, pendSub, g.examHead, finalScore, correctCount, totalCount);
-        g.examHead = nullptr; // submitExamWorkflow nhan quyen so huu danh sach (ca khi loat)
+        g.examHead = nullptr;
         g.examList.clear();
         g.currentModal = MODAL_NONE;
 
@@ -444,7 +441,7 @@ static void drawCancelExamSessionModal(GuiState& g) {
             snprintf(msg, sizeof(msg), "Da nop bai tu dong (diem %.2f - dung %d/%d cau), huy phien thi do dang.", finalScore, correctCount, totalCount);
             g.showToast(msg, 4.0f, false);
         } else {
-            // phien khong nop duoc (tu choi/du lieu loi) => giai phong luon de khong treo mai
+
             removeExamSession(g.loggedStudent->id);
             snprintf(msg, sizeof(msg), "Khong nop duoc: %s Da xoa phien thi do dang.", getErrorMessage(res));
             g.showToast(msg, 4.0f, true);

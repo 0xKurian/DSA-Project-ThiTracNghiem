@@ -11,8 +11,6 @@
 #include <fstream>
 #include <string>
 
-// ==================== CORE EXAM PROTOTYPES ====================
-
 bool canTakeExam(
     Subject* subject,
     int numberOfQuestions,
@@ -68,8 +66,6 @@ bool isExamTimeExpired(
     }
     return difftime(time(nullptr), startTime) >= static_cast<double>(minutes * 60);
 }
-
-// ==================== EXAM TIMER & CLOCK ====================
 
 ExamTimer::ExamTimer()
     : startTime(0), totalDurationSeconds(0), initialRemainingSeconds(0), isRunning(false) {}
@@ -141,8 +137,6 @@ void formatExamTime(int remainingSeconds, char buffer[], int bufferSize) {
     std::snprintf(buffer, bufferSize, "%02d:%02d (%d phut %d giay)", mins, secs, mins, secs);
 }
 
-// ==================== WORKFLOWS ====================
-
 static void initializeRngOnce() {
     static bool rngInitialized = false;
     if (!rngInitialized) {
@@ -173,7 +167,6 @@ BusinessResult prepareExamWorkflow(
     trimString(cleanSubId);
     toUpperString(cleanSubId);
 
-    // Moi sinh vien chi duoc thi moi mon 1 lan duy nhat
     if (findScore(student, cleanSubId) != nullptr) {
         return ERR_CONSTRAINT_VIOLATION;
     }
@@ -192,7 +185,6 @@ BusinessResult prepareExamWorkflow(
         return ERR_INVALID_FORMAT;
     }
 
-    // Cap phat mang dong con tro de shuffle ngau nhien (Khong dung std::vector)
     const Question** questionPool = new const Question*[totalAvailable];
 
     Question* currentQ = subject->questionList;
@@ -204,7 +196,6 @@ BusinessResult prepareExamWorkflow(
 
     initializeRngOnce();
 
-    // Fisher-Yates Shuffle
     for (int i = totalAvailable - 1; i > 0; --i) {
         int j = rand() % (i + 1);
         if (i != j) {
@@ -214,7 +205,6 @@ BusinessResult prepareExamWorkflow(
         }
     }
 
-    // Lay N cau hoi dau tien va tao ExamDetail snapshot
     for (int i = 0; i < numberOfQuestions; ++i) {
         ExamDetail* detail = createExamDetail(questionPool[i]);
         if (detail != nullptr) {
@@ -222,7 +212,6 @@ BusinessResult prepareExamWorkflow(
         }
     }
 
-    // Giai phong ngay mang con tro phu (khong delete cac Question goc)
     delete[] questionPool;
 
     return SUCCESS;
@@ -256,13 +245,11 @@ BusinessResult submitExamWorkflow(
     trimString(cleanSubId);
     toUpperString(cleanSubId);
 
-    // Kiem tra lai neu sinh vien da co diem mon nay
     if (findScore(student, cleanSubId) != nullptr) {
         cancelExam(examQuestionsHead);
         return ERR_CONSTRAINT_VIOLATION;
     }
 
-    // Cham diem
     ExamDetail* current = examQuestionsHead;
     while (current != nullptr) {
         totalCount++;
@@ -282,19 +269,15 @@ BusinessResult submitExamWorkflow(
 
     finalScore = calculateScore(correctCount, totalCount);
 
-    // Ghi nhan Score va gan quyen so huu examQuestionsHead vao Score->detailList
     if (!addScore(student, cleanSubId, finalScore, examQuestionsHead)) {
         cancelExam(examQuestionsHead);
         return ERR_CONSTRAINT_VIOLATION;
     }
 
-    // Xoa file tam ngay khi nop bai thanh cong (du nop chu dong hay het gio)
     removeExamSession(student->id);
 
     return SUCCESS;
 }
-
-// ==================== EXAM SESSION PERSISTENCE ====================
 
 static std::string getExamSessionFilePath(const char studentId[], const char* filepath = nullptr) {
     if (filepath != nullptr && stringLength(filepath) > 0) {
@@ -341,7 +324,6 @@ bool saveExamSession(
     trimString(cleanStdId);
     toUpperString(cleanStdId);
 
-    // Dem so luong cau hoi
     int count = 0;
     ExamDetail* cur = examQuestionsHead;
     while (cur != nullptr) {
@@ -349,10 +331,8 @@ bool saveExamSession(
         cur = cur->next;
     }
 
-    // Line 1: MASV|MAMON|THOI_GIAN_CON_LAI|SO_CAU
     out << cleanStdId << "|" << cleanSubId << "|" << (remainingSeconds >= 0 ? remainingSeconds : 0) << "|" << count << "\n";
 
-    // Danh sach cau hoi: ID|Selected|Correct|Content|A|B|C|D
     cur = examQuestionsHead;
     while (cur != nullptr) {
         char sel = (cur->selectedAnswer == '\0') ? '-' : cur->selectedAnswer;
@@ -669,7 +649,7 @@ bool loadExamSession(
         }
 
         if (tCount >= 8) {
-            // Full snapshot: ID|Selected|Correct|Content|A|B|C|D
+
             int qId = 0;
             try { qId = std::stoi(tokens[0]); } catch (...) { continue; }
             char sel = tokens[1].empty() ? '\0' : tokens[1][0];
@@ -689,7 +669,7 @@ bool loadExamSession(
 
             addExamDetail(examQuestionsHead, d);
         } else if (tCount >= 2 && subjectNode != nullptr) {
-            // ID|Selected -> Look up Question in subjectNode
+
             int qId = 0;
             try { qId = std::stoi(tokens[0]); } catch (...) { continue; }
             char sel = tokens[1].empty() ? '\0' : tokens[1][0];
@@ -712,4 +692,3 @@ bool loadExamSession(
     }
     return true;
 }
-
