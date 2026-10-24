@@ -1,9 +1,15 @@
 # Brief tổng hợp — Business backlog (core-owned ExamConfig)
 
-- **Người nhận:** Người 3 (core + business)
-- **Người giao:** Người 1 (UI)
+- **Người nhận:** Người 1 (Core) + Người 2 (Business)
+- **Người giao:** Người 3 (UI)
 - **Ngày:** 2026-10-24 (bản 2 — chốt core-owned)
 - **Trạng thái:** chờ thực hiện. UI đã commit bản tạm cho cấu hình lớp (bốc đề/lưu RAM trong UI); sẽ thay bằng API dưới đây.
+
+> **Handoff hiện hành đã tách theo người nhận:**
+> - Core: [`docs/HANDOFF_CORE.md`](HANDOFF_CORE.md)
+> - Business: [`docs/HANDOFF_BUSINESS.md`](HANDOFF_BUSINESS.md)
+>
+> File này giữ spec chi tiết R1–R8 để tra cứu; item mới ghi vào 2 file handoff trên.
 
 Brief này gom toàn bộ việc core/business cần làm, thay thế `docs/EXAM_CONFIG_BRIEF.md` cũ.
 
