@@ -1,5 +1,11 @@
 # Hợp đồng Core
 
+> **Trạng thái chuyển đổi:** `ExamConfig` trong `Class.configList` là mô hình
+> cấu hình thi mới theo `HANDOFF_CORE.md` và `HANDOFF_BUSINESS.md`. Hai trường
+> `Subject.examQuestionCount/examMinutes` bên dưới vẫn có trong Core để UI cũ
+> biên dịch, nhưng business mới không còn lưu chúng vào `subjects.txt`. Việc
+> xóa hai trường này cần thực hiện cùng lúc với chuyển đổi UI và test cũ.
+
 ## Module
 
 `Structures.h` và `Constants.h` định nghĩa dữ liệu. Mỗi module có header riêng: `SubjectBST`, `QuestionList`, `ClassArray`, `StudentList`, `ScoreList`, `ExamConfigList`, `StringUtils`. `FunctionPrototype.h` tổng hợp header core và giữ các khai báo nghiệp vụ chưa được core cài đặt.

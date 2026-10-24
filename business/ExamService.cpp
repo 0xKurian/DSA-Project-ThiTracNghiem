@@ -4,6 +4,9 @@
 #include "../core/QuestionList.h"
 #include "../core/ScoreList.h"
 #include "../core/StringUtils.h"
+#include "ExamConfigService.h"
+#include "FileStorage.h"
+#include "PipeCodec.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -57,16 +60,6 @@ void cancelExam(
     deleteExamDetailList(examQuestionsHead);
 }
 
-bool isExamTimeExpired(
-    time_t startTime,
-    int minutes
-) {
-    if (minutes <= 0) {
-        return true;
-    }
-    return difftime(time(nullptr), startTime) >= static_cast<double>(minutes * 60);
-}
-
 ExamTimer::ExamTimer()
     : startTime(0), totalDurationSeconds(0), initialRemainingSeconds(0), isRunning(false) {}
 
@@ -94,9 +87,7 @@ void ExamTimer::resume(int remainingSeconds) {
 
 int ExamTimer::getRemainingSeconds() const {
     if (!isRunning) return 0;
-    double elapsed = difftime(time(nullptr), startTime);
-    int remaining = initialRemainingSeconds - static_cast<int>(elapsed);
-    return (remaining > 0) ? remaining : 0;
+    return calculateExamRemainingSeconds(startTime, initialRemainingSeconds);
 }
 
 int ExamTimer::getElapsedSeconds() const {
@@ -106,7 +97,8 @@ int ExamTimer::getElapsedSeconds() const {
 }
 
 bool ExamTimer::isExpired() const {
-    return getRemainingSeconds() <= 0;
+    if (!isRunning) return true;
+    return isExamTimeExpiredSeconds(startTime, initialRemainingSeconds);
 }
 
 void ExamTimer::stop() {
@@ -137,12 +129,52 @@ void formatExamTime(int remainingSeconds, char buffer[], int bufferSize) {
     std::snprintf(buffer, bufferSize, "%02d:%02d (%d phut %d giay)", mins, secs, mins, secs);
 }
 
+void formatExamClock(int seconds, char out[], int size) {
+    if (out == nullptr || size <= 0) return;
+    if (seconds < 0) seconds = 0;
+    std::snprintf(out, size, "%02d:%02d", seconds / 60, seconds % 60);
+}
+
+ExamTickResult tickExamSession(
+    ExamTimer& timer, ExamSessionTracker& tracker, const char studentId[],
+    const char subjectId[], ExamDetail* examHead, const char* filepath) {
+    int remaining = timer.getRemainingSeconds();
+    if (timer.isExpired()) return {0, true, false};
+    bool saved = false;
+    if (remaining != tracker.lastSavedSecond) {
+        saved = saveExamSession(studentId, subjectId, remaining, examHead,
+                                filepath);
+        if (saved) tracker.lastSavedSecond = remaining;
+    }
+    return {remaining, false, saved};
+}
+
 static void initializeRngOnce() {
     static bool rngInitialized = false;
     if (!rngInitialized) {
         srand(static_cast<unsigned int>(time(nullptr)));
         rngInitialized = true;
     }
+}
+
+int drawQuestionIds(Subject* subject, int count, int outIds[]) {
+    if (subject == nullptr || outIds == nullptr || count < 1) return 0;
+    int available = countQuestions(subject->questionList);
+    if (count > available) return 0;
+    const Question** pool = new const Question*[available];
+    int index = 0;
+    for (Question* question = subject->questionList; question != nullptr;
+         question = question->next) pool[index++] = question;
+    initializeRngOnce();
+    for (int i = available - 1; i > 0; --i) {
+        int j = rand() % (i + 1);
+        const Question* temp = pool[i];
+        pool[i] = pool[j];
+        pool[j] = temp;
+    }
+    for (int i = 0; i < count; ++i) outIds[i] = pool[i]->id;
+    delete[] pool;
+    return count;
 }
 
 BusinessResult prepareExamWorkflow(
@@ -180,39 +212,22 @@ BusinessResult prepareExamWorkflow(
         return ERR_INVALID_FORMAT;
     }
 
-    int totalAvailable = countQuestions(subject->questionList);
-    if (numberOfQuestions > totalAvailable) {
+    int* questionIds = new int[numberOfQuestions];
+    if (drawQuestionIds(subject, numberOfQuestions, questionIds) != numberOfQuestions) {
+        delete[] questionIds;
         return ERR_INVALID_FORMAT;
     }
-
-    const Question** questionPool = new const Question*[totalAvailable];
-
-    Question* currentQ = subject->questionList;
-    int idx = 0;
-    while (currentQ != nullptr) {
-        questionPool[idx++] = currentQ;
-        currentQ = currentQ->next;
-    }
-
-    initializeRngOnce();
-
-    for (int i = totalAvailable - 1; i > 0; --i) {
-        int j = rand() % (i + 1);
-        if (i != j) {
-            const Question* temp = questionPool[i];
-            questionPool[i] = questionPool[j];
-            questionPool[j] = temp;
-        }
-    }
-
     for (int i = 0; i < numberOfQuestions; ++i) {
-        ExamDetail* detail = createExamDetail(questionPool[i]);
-        if (detail != nullptr) {
-            addExamDetail(examQuestionsHead, detail);
+        Question* question = findQuestion(subject->questionList, questionIds[i]);
+        ExamDetail* detail = createExamDetail(question);
+        if (detail == nullptr) {
+            delete[] questionIds;
+            cancelExam(examQuestionsHead);
+            return ERR_INVALID_FORMAT;
         }
+        addExamDetail(examQuestionsHead, detail);
     }
-
-    delete[] questionPool;
+    delete[] questionIds;
 
     return SUCCESS;
 }
@@ -274,12 +289,11 @@ BusinessResult submitExamWorkflow(
         return ERR_CONSTRAINT_VIOLATION;
     }
 
-    removeExamSession(student->id);
-
     return SUCCESS;
 }
 
 static std::string getExamSessionFilePath(const char studentId[], const char* filepath = nullptr) {
+    if (validateStudentId(studentId) != SUCCESS) return "";
     if (filepath != nullptr && stringLength(filepath) > 0) {
         return std::string(filepath);
     }
@@ -339,11 +353,11 @@ bool saveExamSession(
         out << cur->questionId << "|"
             << sel << "|"
             << cur->correctAnswer << "|"
-            << cur->content << "|"
-            << cur->answerA << "|"
-            << cur->answerB << "|"
-            << cur->answerC << "|"
-            << cur->answerD << "\n";
+            << escapePipe(cur->content) << "|"
+            << escapePipe(cur->answerA) << "|"
+            << escapePipe(cur->answerB) << "|"
+            << escapePipe(cur->answerC) << "|"
+            << escapePipe(cur->answerD) << "\n";
         cur = cur->next;
     }
 
@@ -596,18 +610,8 @@ bool loadExamSession(
     if (headerLine.empty()) return false;
 
     std::string headerTokens[8];
-    int hCount = 0;
-    size_t start = 0;
-    while (hCount < 8) {
-        size_t pos = headerLine.find('|', start);
-        if (pos == std::string::npos) {
-            headerTokens[hCount++] = headerLine.substr(start);
-            break;
-        } else {
-            headerTokens[hCount++] = headerLine.substr(start, pos - start);
-            start = pos + 1;
-        }
-    }
+    int hCount = splitEscapedPipe(headerLine, headerTokens, 8);
+    if (hCount < 0) return false;
 
     std::string subId = "";
     if (hCount >= 4) {
@@ -635,18 +639,8 @@ bool loadExamSession(
         if (line.empty()) continue;
 
         std::string tokens[9];
-        int tCount = 0;
-        size_t sPos = 0;
-        while (tCount < 9) {
-            size_t pos = line.find('|', sPos);
-            if (pos == std::string::npos) {
-                tokens[tCount++] = line.substr(sPos);
-                break;
-            } else {
-                tokens[tCount++] = line.substr(sPos, pos - sPos);
-                sPos = pos + 1;
-            }
-        }
+        int tCount = splitEscapedPipe(line, tokens, 9);
+        if (tCount < 0) continue;
 
         if (tCount >= 8) {
 
@@ -691,4 +685,74 @@ bool loadExamSession(
         return false;
     }
     return true;
+}
+
+BusinessResult finishExamWorkflow(
+    Subject* root, Class* classes[], int classCount, Student* student,
+    const char subjectId[], ExamDetail*& head, float& score, int& correct,
+    int& total, bool* saveFailedOut, const char* dataDir,
+    const char* sessionFilepath) {
+    if (saveFailedOut != nullptr) *saveFailedOut = false;
+    if (student == nullptr || subjectId == nullptr ||
+        findStudentClass(classes, classCount, student->id) == nullptr)
+        return ERR_NOT_FOUND;
+    BusinessResult result = submitExamWorkflow(student, subjectId, head, score,
+                                               correct, total);
+    head = nullptr;
+    if (result != SUCCESS) return result;
+    bool saved = saveAllData(root, classes, classCount, dataDir);
+    if (!saved) {
+        if (saveFailedOut != nullptr) *saveFailedOut = true;
+    } else {
+        removeExamSession(student->id, sessionFilepath);
+    }
+    return SUCCESS;
+}
+
+BusinessResult submitExpiredExamWorkflow(
+    Subject* root, Class* classes[], int classCount, Student* student,
+    const char subjectId[], ExamDetail*& head, float& score, int& correct,
+    int& total, bool* saveFailedOut, const char* dataDir,
+    const char* sessionFilepath) {
+    return finishExamWorkflow(root, classes, classCount, student, subjectId,
+                              head, score, correct, total, saveFailedOut,
+                              dataDir, sessionFilepath);
+}
+
+BusinessResult cancelPendingExamWorkflow(
+    Subject* root, Class* classes[], int classCount, Student* student,
+    bool* saveFailedOut, const char* dataDir, const char* sessionFilepath) {
+    if (student == nullptr ||
+        findStudentClass(classes, classCount, student->id) == nullptr)
+        return ERR_NOT_FOUND;
+    ExamDetail* head = nullptr;
+    char subjectId[SUBJECT_ID_LEN] = {};
+    int remaining = 0;
+    if (!loadExamSession(student->id, subjectId, remaining, head, root,
+                         sessionFilepath)) return ERR_NOT_FOUND;
+    float score = 0.0f;
+    int correct = 0;
+    int total = 0;
+    BusinessResult result = finishExamWorkflow(
+        root, classes, classCount, student, subjectId, head, score, correct,
+        total, saveFailedOut, dataDir, sessionFilepath);
+    if (head != nullptr) cancelExam(head);
+    return result;
+}
+
+BusinessResult resumeExamWorkflow(
+    Subject* root, Class* classes[], int classCount, Student* student,
+    ExamDetail*& head, char subjectOut[], int& remainingOut,
+    const char* sessionFilepath) {
+    if (head != nullptr) return ERR_CONSTRAINT_VIOLATION;
+    if (student == nullptr || subjectOut == nullptr ||
+        findStudentClass(classes, classCount, student->id) == nullptr)
+        return ERR_NOT_FOUND;
+    if (!loadExamSession(student->id, subjectOut, remainingOut, head, root,
+                         sessionFilepath)) return ERR_NOT_FOUND;
+    if (findScore(student, subjectOut) != nullptr) {
+        cancelExam(head);
+        return ERR_CONSTRAINT_VIOLATION;
+    }
+    return SUCCESS;
 }

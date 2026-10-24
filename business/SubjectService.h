@@ -4,39 +4,22 @@
 #include "../core/Structures.h"
 #include "BusinessErrors.h"
 
-bool isSubjectUsedInScores(
-    Class* classes[],
-    int classCount,
-    const char subjectId[]
-);
+bool isSubjectUsedInScores(Class *classes[], int classCount,
+                           const char subjectId[]);
 
-BusinessResult addSubjectWorkflow(
-    Subject*& root,
-    const char id[],
-    const char name[]
-);
+void rebalanceSubjectBST(Subject*& root);
 
-BusinessResult editSubjectWorkflow(
-    Subject*& root,
-    Class* classes[],
-    int classCount,
-    const char oldId[],
-    const char newId[],
-    const char newName[]
-);
+BusinessResult addSubjectWorkflow(Subject *&root, const char id[],
+                                  const char name[]);
 
-BusinessResult deleteSubjectWorkflow(
-    Subject*& root,
-    Class* classes[],
-    int classCount,
-    const char id[]
-);
+BusinessResult editSubjectWorkflow(Subject *&root, Class *classes[],
+                                   int classCount, const char oldId[],
+                                   const char newId[], const char newName[]);
 
-BusinessResult setExamConfigWorkflow(
-    Subject*& root,
-    const char* subjectId,
-    int questionCount,
-    int minutes
-);
+BusinessResult deleteSubjectWorkflow(Subject *&root, Class *classes[],
+                                     int classCount, const char id[]);
+
+BusinessResult setExamConfigWorkflow(Subject *&root, const char *subjectId,
+                                     int questionCount, int minutes);
 
 #endif

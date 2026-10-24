@@ -17,347 +17,123 @@
 
 ---
 
-## Đang mở
+## Đang mở (Đã hoàn tất toàn bộ B01 — B08)
 
 ### B01 — Rebalance BST môn học sau khi nạp file (R1)
 
-- **Trạng thái:** Chờ business
-- **UI đang chờ:** `ui/GuiAdminSubjects.cpp` (hiển thị danh sách môn)
-- **Vấn đề:** `FileStorage::writeSubjectsRecursive` ghi môn theo **in-order**.
-  Loader `insertSubject` lần lượt theo thứ tự file → cây lệch hẳn sang phải,
-  chiều cao `O(n)`.
-- **Không dùng AVL/cây tự cân bằng; không sửa core.**
-- **API/hành vi mong muốn:** thêm vào `business/SubjectService.h/.cpp`:
-
-```cpp
-void rebalanceSubjectBST(Subject*& root);
-```
-
-1. Đếm node; cấp `Subject** nodes = new Subject*[n]`; duyệt in-order.
-2. Dựng lại mid-first; **chỉ gán `left/right`**, không tạo/xoá node, không đổi field.
-3. `delete[] nodes`.
-
-Gọi trong `loadAllData` sau khi nạp subjects (cả file mới và legacy). Không cần
-gọi sau mỗi insert/delete.
-
-- **Acceptance/test:** `tests/test_bst_rebalance.cpp`:
-  - Insert 1..100 tăng dần → chiều cao ≤ `2 * ceil(log2(n+1))`.
-  - In-order trước/sau giống nhau; `findSubject` đủ.
-  - n = 0/1/2; gọi 2 lần idempotent.
+- **Trạng thái:** Xong (24/10/2026)
+- **File:** `business/SubjectService.h/.cpp`, tích hợp tại `business/FileStorage.cpp`
+- **Chi tiết triển khai:**
+  - Hàm `void rebalanceSubjectBST(Subject*& root);` đếm số node, duyệt in-order lấy mảng con trỏ `Subject**`, tái cấu trúc mid-first gán lại `left/right` (không tạo/xóa node, không cấp phát thừa).
+  - Tự động gọi trong `loadAllData()` ngay sau khi nạp xong subjects.
+- **Acceptance/test:** `tests/test_bst_rebalance.cpp` PASS 100% (n=0, 1, 2, 100 cây lệch dồn phải rebalance về chiều cao $\le 14$, idempotent khi gọi 2 lần).
 
 ### B02 — Workflow cấu hình thi theo lớp + persistence + freeze (R2 business)
 
-- **Trạng thái:** Chờ business
-- **UI đang chờ:** `ui/GuiAdminExamConfigs.cpp`, `ui/GuiExamPrepare.cpp`,
-  `ui/GuiState.h`, `ui/GuiModalDialogs.cpp`
-- **Core dependency:** `ExamConfig` + `Class.configList` + module CRUD do core làm
-  trong `docs/HANDOFF_CORE.md` C01.
-
-#### Mục tiêu
-
-- Mỗi cặp `(lớp, môn)` có một cấu hình: số câu, số phút, bộ câu đã bốc, ngày tạo.
-- Bốc N câu **một lần** khi lưu; mọi SV trong lớp thi đúng bộ đó (đảo đáp án vẫn
-  ngẫu nhiên từng SV).
-- Xem trước bộ đã bốc.
-- **Freeze:** đã có SV thi môn đó trong lớp → cấm sửa/xoá cấu hình.
-- Console dùng chung, không bắt SV nhập N/phút.
-
-#### Business — API
-
-```cpp
-int drawQuestionIds(Subject* subject, int count, int outIds[]);
-
-BusinessResult setClassExamConfigWorkflow(
-    Subject* root,
-    Class* classes[],
-    int classCount,
-    const char classId[],
-    const char subjectId[],
-    int numberOfQuestions,
-    int minutes
-);
-
-BusinessResult deleteClassExamConfigWorkflow(
-    Class* classes[],
-    int classCount,
-    const char classId[],
-    const char subjectId[]
-);
-
-bool classHasTakenSubject(
-    Class* classes[],
-    int classCount,
-    const char classId[],
-    const char subjectId[]
-);
-
-Class* findStudentClass(
-    Class* classes[],
-    int classCount,
-    const char studentId[]
-);
-
-BusinessResult prepareExamFromConfig(
-    Subject* root,
-    Class* classes[],
-    int classCount,
-    Student* student,
-    const char subjectId[],
-    ExamDetail*& examQuestionsHead
-);
-```
-
-#### Hành vi
-
-`drawQuestionIds`: tách từ `prepareExamWorkflow` (Fisher-Yates + `initializeRngOnce`),
-dùng chung.
-
-`setClassExamConfigWorkflow`:
-
-1. Chuẩn hoá ID (trim + upper) bằng helper validation.
-2. Tìm lớp/môn; sai → `ERR_NOT_FOUND`.
-3. `1 <= numberOfQuestions <= countQuestions(subject->questionList)`;
-   `1 <= minutes <= 180`; sai → `ERR_INVALID_FORMAT`.
-4. **Freeze:** `classHasTakenSubject` → `ERR_CONSTRAINT_VIOLATION`.
-5. Nếu cặp đã có (chưa freeze):
-   - cùng `questionCount` → cập nhật `minutes`, giữ `questionIds`/`createdAt`;
-   - khác `questionCount` → free bộ cũ, bốc mới, cập nhật `createdAt`.
-6. Nếu chưa có → bốc bộ mới, `createExamConfig`, `addExamConfig`.
-7. Bốc lỗi → `ERR_INVALID_FORMAT`, không đổi cấu hình cũ.
-
-`deleteClassExamConfigWorkflow`: freeze → `ERR_CONSTRAINT_VIOLATION`; không có →
-`ERR_NOT_FOUND`; có → xoá node + `delete[]`.
-
-`classHasTakenSubject`: duyệt `classroom->studentList`,
-`findScore(student, subjectId) != nullptr`.
-
-`prepareExamFromConfig`:
-
-1. Tìm lớp SV; không có → `ERR_NOT_FOUND`.
-2. Tìm config `(lớp, môn)`; không có → `ERR_NOT_FOUND`.
-3. Đã có điểm môn → `ERR_CONSTRAINT_VIOLATION`.
-4. Mọi `questionId` còn trong ngân hàng; thiếu → `ERR_NOT_FOUND`.
-5. Dựng `ExamDetail` đúng thứ tự ID bằng `createExamDetail` + `addExamDetail`.
-6. Lỗi giữa chừng → `cancelExam(head)`, trả lỗi.
-
-#### Persistence
-
-File `data/exam_configs.txt`:
-
-```
-<so_cau_hinh>
-MALOP|MAMH|SO_CAU|PHUT|NGAY_TAO|id1,id2,...
-```
-
-Ví dụ:
-
-```
-2
-D23CQCN01|CSDL|3|15|2026-10-24 08:00|4,5,6
-D23CQCN01|CTDL|2|10|2026-10-24 09:30|1,2
-```
-
-```cpp
-bool saveExamConfigsToFile(Class* classes[], int classCount, const char* filepath);
-bool loadExamConfigsFromFile(Class* classes[], int classCount, const char* filepath);
-```
-
-- Gọi trong `saveAllData/loadAllData`; **giữ nguyên chữ ký** (duyệt classes,
-  không thêm tham số book).
-- Nạp subjects → classes → configs; đối chiếu lớp/môn/ID.
-- File không tồn tại → `true`, không có config.
-- Dòng lỗi → bỏ qua, tiếp tục.
-- Save: duyệt classes/configList; ghi `classId` từ `Class`.
-
-#### Legacy cần xoá
-
-- `Subject.examQuestionCount/examMinutes` khỏi `Structures.h` và `createSubject`
-  (core — C01).
-- `setExamConfigWorkflow` khỏi `SubjectService`.
-- `FileStorage`: ghi `subjects.txt` 3 cột; loader vẫn nhận file 5 cột cũ và bỏ
-  2 cột cuối.
-- `prepareExamWorkflow` cũ: xoá nếu không còn caller; giữ `drawQuestionIds`.
-- `tests/test_subject_exam_config.cpp`: xoá/viết lại theo config lớp.
-- `docs/CORE_API.md`, `business/README.md`: cập nhật.
-- **Dữ liệu cũ không map được sang lớp** → giáo viên tạo lại cấu hình; điểm thi
-  không mất.
-
-#### Acceptance/test
-
-`tests/test_exam_config.cpp` + core test:
-
-- Core: create/add/find/delete; trùng môn bị chặn; `deleteClass` giải phóng config
-  + `questionIds`.
-- Tạo 2 lớp, môn 10 câu; config 3 câu/15 phút.
-- 2 SV cùng lớp → cùng danh sách ID, cùng thứ tự.
-- Lớp khác có config riêng → bộ khác.
-- Freeze: SV nộp bài → sửa/xoá trả `ERR_CONSTRAINT_VIOLATION`; trước khi thi thì được.
-- Sửa phút giữ bộ; sửa N đổi bộ.
-- N > bank / <= 0 / phút ngoài 1..180 bị chặn.
-- Xoá câu trong ngân hàng → prepare lỗi, không crash.
-- Save/load round-trip; file thiếu → rỗng; xoá lớp → file sạch sau save.
-- Xoá môn → business dọn config khỏi mọi lớp trước khi xoá môn.
+- **Trạng thái:** Xong (24/10/2026)
+- **File:** `business/ExamConfigService.h/.cpp`, `business/FileStorage.h/.cpp`
+- **Chi tiết triển khai:**
+  - Đầy đủ 6 API theo đặc tả: `drawQuestionIds`, `setClassExamConfigWorkflow`, `deleteClassExamConfigWorkflow`, `classHasTakenSubject`, `findStudentClass`, `prepareExamFromConfig`.
+  - Quản lý Freeze chặt chẽ: `classHasTakenSubject` chặn sửa/xóa khi đã có SV thi môn đó (`ERR_CONSTRAINT_VIOLATION`).
+  - Đổi số phút giữ nguyên bộ đề; đổi số câu hỏi tự động bốc bộ mới và giải phóng bộ cũ an toàn.
+  - Sửa/xóa môn học tự động cập nhật hoặc dọn dẹp cấu hình liên quan trong mọi lớp (`SubjectService.cpp:143-176`).
+  - Persistence `data/exam_configs.txt` qua `saveExamConfigsToFile` / `loadExamConfigsFromFile`, tích hợp sẵn trong `saveAllData` và `loadAllData`.
+  - `FileStorage`: `subjects.txt` được ghi 3 cột chuẩn mới; loader tương thích ngược nạp được cả file 5 cột cũ và bỏ 2 cột cuối.
+- **Acceptance/test:** `tests/test_exam_config.cpp` và `tests/test_subject_exam_config.cpp` PASS 100%.
 
 ### B03 — Timer + session runtime (R3)
 
-- **Trạng thái:** Chờ business
-- **UI đang chờ:** `ui/GuiExamRoom.cpp`, `ui/GuiExamPrepare.cpp`,
-  `ui/GuiModalDialogs.cpp`, `ui/ConsoleUI.cpp`
-- **Vấn đề:** UI tự lưu session mỗi giây; console hủy phiên chỉ xóa file, không
-  nộp bài.
-
-#### Gộp timer
-
-```cpp
-int ExamTimer::getRemainingSeconds() const {
-    if (!isRunning) return 0;
-    return calculateExamRemainingSeconds(startTime, initialRemainingSeconds);
-}
-
-bool ExamTimer::isExpired() const {
-    if (!isRunning) return true;
-    return isExamTimeExpiredSeconds(startTime, initialRemainingSeconds);
-}
-```
-
-- Xoá `isExamTimeExpired(time_t, int minutes)` chết; cập nhật `business/README.md`.
-- Thêm `void formatExamClock(int seconds, char out[], int size);` → `"MM:SS"`.
-
-#### Session runtime
-
-```cpp
-struct ExamSessionTracker { int lastSavedSecond; };
-
-struct ExamTickResult {
-    int remainingSeconds;
-    bool expired;
-    bool saved;
-};
-
-ExamTickResult tickExamSession(
-    ExamTimer& timer,
-    ExamSessionTracker& tracker,
-    const char studentId[],
-    const char subjectId[],
-    ExamDetail* examHead
-);
-```
-
-- Expired → `{0, true, false}`.
-- Giây đổi → `saveExamSession`, cập nhật tracker, `saved = true`.
-- UI bỏ `examLastSavedSec` và lời gọi `saveExamSession` mỗi giây.
-
-Workflow kết thúc:
-
-```cpp
-BusinessResult submitExpiredExamWorkflow(root, classes, classCount,
-    Student*, subjectId, ExamDetail*& head, float& score, int& correct, int& total);
-BusinessResult finishExamWorkflow(...);          // nộp tay
-BusinessResult cancelPendingExamWorkflow(root, classes, classCount, Student*);
-BusinessResult resumeExamWorkflow(root, classes, classCount, Student*,
-    ExamDetail*& head, char subjectOut[], int& remainingOut);
-```
-
-- Submit/finish: `submitExamWorkflow` + `removeExamSession` + `saveAllData`; trả điểm.
-- Cancel: check/load + submit + xoá phiên + save.
-- Resume: check/load + trả head/môn/giây.
-- Save lỗi → vẫn trả kết quả nộp, kèm cảnh báo.
-
-#### Acceptance/test
-
-`tests/test_exam_timer.cpp`:
-
-- start/resume/stop; start(0)/resume(0) expired ngay.
-- `formatExamClock(0) == "00:00"`, `formatExamClock(65) == "01:05"`.
-- Tick lưu đúng khi giây đổi, không lặp; expired đúng.
+- **Trạng thái:** Xong (24/10/2026)
+- **File:** `business/ExamService.h/.cpp`
+- **Chi tiết triển khai:**
+  - Gộp timer vào `struct ExamTimer`: `getRemainingSeconds() const`, `isExpired() const` chuẩn theo giây, khử trôi thời gian bằng epoch clock.
+  - Xóa bỏ hoàn toàn hàm cũ `isExamTimeExpired(time_t, int minutes)`.
+  - Thêm `void formatExamClock(int seconds, char out[], int size);` xuất định dạng `"MM:SS"`.
+  - Cung cấp `ExamSessionTracker` và `tickExamSession`: tự động lưu session `temp_<MASV>.dat` khi số giây thay đổi, tránh ghi đĩa trùng lặp mỗi tick.
+  - Cung cấp 4 workflow kết thúc bài thi:
+    - `finishExamWorkflow(...)`: nộp bài thủ công, tự chấm điểm, lưu `saveAllData`, xóa session.
+    - `submitExpiredExamWorkflow(...)`: nộp bài khi hết giờ, xử lý tương tự `finishExamWorkflow`.
+    - `cancelPendingExamWorkflow(...)`: hủy phiên thi dở dang (tự nạp session, nộp bài, chấm điểm và khóa thi lại).
+    - `resumeExamWorkflow(...)`: khôi phục phiên thi dở dang cho sinh viên.
+  - Hỗ trợ cờ `saveFailedOut` an toàn bộ nhớ nếu ghi file thất bại.
+- **Acceptance/test:** `tests/test_exam_timer.cpp` PASS 100%.
 
 ### B04 — Pass/fail + điều kiện thi + query dùng chung (R4)
 
-- **Trạng thái:** Chờ business
-- **UI đang chờ:** `ui/GuiExamResult.cpp:21` (hardcode 5.0),
-  `ui/GuiAdminScores.cpp:13`, `ui/GuiAdminClasses.cpp:8`, `ui/ConsoleUI.cpp:56,145`
-- **Vấn đề:** UI đang có bản trùng logic đếm SV, tìm lớp của SV, duyệt môn in-order,
-  ngưỡng đạt.
-
-```cpp
-bool isPassingScore(float score);                    // ngưỡng 5.0
-BusinessResult canStudentTakeSubject(
-    Subject* root, Class* classes[], int classCount,
-    Student* student, const char subjectId[], const char** reasonOut);
-int countStudentsInClass(const Class* classroom);
-int collectSubjectsInOrder(Subject* root, Subject* out[], int capacity);
-void freeAllData(Subject*& root, Class* classes[], int& classCount);  // tuỳ chọn
-```
-
-- `isPassingScore` thay `GuiExamResult.cpp:21`.
-- `canStudentTakeSubject` trả lý do (chưa lớp, chưa config, đã thi, config lỗi).
-- `countStudentsInClass` xoá 3 bản trùng UI.
-- `collectSubjectsInOrder` xoá bản console trùng.
-- `freeAllData` tuỳ chọn.
-- UI xoá bản trùng sau khi API có.
+- **Trạng thái:** Xong (24/10/2026)
+- **File:** `business/BusinessQueries.h/.cpp`, `business/ExamConfigService.h/.cpp`
+- **Chi tiết triển khai:**
+  - `bool isPassingScore(float score)` (ngưỡng 5.0).
+  - `int countStudentsInClass(const Class* classroom)`.
+  - `int collectSubjectsInOrder(Subject* root, Subject* out[], int capacity)`.
+  - `void freeAllData(Subject*& root, Class* classes[], int& classCount)`.
+  - `canStudentTakeSubject(...)` kiểm tra điều kiện thi của sinh viên và trả về chuỗi lý do chi tiết (chưa có lớp, chưa cấu hình, đã thi rồi, cấu hình không hợp lệ, câu hỏi trong ngân hàng bị xóa).
+- **Acceptance/test:** Tích hợp kiểm tra trong `tests/test_exam_config.cpp` PASS 100%.
 
 ### B05 — Chính sách xóa câu hỏi khi môn đã có điểm
 
-- **Trạng thái:** Chờ business quyết định
-- **UI đang chờ:** `ui/GuiModalDialogs.cpp:332`
-- **Vấn đề:** modal ghi “Chỉ xóa được câu hỏi nếu chưa có sinh viên thi môn này”,
-  nhưng `deleteQuestionWorkflow` không kiểm tra và vẫn trả `SUCCESS`.
-- **Hành vi mong muốn:** chọn một hướng:
-  1. Chặn bằng `isSubjectUsedInScores` → trả `ERR_CONSTRAINT_VIOLATION`; hoặc
-  2. Cho xóa và xác nhận lại text UI (bài thi cũ vẫn an toàn nhờ snapshot).
-- **Acceptance/test:** có test cho cả trường hợp đã có điểm và chưa có điểm.
-- **Ghi chú:** UI không tự quyết định policy; chỉ sửa text theo kết luận của business.
+- **Trạng thái:** Xong (24/10/2026)
+- **File:** `business/QuestionService.h/.cpp`
+- **Quyết định của Business:** **Áp dụng Hướng 1 (Bảo toàn toàn vẹn dữ liệu)**:
+  - Chặn xóa câu hỏi nếu môn học đã phát sinh điểm thi (`isSubjectUsedInScores`) HOẶC câu hỏi đang nằm trong cấu hình thi của bất kỳ lớp nào trong hệ thống (`ERR_CONSTRAINT_VIOLATION`).
+  - Thêm overload 5 tham số: `deleteQuestionWorkflow(root, classes, classCount, subjectId, questionId)`.
+  - Giữ lại overload 3 tham số cũ `deleteQuestionWorkflow(root, subjectId, questionId)` để tầng UI hiện tại không bị gãy khi biên dịch; UI sẽ chuyển sang overload 5 tham số khi nối API.
+  - Modal UI giữ nguyên thông báo “Chỉ xóa được câu hỏi nếu chưa có sinh viên thi môn này” (hoặc cập nhật thêm "và câu hỏi chưa nằm trong cấu hình thi của lớp").
+- **Acceptance/test:** `tests/test_business_edges.cpp` PASS 100%.
 
 ### B06 — Ký tự `|` trong dữ liệu người dùng (ưu tiên thấp)
 
-- **Trạng thái:** Chờ business
-- **UI đang chờ:** các form `ui/GuiModalDialogs.cpp`
-- **Vấn đề:** `FileStorage` dùng `|` làm delimiter nhưng không escape; validation
-  không chặn `|`, nên tên môn/câu hỏi/đáp án chứa `|` có thể làm lệch cột khi load lại.
-- **Hành vi mong muốn:** escape/unescape khi ghi/đọc, hoặc từ chối `|` trong
-  `Validation`; giữ đọc được file 3 cột/5 cột cũ.
-- **Acceptance/test:** round-trip với `|` trong tên/câu hỏi/đáp án; dữ liệu hiện tại
-  vẫn load/save byte-identical.
+- **Trạng thái:** Xong (24/10/2026)
+- **File:** `business/PipeCodec.h`, `business/FileStorage.cpp`, `business/ExamService.cpp`
+- **Chi tiết triển khai:**
+  - Cung cấp `escapePipe()` (chuyển `|` → `\|` và `\` → `\\`) và `splitEscapedPipe()`.
+  - Áp dụng vào việc lưu/đọc tên môn học, nội dung câu hỏi, 4 phương án, họ tên sinh viên và file phiên thi `temp_<MASV>.dat`.
+- **Acceptance/test:** `tests/test_business_edges.cpp` kiểm tra round-trip dữ liệu chứa `|` và `\` PASS 100%.
 
 ### B07 — Chuẩn hóa đường dẫn file session (ưu tiên thấp)
 
-- **Trạng thái:** Chờ business
-- **UI đang chờ:** `ui/GuiExamRoom.cpp` (save session), `ui/GuiExamPrepare.cpp`
-  (load session)
-- **Vấn đề:** `ExamService::getExamSessionFilePath` lấy `temp_<MASV>.dat` trực tiếp
-  từ ID; validation chỉ kiểm tra rỗng/độ dài, không chặn `/`, `\`, `..`.
-- **Hành vi mong muốn:** whitelist ký tự ID hoặc sanitize đường dẫn; không đổi tên
-  file với ID hợp lệ hiện tại.
-- **Acceptance/test:** ID chứa `../` không ghi ra ngoài thư mục làm việc; `SV001`
-  vẫn là `temp_SV001.dat`.
+- **Trạng thái:** Xong (24/10/2026)
+- **File:** `business/Validation.cpp`, `business/ExamService.cpp`
+- **Chi tiết triển khai:**
+  - `validateStudentId()` bổ sung whitelist ký tự `[A-Za-z0-9_-]`, chặn đứng nguy cơ Path Traversal (`../`, `/`, `\`).
+  - `getExamSessionFilePath()` kiểm tra hợp lệ của MASV trước khi tạo file session; trả về chuỗi rỗng nếu vi phạm.
+- **Acceptance/test:** `tests/test_exam_timer.cpp` kiểm tra từ chối ID dạng `../SV1` PASS 100%.
 
 ### B08 — Persistence/save policy (R5)
 
-- **Trạng thái:** Chờ business
-- `submitExpired/finish/cancelPending` tự gọi `saveAllData`; UI không tự lưu sau
-  nộp/huỷ.
-- Nút `Luu File` và lưu lúc thoát vẫn UI gọi.
-- `loadAllData`: subjects → classes → configs → rebalance BST.
-- `saveAllData`: subjects → classes (kèm config) → file.
+- **Trạng thái:** Xong (24/10/2026)
+- **File:** `business/ExamService.cpp`, `business/FileStorage.cpp`
+- **Chi tiết triển khai:**
+  - `finishExamWorkflow`, `submitExpiredExamWorkflow` và `cancelPendingExamWorkflow` tự động gọi `saveAllData()`. UI không cần tự lưu sau khi nộp hoặc hủy thi.
+  - Thứ tự nạp dữ liệu chuẩn trong `loadAllData()`: subjects → classes → exam configs → dọn dẹp configs không hợp lệ (`discardInvalidExamConfigs`) → rebalance BST (`rebalanceSubjectBST`).
+- **Acceptance/test:** Kiểm tra trong `tests/test_exam_config.cpp` và `tests/test_exam_timer.cpp` PASS 100%.
 
 ---
 
 ## Hợp đồng UI sau khi API xong (R6)
 
-UI sẽ gọi:
+Tầng UI chỉ cần include các header tương ứng và gọi các API chuẩn:
 
-| Việc | Hàm |
-|---|---|
-| Tạo/sửa cấu hình | `setClassExamConfigWorkflow` |
-| Xoá cấu hình | `deleteClassExamConfigWorkflow` |
-| Tìm cấu hình/preview | `findExamConfig(class, subjectId)` + `questionIds` |
-| Chuẩn bị thi | `prepareExamFromConfig` |
-| Lớp của SV | `findStudentClass` |
-| Trạng thái/freeze | `classHasTakenSubject` |
-| Tick/lưu phiên | `tickExamSession` |
-| Nộp/huỷ/tiếp tục | `submitExpired`, `finish`, `cancelPending`, `resume` |
-| Pass/fail | `isPassingScore` |
-| Điều kiện thi | `canStudentTakeSubject` |
+| Nghiệp vụ | Hàm API | Header File |
+|---|---|---|
+| Tạo/sửa cấu hình theo lớp | `setClassExamConfigWorkflow` | `business/ExamConfigService.h` |
+| Xoá cấu hình theo lớp | `deleteClassExamConfigWorkflow` | `business/ExamConfigService.h` |
+| Tìm cấu hình / xem trước bộ đề | `findExamConfig(classroom, subjectId)` | `core/ExamConfigList.h` |
+| Chuẩn bị thi từ cấu hình lớp | `prepareExamFromConfig` | `business/ExamConfigService.h` |
+| Tra cứu lớp của sinh viên | `findStudentClass` | `business/ExamConfigService.h` |
+| Kiểm tra trạng thái đã thi (Freeze) | `classHasTakenSubject` | `business/ExamConfigService.h` |
+| Kiểm tra điều kiện thi & lý do | `canStudentTakeSubject` | `business/ExamConfigService.h` |
+| Tick đếm giờ & tự động lưu session | `tickExamSession` | `business/ExamService.h` |
+| Định dạng chuỗi đồng hồ (`MM:SS`) | `formatExamClock` | `business/ExamService.h` |
+| Nộp bài thi thủ công | `finishExamWorkflow` | `business/ExamService.h` |
+| Tự động nộp khi hết giờ | `submitExpiredExamWorkflow` | `business/ExamService.h` |
+| Hủy phiên thi dở dang (tự nộp) | `cancelPendingExamWorkflow` | `business/ExamService.h` |
+| Khôi phục phiên thi dở dang | `resumeExamWorkflow` | `business/ExamService.h` |
+| Đánh giá Đạt / Không đạt (ngưỡng 5.0) | `isPassingScore` | `business/BusinessQueries.h` |
+| Đếm số sinh viên trong lớp | `countStudentsInClass` | `business/BusinessQueries.h` |
+| Thu thập danh sách môn in-order | `collectSubjectsInOrder` | `business/BusinessQueries.h` |
+| Giải phóng toàn bộ dữ liệu | `freeAllData` | `business/BusinessQueries.h` |
+| Xóa câu hỏi (kiểm tra điểm & config) | `deleteQuestionWorkflow(root, classes, count, subId, qId)` | `business/QuestionService.h` |
 
 UI sẽ xoá:
 
@@ -368,6 +144,7 @@ UI sẽ xoá:
 - `GuiFindStudentClass`.
 - `examLastSavedSec`, auto-submit, `saveExamSession/removeExamSession` trong UI.
 - Pass threshold, `countStudentsInClass`, `collectSubjectsInOrder` trùng.
+
 - Modal "Cau hinh console" + validation cấu hình môn cũ.
 
 UI giữ: vẽ, tìm kiếm/sắp xếp/phân trang, toast/caret, chuyển màn, đọc dữ liệu để

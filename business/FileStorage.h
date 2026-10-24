@@ -29,6 +29,9 @@ bool loadClassesFromFile(
     const char* filepath
 );
 
+bool saveExamConfigsToFile(Class* classes[], int classCount, const char* filepath);
+bool loadExamConfigsFromFile(Class* classes[], int classCount, const char* filepath);
+
 bool saveAllData(
     Subject* root,
     Class* classes[],

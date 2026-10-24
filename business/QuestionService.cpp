@@ -3,6 +3,7 @@
 #include "../core/SubjectBST.h"
 #include "../core/QuestionList.h"
 #include "../core/StringUtils.h"
+#include "SubjectService.h"
 
 BusinessResult addQuestionWorkflow(
     Subject* root,
@@ -186,4 +187,34 @@ BusinessResult deleteQuestionWorkflow(
 
     bool deleted = deleteQuestion(subject->questionList, questionId);
     return deleted ? SUCCESS : ERR_NOT_FOUND;
+}
+
+BusinessResult deleteQuestionWorkflow(
+    Subject* root, Class* classes[], int classCount,
+    const char subjectId[], int questionId
+) {
+    if (validateSubjectId(subjectId) != SUCCESS) return ERR_NOT_FOUND;
+    char cleanSubId[SUBJECT_ID_LEN];
+    stringCopy(cleanSubId, subjectId, SUBJECT_ID_LEN);
+    trimString(cleanSubId);
+    toUpperString(cleanSubId);
+    Subject* subject = findSubject(root, cleanSubId);
+    if (subject == nullptr || findQuestion(subject->questionList, questionId) == nullptr)
+        return ERR_NOT_FOUND;
+    if (isSubjectUsedInScores(classes, classCount, cleanSubId))
+        return ERR_CONSTRAINT_VIOLATION;
+    if (classes != nullptr) {
+        for (int i = 0; i < classCount; ++i) {
+            if (classes[i] == nullptr) continue;
+            for (ExamConfig* cfg = classes[i]->configList; cfg != nullptr;
+                 cfg = cfg->next) {
+                if (!stringEqual(cfg->subjectId, cleanSubId)) continue;
+                for (int j = 0; j < cfg->questionCount; ++j) {
+                    if (cfg->questionIds[j] == questionId)
+                        return ERR_CONSTRAINT_VIOLATION;
+                }
+            }
+        }
+    }
+    return deleteQuestionWorkflow(root, cleanSubId, questionId);
 }

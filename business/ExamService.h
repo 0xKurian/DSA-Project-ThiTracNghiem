@@ -18,10 +18,7 @@ float calculateScore(
     int totalQuestions
 );
 
-bool isExamTimeExpired(
-    time_t startTime,
-    int minutes
-);
+int drawQuestionIds(Subject* subject, int count, int outIds[]);
 
 struct ExamTimer {
     time_t startTime;
@@ -57,6 +54,45 @@ void formatExamTime(
     char buffer[],
     int bufferSize
 );
+
+void formatExamClock(int seconds, char out[], int size);
+
+struct ExamSessionTracker {
+    int lastSavedSecond = -1;
+};
+
+struct ExamTickResult {
+    int remainingSeconds;
+    bool expired;
+    bool saved;
+};
+
+ExamTickResult tickExamSession(
+    ExamTimer& timer, ExamSessionTracker& tracker, const char studentId[],
+    const char subjectId[], ExamDetail* examHead,
+    const char* filepath = nullptr);
+
+BusinessResult finishExamWorkflow(
+    Subject* root, Class* classes[], int classCount, Student* student,
+    const char subjectId[], ExamDetail*& head, float& score, int& correct,
+    int& total, bool* saveFailedOut = nullptr, const char* dataDir = "data",
+    const char* sessionFilepath = nullptr);
+
+BusinessResult submitExpiredExamWorkflow(
+    Subject* root, Class* classes[], int classCount, Student* student,
+    const char subjectId[], ExamDetail*& head, float& score, int& correct,
+    int& total, bool* saveFailedOut = nullptr, const char* dataDir = "data",
+    const char* sessionFilepath = nullptr);
+
+BusinessResult cancelPendingExamWorkflow(
+    Subject* root, Class* classes[], int classCount, Student* student,
+    bool* saveFailedOut = nullptr, const char* dataDir = "data",
+    const char* sessionFilepath = nullptr);
+
+BusinessResult resumeExamWorkflow(
+    Subject* root, Class* classes[], int classCount, Student* student,
+    ExamDetail*& head, char subjectOut[], int& remainingOut,
+    const char* sessionFilepath = nullptr);
 
 BusinessResult prepareExamWorkflow(
     Subject* root,

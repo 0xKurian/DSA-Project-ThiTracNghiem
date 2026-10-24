@@ -34,4 +34,9 @@ BusinessResult deleteQuestionWorkflow(
     int questionId
 );
 
+BusinessResult deleteQuestionWorkflow(
+    Subject* root, Class* classes[], int classCount,
+    const char subjectId[], int questionId
+);
+
 #endif

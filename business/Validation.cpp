@@ -117,6 +117,16 @@ BusinessResult validateStudentId(const char id[]) {
   if (stringLength(id) >= STUDENT_ID_LEN) {
     return ERR_BUFFER_OVERFLOW;
   }
+  char cleanId[STUDENT_ID_LEN];
+  stringCopy(cleanId, id, STUDENT_ID_LEN);
+  trimString(cleanId);
+  for (int i = 0; cleanId[i] != '\0'; ++i) {
+    char ch = cleanId[i];
+    bool allowed = (ch >= 'A' && ch <= 'Z') ||
+                   (ch >= 'a' && ch <= 'z') ||
+                   (ch >= '0' && ch <= '9') || ch == '_' || ch == '-';
+    if (!allowed) return ERR_INVALID_FORMAT;
+  }
   return SUCCESS;
 }
 

@@ -1,5 +1,38 @@
 # 📘 TÀI LIỆU HƯỚNG DẪN TẦNG NGHIỆP VỤ (`business/`)
 
+> **Cập nhật hợp đồng 24/10/2026:** Cấu hình thi mới nằm trong
+> `Class.configList`, được quản lý bởi `ExamConfigService.h/.cpp` và lưu tại
+> `data/exam_configs.txt`. Các đoạn bên dưới mô tả `setExamConfigWorkflow`,
+> `Subject.examQuestionCount/examMinutes`, định dạng môn 5 cột và UI tự lưu
+> session là tài liệu của luồng cũ; chỉ còn để tham khảo trong giai đoạn chuyển UI.
+
+## API nghiệp vụ hiện hành cho cấu hình lớp và phiên thi
+
+- `setClassExamConfigWorkflow` bốc và giữ cố định thứ tự ID câu hỏi cho cặp
+  `(lớp, môn)`. Đổi phút giữ bộ đề; đổi số câu bốc bộ mới. Khi lớp đã có điểm
+  môn này, `setClassExamConfigWorkflow` và `deleteClassExamConfigWorkflow` trả
+  `ERR_CONSTRAINT_VIOLATION`.
+- `findStudentClass`, `classHasTakenSubject`, `canStudentTakeSubject` và
+  `prepareExamFromConfig` là các truy vấn/workflow dùng chung cho GUI và console.
+  `prepareExamFromConfig` tạo snapshot câu hỏi theo thứ tự cấu hình và chuyển
+  quyền sở hữu danh sách `ExamDetail` cho caller cho tới lúc nộp hoặc hủy.
+- `saveAllData`/`loadAllData` đọc ghi thêm `exam_configs.txt`; môn được ghi
+  3 cột, loader vẫn đọc được file môn 5 cột cũ nhưng bỏ cấu hình cũ. Sau khi
+  nạp, BST môn được cân bằng lại. Không tự chuyển cấu hình môn cũ sang lớp.
+- `tickExamSession` lưu khi số giây còn lại thay đổi. `finishExamWorkflow`,
+  `submitExpiredExamWorkflow` và `cancelPendingExamWorkflow` chấm bài, lưu toàn
+  bộ dữ liệu rồi xóa session khi lưu thành công. `saveFailedOut` báo trường hợp
+  điểm đã được chấm trong RAM nhưng ghi file thất bại. Sau nộp, `head` là null.
+- `deleteQuestionWorkflow(root, classes, classCount, subjectId, questionId)`
+  chặn xóa nếu môn đã có điểm hoặc câu hỏi đang nằm trong cấu hình lớp. Chữ ký
+  3 tham số cũ còn để UI hiện tại biên dịch, chưa có đủ dữ liệu để áp dụng
+  quy tắc này; UI cần chuyển sang chữ ký mới.
+- `isPassingScore`, `countStudentsInClass`, `collectSubjectsInOrder` và
+  `freeAllData` nằm trong `BusinessQueries.h/.cpp`.
+
+Các API cũ vẫn tồn tại để bản UI hiện tại biên dịch. UI cần chuyển sang API
+theo lớp trước khi Core xóa hai trường cấu hình cũ trên `Subject`.
+
 ## Hệ Thống Thi Trắc Nghiệm C++ — Data Structures & Algorithms
 
 ---
@@ -158,7 +191,7 @@ Mỗi hàm kiểm tra một trường cụ thể, trả về `BusinessResult`:
 | `validateSubjectName(name)` | Tên môn học (TENMH) | `SUBJECT_NAME_LEN = 100` | Không rỗng/whitespace + độ dài < 100 |
 | `validateClassId(id)` | Mã lớp (MALOP) | `CLASS_ID_LEN = 20` | Không rỗng/whitespace + độ dài < 20 |
 | `validateClassName(name)` | Tên lớp (TENLOP) | `CLASS_NAME_LEN = 100` | Không rỗng/whitespace + độ dài < 100 |
-| `validateStudentId(id)` | Mã sinh viên (MASV) | `STUDENT_ID_LEN = 20` | Không rỗng/whitespace + độ dài < 20 |
+| `validateStudentId(id)` | Mã sinh viên (MASV) | `STUDENT_ID_LEN = 20` | Không rỗng/whitespace + độ dài < 20 + chỉ chứa `[A-Za-z0-9_-]` (chống path traversal cho session file) |
 | `validateStudentName(ho, ten)` | Họ và Tên | `HO_LEN=50`, `TEN_LEN=30` | Cả hai không rỗng + đúng giới hạn |
 | `validateGender(gender)` | Phái (Giới tính) | `GENDER_LEN = 10` | Phải là `"NAM"` hoặc `"NU"` (tự trim & upper) |
 | `validatePassword(pass)` | Mật khẩu | `PASSWORD_LEN = 50` | Không rỗng + không chứa khoảng trắng + < 50 ký tự |
@@ -241,6 +274,7 @@ BusinessResult editSubjectWorkflow(
    - Kiểm tra ràng buộc: nếu môn cũ đã có điểm thi → `ERR_CONSTRAINT_VIOLATION`.
    - Kiểm tra trùng: nếu `newId` đã tồn tại → `ERR_DUPLICATE`.
 4. Gọi `editSubject()` (xóa node cũ, chèn node mới trên BST để giữ tính chất BST).
+5. **Đồng bộ cấu hình lớp:** Tự động duyệt qua `classes[]` và cập nhật mã môn mới `cleanNewId` cho mọi `ExamConfig` của môn học đó.
 
 **Quan trọng:** Khi đổi mã `MAMH`, hàm `editSubject()` ở tầng `core` sẽ **xóa node cũ và chèn node mới** vì vị trí trên cây BST phụ thuộc vào giá trị khóa.
 
@@ -260,11 +294,31 @@ BusinessResult deleteSubjectWorkflow(
 **Luồng xử lý:**
 1. Chuẩn hóa và tìm môn học trên BST.
 2. **Kiểm tra ràng buộc toàn vẹn:** Nếu bất kỳ sinh viên nào đã thi môn này → `ERR_CONSTRAINT_VIOLATION` (chặn xóa).
-3. Gọi `deleteSubject(root, cleanId)` — tự động giải phóng toàn bộ `questionList` của môn trước khi xóa node BST.
+3. **Dọn dẹp cấu hình lớp:** Tự động giải phóng `ExamConfig` của môn này khỏi toàn bộ danh sách lớp học (`classes[i]->configList`).
+4. Gọi `deleteSubject(root, cleanId)` — tự động giải phóng toàn bộ `questionList` của môn trước khi xóa node BST.
 
 ---
 
-#### 5.5. `setExamConfigWorkflow()`
+#### 5.5. `rebalanceSubjectBST()` — Cân Bằng Lại Cây BST Môn Học (B01 / R1)
+
+```cpp
+void rebalanceSubjectBST(Subject*& root);
+```
+
+**Mục đích:** Khi nạp từ file `subjects.txt` (được ghi theo thứ tự in-order), cây BST sẽ bị suy biến lệch hoàn toàn sang phải với chiều cao $O(N)$. Hàm này tái cấu trúc cây về dạng cân bằng hoàn hảo (chiều cao $\le 2 \times \lceil\log_2(N+1)\rceil$) để đảm bảo tốc độ tìm kiếm $O(\log N)$.
+
+**Thuật toán:**
+1. Đếm tổng số node hiện tại trên cây. Nếu $N < 2$, kết thúc ngay.
+2. Cấp phát mảng con trỏ tạm: `Subject** nodes = new Subject*[count];`.
+3. Duyệt in-order đưa con trỏ các node vào mảng (đã tự động có thứ tự từ điển).
+4. Đệ quy dựng lại cây theo nguyên lý mid-first (chọn phần tử giữa làm root, nửa trái làm cây con trái, nửa phải làm cây con phải). **Chỉ gán lại con trỏ `left/right`**, không tạo mới hay hủy node nào.
+5. Giải phóng mảng con trỏ tạm: `delete[] nodes;`.
+
+*Hàm được tự động gọi trong `loadAllData()` ngay sau khi nạp xong danh sách môn.*
+
+---
+
+#### 5.6. `setExamConfigWorkflow()` *(Legacy — Đang chờ UI loại bỏ)*
 
 ```cpp
 BusinessResult setExamConfigWorkflow(
@@ -275,23 +329,7 @@ BusinessResult setExamConfigWorkflow(
 );
 ```
 
-**Mục đích:** Cấu hình số câu hỏi thi và thời gian thi (phút) cho một môn học cụ thể. Giá trị cấu hình được lưu trực tiếp vào 2 trường `examQuestionCount` và `examMinutes` của `Subject`, tồn tại bền vững qua các phiên chạy và lưu trữ file.
-
-**Luồng xử lý:**
-1. Kiểm tra phòng thủ: `root == nullptr` hoặc `subjectId == nullptr` → `ERR_NOT_FOUND`.
-2. Chuẩn hóa mã môn (trim + upper). Nếu rỗng → `ERR_NOT_FOUND`.
-3. Tìm môn học trên cây BST bằng `findSubject()`. Nếu không tìm thấy → `ERR_NOT_FOUND`.
-4. Kiểm tra số câu hỏi: `1 <= questionCount <= countQuestions(subject->questionList)`. Nếu không thỏa mãn → `ERR_CONSTRAINT_VIOLATION`.
-5. Kiểm tra thời gian: `1 <= minutes <= 180` (phút). Nếu không thỏa mãn → `ERR_CONSTRAINT_VIOLATION`.
-6. Cập nhật trực tiếp:
-   ```cpp
-   subject->examQuestionCount = questionCount;
-   subject->examMinutes = minutes;
-   return SUCCESS;
-   ```
-
-**Trả về:** `SUCCESS` nếu thành công, hoặc `ERR_NOT_FOUND`, `ERR_CONSTRAINT_VIOLATION`.  
-*(Nếu xảy ra lỗi, cấu hình cũ của môn học được giữ nguyên 100%)*.
+> **Lưu ý:** Đây là hàm cấu hình thi trên thực thể `Subject` cũ. Hiện tại hệ thống đã chuyển sang cấu hình thi theo từng lớp (`ExamConfigService.h`). Hàm này được giữ lại tạm thời để UI hiện tại có thể biên dịch và sẽ được gỡ bỏ hoàn toàn sau khi UI chuyển đổi xong.
 
 ---
 
@@ -354,9 +392,21 @@ BusinessResult editQuestionWorkflow(
 
 ---
 
-#### 6.3. `deleteQuestionWorkflow()`
+#### 6.3. `deleteQuestionWorkflow()` — Xóa Câu Hỏi & Bảo Toàn Ràng Buộc (B05)
+
+Hệ thống hỗ trợ 2 chữ ký:
 
 ```cpp
+// 1. Chữ ký chuẩn mới (Khuyến nghị cho UI):
+BusinessResult deleteQuestionWorkflow(
+    Subject* root,
+    Class* classes[],
+    int classCount,
+    const char subjectId[],
+    int questionId
+);
+
+// 2. Chữ ký cũ (Tương thích ngược để UI cũ biên dịch):
 BusinessResult deleteQuestionWorkflow(
     Subject* root,
     const char subjectId[],
@@ -364,9 +414,111 @@ BusinessResult deleteQuestionWorkflow(
 );
 ```
 
-**Luồng xử lý:**
-1. Tìm môn học → gọi `deleteQuestion(subject->questionList, questionId)`.
-2. Hàm `deleteQuestion()` ở tầng `core` sẽ nối lại linked list và `delete` node.
+**Chính sách nghiệp vụ (B05):**
+1. Tìm môn học và câu hỏi. Nếu không thấy → `ERR_NOT_FOUND`.
+2. **Kiểm tra ràng buộc điểm số:** Nếu môn học đã có sinh viên thi (`isSubjectUsedInScores`) → trả về `ERR_CONSTRAINT_VIOLATION` (chặn xóa).
+3. **Kiểm tra ràng buộc cấu hình thi:** Nếu câu hỏi này đang nằm trong bộ đề đã bốc của bất kỳ lớp nào (`ExamConfig.questionIds`) → trả về `ERR_CONSTRAINT_VIOLATION` (chặn xóa).
+4. Nếu vượt qua các ràng buộc an toàn, gọi `deleteQuestion(subject->questionList, questionId)` và trả về `SUCCESS`.
+
+---
+
+## 6A. ExamConfigService.h / ExamConfigService.cpp — Cấu Hình Thi Theo Lớp & Đề Cố Định (B02 / R2)
+
+**Đường dẫn:** `business/ExamConfigService.h` + `business/ExamConfigService.cpp`
+
+Đây là phân hệ quản lý cấu hình thi mới: mỗi cặp `(lớp, môn)` sở hữu một cấu hình thi độc lập, lưu trực tiếp trong danh sách `Class.configList`. Bộ câu hỏi được bốc ngẫu nhiên **một lần** duy nhất khi tạo cấu hình; toàn bộ sinh viên trong lớp thi chung bộ câu hỏi này.
+
+### Các Hàm Nghiệp Vụ Chính
+
+#### 1. `drawQuestionIds()` — Bốc ngẫu nhiên N câu hỏi không lặp
+```cpp
+int drawQuestionIds(Subject* subject, int count, int outIds[]);
+```
+- Sử dụng giải thuật Fisher-Yates shuffle trên mảng con trỏ tạm, khởi tạo `srand` một lần duy nhất qua `initializeRngOnce()`.
+- Trả về số câu hỏi thực tế bốc được (`= count` nếu thành công).
+
+#### 2. `setClassExamConfigWorkflow()` — Thiết lập / Cập nhật cấu hình thi của lớp
+```cpp
+BusinessResult setClassExamConfigWorkflow(
+    Subject* root, Class* classes[], int classCount,
+    const char classId[], const char subjectId[],
+    int numberOfQuestions, int minutes
+);
+```
+- **Ràng buộc:** $1 \le \text{numberOfQuestions} \le \text{tổng số câu của môn}$; $1 \le \text{minutes} \le 180$.
+- **Freeze Policy:** Nếu trong lớp đã có bất kỳ sinh viên nào thi môn này (`classHasTakenSubject`) → lập tức trả về `ERR_CONSTRAINT_VIOLATION` (cấm sửa).
+- **Hành vi linh hoạt:**
+  - Nếu sửa số phút mà giữ nguyên số câu: cập nhật `minutes`, **giữ nguyên bộ đề cũ**.
+  - Nếu sửa số câu: giải phóng bộ đề cũ, bốc ngẫu nhiên bộ đề mới.
+
+#### 3. `deleteClassExamConfigWorkflow()` — Xóa cấu hình thi của lớp
+```cpp
+BusinessResult deleteClassExamConfigWorkflow(
+    Class* classes[], int classCount,
+    const char classId[], const char subjectId[]
+);
+```
+- Nếu đã có sinh viên trong lớp thi môn này → trả về `ERR_CONSTRAINT_VIOLATION`.
+- Nếu chưa thi → giải phóng cấu hình và thu hồi mảng `questionIds`.
+
+#### 4. `findStudentClass()` & `classHasTakenSubject()` — Tra cứu & Kiểm tra Freeze
+```cpp
+Class* findStudentClass(Class* classes[], int classCount, const char studentId[]);
+bool classHasTakenSubject(Class* classes[], int classCount, const char classId[], const char subjectId[]);
+```
+
+#### 5. `canStudentTakeSubject()` — Kiểm tra điều kiện làm bài thi
+```cpp
+BusinessResult canStudentTakeSubject(
+    Subject* root, Class* classes[], int classCount,
+    Student* student, const char subjectId[], const char** reasonOut
+);
+```
+- Kiểm tra toàn diện: sinh viên có thuộc lớp không, lớp đã có cấu hình thi chưa, sinh viên đã thi môn này chưa, cấu hình có hợp lệ không, các câu hỏi trong cấu hình có còn tồn tại trong ngân hàng đề không.
+- Nếu không thỏa mãn, trả về mã lỗi kèm con trỏ chuỗi lý do `reasonOut` (tiếng Việt có dấu).
+
+#### 6. `prepareExamFromConfig()` — Tạo đề thi snapshot cho sinh viên
+```cpp
+BusinessResult prepareExamFromConfig(
+    Subject* root, Class* classes[], int classCount,
+    Student* student, const char subjectId[],
+    ExamDetail*& examQuestionsHead
+);
+```
+- Kiểm tra qua `canStudentTakeSubject`.
+- Lần lượt tạo các node `ExamDetail` snapshot theo đúng thứ tự câu hỏi đã cấu hình cho lớp.
+- Nếu gặp sự cố giữa chừng, tự động dọn dẹp qua `cancelExam()` chống rò rỉ bộ nhớ.
+
+---
+
+## 6B. BusinessQueries.h / BusinessQueries.cpp — Truy Vấn Dùng Chung (B04 / R4)
+
+**Đường dẫn:** `business/BusinessQueries.h` + `business/BusinessQueries.cpp`
+
+Gom các hàm tiện ích và quy chế thi dùng chung cho cả Console và GUI, loại bỏ triệt để các đoạn code trùng lặp:
+
+```cpp
+bool isPassingScore(float score);                                       // Trả về true nếu score >= 5.0f
+int countStudentsInClass(const Class* classroom);                       // Đếm sĩ số lớp O(S)
+int collectSubjectsInOrder(Subject* root, Subject* out[], int capacity); // Thu thập danh sách môn theo thứ tự bảng chữ cái
+void freeAllData(Subject*& root, Class* classes[], int& classCount);    // Thu hồi toàn bộ dữ liệu khi thoát chương trình
+```
+
+---
+
+## 6C. PipeCodec.h — Xử Lý Ký Tự Phân Cách Pipe Trong Dữ Liệu (B06)
+
+**Đường dẫn:** `business/PipeCodec.h`
+
+Để tránh hiện tượng lệch cột khi lưu trữ file với ký tự `|` (delimiter mặc định), module này cung cấp 2 hàm mã hóa / giải mã:
+
+```cpp
+inline std::string escapePipe(const char* value);
+inline int splitEscapedPipe(const std::string& line, std::string fields[], int capacity);
+```
+- `escapePipe`: Chuyển đổi ký tự `|` thành `\|` và `\` thành `\\`.
+- `splitEscapedPipe`: Tách chuỗi theo dấu `|`, bỏ qua các ký tự đã được escape (`\|`), và tự động unescape về chuỗi gốc ban đầu.
+- Được sử dụng đồng bộ trong `FileStorage.cpp` (môn học, câu hỏi, điểm thi) và `ExamService.cpp` (phiên thi tạm).
 
 ---
 
@@ -713,32 +865,32 @@ Giải phóng toàn bộ danh sách `ExamDetail` khi sinh viên hủy thi giữa
 
 ---
 
-#### 10.6. `isExamTimeExpired()` & Các Tiện Ích Đếm Giờ Theo Giây
+#### 10.6. Các Tiện Ích Đếm Giờ Theo Giây & Định Dạng Đồng Hồ (B03 / R3)
 
 Tầng Business cung cấp hệ thống hàm kiểm tra và định dạng thời gian chính xác theo giây:
 
 ```cpp
-// 1. Kiểm tra hết giờ theo phút
-bool isExamTimeExpired(time_t startTime, int minutes);
-
-// 2. Tính số giây còn lại chính xác
+// 1. Tính số giây còn lại chính xác (chống trôi thời gian qua difftime)
 int calculateExamRemainingSeconds(time_t startTime, int durationSeconds);
 
-// 3. Kiểm tra hết giờ theo giây
+// 2. Kiểm tra hết giờ theo giây
 bool isExamTimeExpiredSeconds(time_t startTime, int durationSeconds);
 
-// 4. Định dạng chuỗi thời gian hiển thị: "MM:SS (M phut S giay)"
+// 3. Định dạng chuỗi thời gian chi tiết: "MM:SS (M phut S giay)"
 void formatExamTime(int remainingSeconds, char buffer[], int bufferSize);
+
+// 4. Định dạng chuỗi đồng hồ điện tử chuẩn GUI/Console: "MM:SS" (vd: 65s -> "01:05")
+void formatExamClock(int seconds, char out[], int size);
 ```
 
 - **`calculateExamRemainingSeconds()`**: Tính `durationSeconds - difftime(time(nullptr), startTime)`. Nếu thời gian đã hết, hàm an toàn trả về `0`.
-- **`formatExamTime()`**: Tự động chuyển đổi số giây còn lại sang chuỗi hiển thị đẹp mắt (ví dụ: `150` giây → `"02:30 (2 phut 30 giay)"`), đảm bảo UI hiển thị đồng nhất.
+- **`formatExamClock()`**: Định dạng gọn dạng `MM:SS` dùng để render trực tiếp lên giao diện Raylib GUI hoặc Console UI.
 
 ---
 
-#### 10.7. `struct ExamTimer` — Bộ Đếm Thời Gian Hướng Đối Tượng
+#### 10.7. `struct ExamTimer` & Runtime Vòng Lặp Thi Trực Tuyến (`tickExamSession`)
 
-Nhằm giúp tầng UI không phải tự quản lý các biến thời gian rời rạc, Business cung cấp struct đóng gói `ExamTimer`:
+Nhằm giúp tầng UI không phải tự quản lý biến thời gian rời rạc hay tự lưu file session mỗi giây (gây nghẽn I/O), Business cung cấp bộ công cụ runtime đồng bộ:
 
 ```cpp
 struct ExamTimer {
@@ -761,25 +913,65 @@ struct ExamTimer {
 };
 ```
 
-**Ví dụ ứng dụng `ExamTimer` trong UI:**
+##### Quản lý nhịp thi & Tự động lưu phiên: `tickExamSession()`
 ```cpp
-ExamTimer timer;
-timer.startMinutes(15); // Bắt đầu làm bài thi 15 phút
+struct ExamSessionTracker {
+    int lastSavedSecond = -1;
+};
 
-while (!timer.isExpired()) {
-    char timeStr[32];
-    timer.formatTime(timeStr, sizeof(timeStr));
-    // UI in đồng hồ: "Thoi gian con lai: 14:59 (14 phut 59 giay)"
-    
-    // Xử lý phím chọn đáp án...
-    if (userSubmitted) break;
-}
+struct ExamTickResult {
+    int remainingSeconds;
+    bool expired;
+    bool saved; // true nếu có đợt ghi đĩa thành công trong tick này
+};
 
-if (timer.isExpired()) {
-    cout << "[THONG BAO]: Da het thoi gian lam bai! Tu dong nop bai...\n";
-    submitExamWorkflow(...);
-}
+ExamTickResult tickExamSession(
+    ExamTimer& timer,
+    ExamSessionTracker& tracker,
+    const char studentId[],
+    const char subjectId[],
+    ExamDetail* examHead,
+    const char* filepath = nullptr
+);
 ```
+- UI chỉ cần gọi `tickExamSession()` trong mỗi frame vẽ màn hình.
+- Hàm chỉ thực hiện ghi đĩa `saveExamSession()` khi **số giây thực tế thay đổi** (`remaining != tracker.lastSavedSecond`), loại bỏ hiện tượng spam I/O đĩa.
+- Khi hết giờ (`isExpired() == true`), trả về `{0, true, false}` để UI chuyển sang bước nộp bài.
+
+##### Các Workflow Kết Thúc Bài Thi & Chuyển Giao Quyền Sở Hữu Bộ Nhớ
+```cpp
+// 1. Nộp bài chủ động (khi sinh viên bấm nộp):
+BusinessResult finishExamWorkflow(
+    Subject* root, Class* classes[], int classCount, Student* student,
+    const char subjectId[], ExamDetail*& head, float& score, int& correct,
+    int& total, bool* saveFailedOut = nullptr, const char* dataDir = "data",
+    const char* sessionFilepath = nullptr
+);
+
+// 2. Nộp bài tự động khi hết giờ:
+BusinessResult submitExpiredExamWorkflow(
+    Subject* root, Class* classes[], int classCount, Student* student,
+    const char subjectId[], ExamDetail*& head, float& score, int& correct,
+    int& total, bool* saveFailedOut = nullptr, const char* dataDir = "data",
+    const char* sessionFilepath = nullptr
+);
+
+// 3. Hủy phiên thi dở dang (tự nạp session, chấm điểm dở dang và khóa thi lại):
+BusinessResult cancelPendingExamWorkflow(
+    Subject* root, Class* classes[], int classCount, Student* student,
+    bool* saveFailedOut = nullptr, const char* dataDir = "data",
+    const char* sessionFilepath = nullptr
+);
+
+// 4. Tiếp tục bài thi từ session:
+BusinessResult resumeExamWorkflow(
+    Subject* root, Class* classes[], int classCount, Student* student,
+    ExamDetail*& head, char subjectOut[], int& remainingOut,
+    const char* sessionFilepath = nullptr
+);
+```
+- Các hàm trên tự động thực hiện trọn gói: **Chấm điểm → Ghi điểm vào ScoreList → Gọi saveAllData() → Tự xóa file session `temp_<MASV>.dat` → Đặt con trỏ `head = nullptr`**.
+- UI không cần phải gọi các hàm lưu đĩa hay quản lý con trỏ riêng rẽ. Nếu việc ghi đĩa gặp sự cố, biến cờ `saveFailedOut = true` được bật để cảnh báo nhưng điểm số trong RAM vẫn được bảo toàn.
 
 ---
 
@@ -969,13 +1161,13 @@ bool saveSubjectsToFile(Subject* root, const char* filepath);
 bool loadSubjectsFromFile(Subject*& root, const char* filepath);
 ```
 
-- **Save:** Duyệt BST theo **in-order** (trái → gốc → phải) → ghi thông tin môn học kèm cấu hình thi theo định dạng 5 cột vào `subjects.txt`:
+- **Save:** Duyệt BST theo **in-order** (trái → gốc → phải) → ghi thông tin danh mục môn học theo định dạng chuẩn 3 cột vào `subjects.txt`:
   ```text
-  MAMH|TENMH|SO_CAU_HOI|EXAM_QUESTION_COUNT|EXAM_MINUTES
+  MAMH|TENMH|SO_CAU_HOI
   ```
-  đồng thời ghi trực tiếp các câu hỏi của môn đó ngay sau dòng môn học. Nếu có tham số thư mục (`dir != ""`), đồng thời xuất câu hỏi ra file `<dir>/<MAMH>.txt`.
+  đồng thời ghi trực tiếp các câu hỏi của môn đó ngay sau dòng môn học (hoặc xuất ra file `<dir>/<MAMH>.txt`). Ký tự `|` và `\` trong tên và nội dung được tự động escape bằng `escapePipe()`.
 
-- **Load (Tương thích ngược):** Đọc môn học từ `subjects.txt` với parser tách 5 cột. Nếu phát hiện file dữ liệu cũ (3 cột hoặc 2 cột), hệ thống tự động gán `examQuestionCount = 0` và `examMinutes = 0` (chưa cấu hình). Sau đó đọc các câu hỏi kèm theo, tự động kiểm tra tính duy nhất ID câu hỏi (`isQuestionIdUsedAnywhere`) và đồng bộ counter `updateQuestionIdCounter()`.
+- **Load (Tương thích ngược):** Đọc môn học từ `subjects.txt`. Parser hỗ trợ cả file 3 cột chuẩn mới và file 5 cột cũ (tự động bỏ qua 2 cột cấu hình cũ để chuyển giao quyền quản lý cho `ExamConfig`). Tự động kiểm tra tính duy nhất ID câu hỏi (`isQuestionIdUsedAnywhere`) và đồng bộ counter `updateQuestionIdCounter()`.
 
 #### 12.2. Tiện Ích Quản Lý File Câu Hỏi Tự Động
 
@@ -999,7 +1191,21 @@ bool loadClassesFromFile(Class* classes[], int& classCount, const char* filepath
 - **Save:** Ghi mảng lớp học ra file, gom thông tin sinh viên và câu hỏi chi tiết bài thi snapshot trên từng dòng bằng dấu `|`.
 - **Load:** Đọc và tái tạo cấu trúc (Class → Student → Score → ExamDetail), hỗ trợ linh hoạt cả định dạng mới lẫn định dạng cũ.
 
-#### 12.4. `saveAllData()` / `loadAllData()` — Hàm Tổng Hợp
+#### 12.4. `saveExamConfigsToFile()` / `loadExamConfigsFromFile()` (B02)
+
+```cpp
+bool saveExamConfigsToFile(Class* classes[], int classCount, const char* filepath);
+bool loadExamConfigsFromFile(Class* classes[], int classCount, const char* filepath);
+```
+
+- **Định dạng file `data/exam_configs.txt`:**
+  ```text
+  <tổng số cấu hình>
+  MALOP|MAMH|SO_CAU|PHUT|NGAY_TAO|id1,id2,id3,...
+  ```
+- **Load:** Nạp cấu hình vào `Class.configList`. Tự động bỏ qua dòng sai cú pháp hoặc ngày giờ không hợp lệ. Nếu file không tồn tại, hàm trả về `true` (không có cấu hình).
+
+#### 12.5. `saveAllData()` / `loadAllData()` — Hàm Tổng Hợp
 
 ```cpp
 bool saveAllData(
@@ -1017,12 +1223,18 @@ bool loadAllData(
 );
 ```
 
-- **`saveAllData()`:** Tự tạo thư mục `data/` nếu chưa có. Ghi `subjects.txt`, các file câu hỏi `<MAMH>.txt` và `classes.txt`.
-- **`loadAllData()`:** Đọc toàn bộ dữ liệu từ thư mục chỉ định. Trả `true` nếu **ít nhất một** file đọc thành công (cho phép chạy với dữ liệu một phần).
+- **`saveAllData()`:** Tự tạo thư mục `data/` nếu chưa có. Ghi `subjects.txt`, các file câu hỏi `<MAMH>.txt`, `classes.txt` và `exam_configs.txt`.
+- **`loadAllData()`:** Nạp toàn bộ dữ liệu từ thư mục chỉ định theo quy trình chuẩn:
+  1. `loadSubjectsFromFile()`
+  2. `loadClassesFromFile()`
+  3. `loadExamConfigsFromFile()`
+  4. `discardInvalidExamConfigs()` (dọn sạch các cấu hình chứa câu hỏi mồ côi đã bị xóa)
+  5. `rebalanceSubjectBST(root)` (cân bằng lại cây nhị phân môn học)
+  Trả `true` nếu dữ liệu cơ bản đọc thành công.
 
 ---
 
-## 13. Bảng Tổng Hợp Tất Cả Hàm
+## 13. Bảng Tổng Hợp Tất Cả Hàm Nghiệp Vụ
 
 | # | File | Hàm | Kiểu Trả Về | Vai Trò |
 |:---:|---|---|---|---|
@@ -1034,7 +1246,7 @@ bool loadAllData(
 | 6 | `Validation.cpp` | `validateSubjectName()` | `BusinessResult` | Validate tên môn |
 | 7 | `Validation.cpp` | `validateClassId()` | `BusinessResult` | Validate mã lớp |
 | 8 | `Validation.cpp` | `validateClassName()` | `BusinessResult` | Validate tên lớp |
-| 9 | `Validation.cpp` | `validateStudentId()` | `BusinessResult` | Validate mã SV |
+| 9 | `Validation.cpp` | `validateStudentId()` | `BusinessResult` | Validate mã SV (whitelist ký tự chống path traversal) |
 | 10 | `Validation.cpp` | `validateStudentName()` | `BusinessResult` | Validate họ tên |
 | 11 | `Validation.cpp` | `validateGender()` | `BusinessResult` | Validate & chuẩn hóa phái |
 | 12 | `Validation.cpp` | `validatePassword()` | `BusinessResult` | Validate mật khẩu |
@@ -1043,48 +1255,59 @@ bool loadAllData(
 | 15 | `Validation.cpp` | `validateCorrectAnswer()` | `BusinessResult` | Validate & chuẩn hóa đáp án đúng |
 | 16 | `SubjectService.cpp` | `isSubjectUsedInScores()` | `bool` | Kiểm tra môn có được tham chiếu |
 | 17 | `SubjectService.cpp` | `addSubjectWorkflow()` | `BusinessResult` | Thêm môn học |
-| 18 | `SubjectService.cpp` | `editSubjectWorkflow()` | `BusinessResult` | Sửa môn học |
-| 19 | `SubjectService.cpp` | `deleteSubjectWorkflow()` | `BusinessResult` | Xóa môn học |
-| 20 | `SubjectService.cpp` | `setExamConfigWorkflow()` | `BusinessResult` | Cấu hình số câu thi & thời gian thi theo môn |
-| 20 | `QuestionService.cpp` | `addQuestionWorkflow()` | `BusinessResult` | Thêm câu hỏi |
-| 21 | `QuestionService.cpp` | `editQuestionWorkflow()` | `BusinessResult` | Sửa câu hỏi |
-| 22 | `QuestionService.cpp` | `deleteQuestionWorkflow()` | `BusinessResult` | Xóa câu hỏi |
-| 23 | `ClassService.cpp` | `addClassWorkflow()` | `BusinessResult` | Thêm lớp học |
-| 25 | `ClassService.cpp` | `deleteClassWorkflow()` | `BusinessResult` | Xóa lớp học (cascade giải phóng sinh viên) |
-| 25 | `StudentService.cpp` | `addStudentWorkflow()` | `BusinessResult` | Thêm sinh viên |
-| 26 | `StudentService.cpp` | `editStudentWorkflow()` | `BusinessResult` | Sửa sinh viên |
-| 27 | `StudentService.cpp` | `deleteStudentWorkflow()` | `BusinessResult` | Xóa sinh viên |
-| 28 | `AuthService.cpp` | `login()` | `LoginRole` | Đăng nhập (đơn giản) |
-| 29 | `AuthService.cpp` | `loginWorkflow()` | `BusinessResult` | Đăng nhập (chi tiết lỗi) |
-| 30 | `ExamService.cpp` | `canTakeExam()` | `bool` | Kiểm tra điều kiện thi |
-| 31 | `ExamService.cpp` | `calculateScore()` | `float` | Tính điểm |
-| 32 | `ExamService.cpp` | `prepareExamWorkflow()` | `BusinessResult` | Bốc đề ngẫu nhiên |
-| 33 | `ExamService.cpp` | `submitExamWorkflow()` | `BusinessResult` | Nộp bài & chấm điểm |
-| 34 | `ExamService.cpp` | `cancelExam()` | `void` | Hủy bài thi, giải phóng bộ nhớ |
-| 35 | `ExamService.cpp` | `isExamTimeExpired()` | `bool` | Kiểm tra bài thi đã hết giờ chưa (theo phút) |
-| 36 | `ExamService.cpp` | `calculateExamRemainingSeconds()` | `int` | Tính số giây còn lại chính xác |
-| 37 | `ExamService.cpp` | `isExamTimeExpiredSeconds()` | `bool` | Kiểm tra hết giờ thi (theo giây) |
-| 38 | `ExamService.cpp` | `formatExamTime()` | `void` | Định dạng số giây sang "MM:SS (M phut S giay)" |
-| 39 | `ExamService.h` | `ExamTimer` | `struct` | Bộ đếm thời gian hướng đối tượng (start, resume, isExpired, format) |
-| 40 | `ExamService.cpp` | `saveExamSession()` | `bool` | Lưu phiên thi tạm chống mất điện/sập nguồn (`temp_<MASV>.dat`) |
-| 41 | `ExamService.cpp` | `checkExamSession()` | `bool` | Kiểm tra và trích xuất thông tin phiên thi dở dang |
-| 42 | `ExamService.cpp` | `removeExamSession()` | `bool` | Xóa file phiên thi sau khi nộp bài hoặc hủy |
-| 43 | `ExamService.cpp` | `loadExamSession()` | `bool` | Khôi phục trọn vẹn danh sách `ExamDetail*` từ file phiên thi |
-| 44 | `ReportService.cpp` | `hasStudentTakenExam()` | `bool` | Kiểm tra SV đã thi và lấy điểm |
-| 45 | `ReportService.cpp` | `getStudentExamScore()` | `Score*` | Lấy con trỏ điểm của SV |
-| 46 | `ReportService.cpp` | `getStudentExamDetails()` | `ExamDetail*` | Lấy snapshot bài thi đã làm |
-| 47 | `ReportService.cpp` | `printClassScoreTable()` | `BusinessResult` | Helper in bảng điểm lớp |
-| 48 | `ReportService.cpp` | `printExamDetailReview()` | `BusinessResult` | Helper in chi tiết bài thi |
-| 49 | `ReportService.cpp` | `printStudentScores()` | `BusinessResult` | Helper in bảng điểm cá nhân SV |
-| 50 | `FileStorage.cpp` | `saveSubjectsToFile()` | `bool` | Ghi BST môn học & câu hỏi ra file |
-| 51 | `FileStorage.cpp` | `loadSubjectsFromFile()` | `bool` | Nạp BST môn học & câu hỏi từ file |
-| 52 | `FileStorage.cpp` | `createEmptyQuestionFile()` | `bool` | Tự động tạo file câu hỏi rỗng cho môn |
-| 53 | `FileStorage.cpp` | `renameSubjectQuestionFile()` | `bool` | Đổi tên file câu hỏi khi đổi MAMH |
-| 54 | `FileStorage.cpp` | `deleteSubjectQuestionFile()` | `bool` | Xóa file câu hỏi khi xóa môn |
-| 55 | `FileStorage.cpp` | `saveClassesToFile()` | `bool` | Ghi mảng lớp học ra file (gom dòng pipe) |
-| 56 | `FileStorage.cpp` | `loadClassesFromFile()` | `bool` | Nạp mảng lớp học từ file (hỗ trợ cả 2 định dạng) |
-| 57 | `FileStorage.cpp` | `saveAllData()` | `bool` | Lưu toàn bộ dữ liệu |
-| 58 | `FileStorage.cpp` | `loadAllData()` | `bool` | Nạp toàn bộ dữ liệu |
+| 18 | `SubjectService.cpp` | `editSubjectWorkflow()` | `BusinessResult` | Sửa môn học (đồng bộ sang ExamConfig) |
+| 19 | `SubjectService.cpp` | `deleteSubjectWorkflow()` | `BusinessResult` | Xóa môn học (dọn dẹp ExamConfig) |
+| 20 | `SubjectService.cpp` | `rebalanceSubjectBST()` | `void` | Tái cân bằng BST môn học sau nạp file |
+| 21 | `QuestionService.cpp` | `addQuestionWorkflow()` | `BusinessResult` | Thêm câu hỏi (auto sinh ID) |
+| 22 | `QuestionService.cpp` | `editQuestionWorkflow()` | `BusinessResult` | Sửa câu hỏi |
+| 23 | `QuestionService.cpp` | `deleteQuestionWorkflow()` | `BusinessResult` | Xóa câu hỏi (kiểm tra điểm & config lớp) |
+| 24 | `ClassService.cpp` | `addClassWorkflow()` | `BusinessResult` | Thêm lớp học |
+| 25 | `ClassService.cpp` | `deleteClassWorkflow()` | `BusinessResult` | Xóa lớp học (cascade giải phóng SV) |
+| 26 | `StudentService.cpp` | `addStudentWorkflow()` | `BusinessResult` | Thêm SV (kiểm tra toàn cục) |
+| 27 | `StudentService.cpp` | `editStudentWorkflow()` | `BusinessResult` | Sửa SV |
+| 28 | `StudentService.cpp` | `deleteStudentWorkflow()` | `BusinessResult` | Xóa SV |
+| 29 | `AuthService.cpp` | `login()` | `LoginRole` | Đăng nhập (đơn giản) |
+| 30 | `AuthService.cpp` | `loginWorkflow()` | `BusinessResult` | Đăng nhập (chi tiết lỗi) |
+| 31 | `ExamConfigService.cpp` | `drawQuestionIds()` | `int` | Bốc ngẫu nhiên N câu hỏi không lặp |
+| 32 | `ExamConfigService.cpp` | `setClassExamConfigWorkflow()` | `BusinessResult` | Tạo/sửa cấu hình thi theo lớp (Freeze guard) |
+| 33 | `ExamConfigService.cpp` | `deleteClassExamConfigWorkflow()` | `BusinessResult` | Xóa cấu hình thi của lớp |
+| 34 | `ExamConfigService.cpp` | `findStudentClass()` | `Class*` | Tra cứu con trỏ lớp của SV |
+| 35 | `ExamConfigService.cpp` | `classHasTakenSubject()` | `bool` | Kiểm tra lớp đã có SV thi môn này chưa |
+| 36 | `ExamConfigService.cpp` | `canStudentTakeSubject()` | `BusinessResult` | Kiểm tra điều kiện thi kèm chuỗi lý do |
+| 37 | `ExamConfigService.cpp` | `prepareExamFromConfig()` | `BusinessResult` | Tạo đề thi snapshot cho SV từ config lớp |
+| 38 | `BusinessQueries.cpp` | `isPassingScore()` | `bool` | Đánh giá Đạt/Không đạt (ngưỡng 5.0f) |
+| 39 | `BusinessQueries.cpp` | `countStudentsInClass()` | `int` | Đếm sĩ số sinh viên của một lớp |
+| 40 | `BusinessQueries.cpp` | `collectSubjectsInOrder()` | `int` | Thu thập mảng môn học theo thứ tự in-order |
+| 41 | `BusinessQueries.cpp` | `freeAllData()` | `void` | Giải phóng toàn bộ bộ nhớ ứng dụng |
+| 42 | `ExamService.cpp` | `calculateScore()` | `float` | Tính điểm trên thang 10 |
+| 43 | `ExamService.cpp` | `calculateExamRemainingSeconds()` | `int` | Tính số giây còn lại chính xác |
+| 44 | `ExamService.cpp` | `isExamTimeExpiredSeconds()` | `bool` | Kiểm tra hết giờ thi (theo giây) |
+| 45 | `ExamService.cpp` | `formatExamClock()` | `void` | Định dạng chuỗi đồng hồ "MM:SS" |
+| 46 | `ExamService.cpp` | `formatExamTime()` | `void` | Định dạng chuỗi "MM:SS (M phut S giay)" |
+| 47 | `ExamService.h` | `ExamTimer` | `struct` | Bộ đếm thời gian hướng đối tượng theo giây |
+| 48 | `ExamService.cpp` | `tickExamSession()` | `ExamTickResult` | Nhịp thi và tự động lưu session khi giây đổi |
+| 49 | `ExamService.cpp` | `finishExamWorkflow()` | `BusinessResult` | Nộp bài thủ công, lưu file và xóa session |
+| 50 | `ExamService.cpp` | `submitExpiredExamWorkflow()` | `BusinessResult` | Nộp bài khi hết giờ, lưu file và xóa session |
+| 51 | `ExamService.cpp` | `cancelPendingExamWorkflow()` | `BusinessResult` | Hủy bài thi dở dang (tự nộp và khóa môn) |
+| 52 | `ExamService.cpp` | `resumeExamWorkflow()` | `BusinessResult` | Khôi phục bài thi dở dang từ session |
+| 53 | `ExamService.cpp` | `saveExamSession()` | `bool` | Lưu file session tạm (`temp_<MASV>.dat`) |
+| 54 | `ExamService.cpp` | `checkExamSession()` | `bool` | Kiểm tra và trích xuất thông tin session |
+| 55 | `ExamService.cpp` | `removeExamSession()` | `bool` | Xóa file session |
+| 56 | `ExamService.cpp` | `loadExamSession()` | `bool` | Khôi phục danh sách `ExamDetail*` |
+| 57 | `ReportService.cpp` | `hasStudentTakenExam()` | `bool` | Kiểm tra SV đã thi và lấy điểm |
+| 58 | `ReportService.cpp` | `getStudentExamScore()` | `Score*` | Lấy con trỏ điểm của SV |
+| 59 | `ReportService.cpp` | `getStudentExamDetails()` | `ExamDetail*` | Lấy snapshot bài thi đã làm |
+| 60 | `ReportService.cpp` | `printClassScoreTable()` | `BusinessResult` | In bảng điểm lớp |
+| 61 | `ReportService.cpp` | `printExamDetailReview()` | `BusinessResult` | In chi tiết bài thi |
+| 62 | `ReportService.cpp` | `printStudentScores()` | `BusinessResult` | In bảng điểm cá nhân SV |
+| 63 | `FileStorage.cpp` | `saveSubjectsToFile()` | `bool` | Ghi BST môn học & câu hỏi ra file (3 cột) |
+| 64 | `FileStorage.cpp` | `loadSubjectsFromFile()` | `bool` | Nạp BST môn học & câu hỏi từ file |
+| 65 | `FileStorage.cpp` | `saveClassesToFile()` | `bool` | Ghi mảng lớp học ra file |
+| 66 | `FileStorage.cpp` | `loadClassesFromFile()` | `bool` | Nạp mảng lớp học từ file |
+| 67 | `FileStorage.cpp` | `saveExamConfigsToFile()` | `bool` | Ghi cấu hình thi theo lớp (`exam_configs.txt`) |
+| 68 | `FileStorage.cpp` | `loadExamConfigsFromFile()` | `bool` | Nạp cấu hình thi theo lớp |
+| 69 | `FileStorage.cpp` | `saveAllData()` | `bool` | Lưu toàn bộ dữ liệu hệ thống |
+| 70 | `FileStorage.cpp` | `loadAllData()` | `bool` | Nạp toàn bộ dữ liệu & tự động cân bằng cây |
 
 ---
 
@@ -1149,16 +1372,19 @@ while (root != nullptr) {
 }
 ```
 
-### 15.3. Gọi `cancelExam()` Hoặc `submitExamWorkflow()` Khi Hết Giờ
+### 15.3. Xử Lý Khi Hết Giờ Hoặc Nộp Bài Thi (B03)
 
-Khi `isExamTimeExpired()` trả `true`, UI **bắt buộc** phải:
-- Gọi `submitExamWorkflow()` nếu muốn tự động nộp bài.
-- Hoặc gọi `cancelExam(examQuestionsHead)` nếu muốn hủy bài. 
-Nếu không làm gì, sẽ xảy ra **memory leak**.
+Khi đồng hồ hết giờ (`timer.isExpired() == true`) hoặc sinh viên bấm nộp bài:
+- **Khuyến nghị chuẩn:** Gọi trực tiếp `finishExamWorkflow(...)` (khi nộp chủ động) hoặc `submitExpiredExamWorkflow(...)` (khi hết giờ).
+- Hai workflow này tự động:
+  1. Chấm điểm bài thi và lưu vào `ScoreList`.
+  2. Ghi toàn bộ dữ liệu ra file thông qua `saveAllData()`.
+  3. Xóa file session tạm `temp_<MASV>.dat`.
+  4. Gán `examQuestionsHead = nullptr` để UI không cần quản lý con trỏ đã chuyển giao quyền sở hữu.
+- **Nếu dùng hàm cấp thấp cũ (`submitExamWorkflow`):** UI bắt buộc phải gọi xóa session và lưu file thủ công, hoặc gọi `cancelExam(examQuestionsHead)` nếu không muốn ghi nhận điểm để tránh rò rỉ bộ nhớ.
 
-### 15.4. Gọi `cancelExam()` Khi Sinh Viên Bấm Hủy
-
-Nếu sinh viên thoát khỏi màn hình làm bài trước khi nộp, UI **bắt buộc** phải gọi:
+### 15.4. Gọi `cancelExam()` Khi Sinh Viên Hủy Trước Khi Nộp
+Nếu sinh viên thoát khỏi màn hình làm bài thi mà chưa từng lưu session và không muốn nộp bài dở dang, UI **bắt buộc** phải gọi:
 ```cpp
 cancelExam(examQuestionsHead);
 ```
@@ -1183,49 +1409,51 @@ while (s != nullptr) {
 }
 ```
 
-### 15.6. Quy Trình Khôi Phục Phiên Thi Dở Dang (Crash / Fault Tolerance)
+### 15.6. Quy Trình Khôi Phục & Quản Lý Phiên Thi Chuẩn Mới (Runtime Loop)
 
-Khi triển khai màn hình sinh viên đăng nhập và làm bài thi, UI nên áp dụng quy trình kiểm tra bài thi dở dang:
+Khi triển khai màn hình sinh viên đăng nhập và làm bài thi, UI nên sử dụng bộ API runtime hiện đại:
 
 1. **Khi sinh viên đăng nhập:**
+   Kiểm tra bài thi dở dang qua `checkExamSession()`:
    ```cpp
    char subId[SUBJECT_ID_LEN] = {};
    int remainingSeconds = 0;
    if (checkExamSession(loggedStudent->id, subId, remainingSeconds)) {
-       // Phát hiện bài thi chưa hoàn thành do tắt máy/mất điện
-       cout << "Phat hien bai thi mon " << subId << " dang lam do voi " 
-            << remainingSeconds << " giay con lai. Ban co muon tiep tuc?\n";
-       // Nếu tiếp tục:
+       // Hỏi sinh viên muốn tiếp tục hay hủy:
+       // - Nếu tiếp tục:
        ExamDetail* examHead = nullptr;
-       if (loadExamSession(loggedStudent->id, subId, remainingSeconds, examHead, rootSubject)) {
+       if (resumeExamWorkflow(root, classes, classCount, loggedStudent, examHead, subId, remainingSeconds) == SUCCESS) {
            ExamTimer timer;
            timer.resume(remainingSeconds);
-           // Tiếp tục vòng lặp làm bài thi...
+           ExamSessionTracker tracker;
+           // Vào vòng lặp thi...
        }
+       // - Nếu hủy phiên dở dang (tự nộp điểm dở dang và khóa thi lại):
+       //   cancelPendingExamWorkflow(root, classes, classCount, loggedStudent);
    }
    ```
-2. **Trong lúc làm bài thi:**
-   Sau mỗi lần sinh viên chọn một đáp án, UI nên gọi `saveExamSession()` để ghi nhận trạng thái mới nhất:
+2. **Trong vòng lặp thi (Frame loop / Tick):**
+   Chỉ cần gọi `tickExamSession()` mỗi frame vẽ:
    ```cpp
-   saveExamSession(loggedStudent->id, subId, timer.getRemainingSeconds(), examHead);
+   ExamTickResult tick = tickExamSession(timer, tracker, loggedStudent->id, subId, examHead);
+   if (tick.expired) {
+       // Hết giờ -> tự động nộp:
+       float score; int correct, total;
+       submitExpiredExamWorkflow(root, classes, classCount, loggedStudent, subId, examHead, score, correct, total);
+   }
    ```
-3. **Khi nộp bài hoặc hủy bài thi:**
-   UI **bắt buộc** phải gọi xóa session để không còn tàn dư file rác:
-   ```cpp
-   removeExamSession(loggedStudent->id);
-   ```
+3. **Cấu hình thi theo lớp & Khóa thi lại (Retake Guard):**
+   - Trước khi thi, kiểm tra điều kiện thi qua:
+     ```cpp
+     const char* reason = nullptr;
+     BusinessResult res = canStudentTakeSubject(root, classes, classCount, student, subjectId, &reason);
+     if (res != SUCCESS) {
+         // Hiển thị reason ra modal hoặc toast thông báo
+     }
+     ```
+   - Sinh viên đã thi môn nào sẽ bị khóa thi lại môn đó (`ERR_CONSTRAINT_VIOLATION`).
 
 ---
 
-### 15.3. Cấu hình thi bền vững & Khóa thi lại (Retake Guard)
-- **Cấu hình thi:** Tầng UI gọi `setExamConfigWorkflow()` để lưu số câu và số phút thi. Màn hình chuẩn bị thi đọc trực tiếp từ `subject->examQuestionCount` và `subject->examMinutes`. Nếu bằng `0`, vô hiệu hóa nút vào thi.
-- **Khóa thi lại:** Trước khi cho phép sinh viên vào thi, UI gọi `hasStudentTakenExam()`. Nếu sinh viên đã có điểm, hiển thị thông báo điểm cũ và khóa nút bắt đầu thi.
+*Tài liệu được cập nhật đầy đủ và đồng bộ với toàn bộ tính năng của tầng Business Logic Layer (ExamConfigService, ExamService, BusinessQueries, FileStorage).*
 
-### 15.4. Xử lý phiên thi dở dang (v2.2.2)
-- Khi sinh viên bấm "Hủy phiên thi dở dang", UI mở modal `MODAL_CANCEL_EXAM`.
-- Khi xác nhận hủy, UI tự động nạp đề và gọi `submitExamWorkflow()` để chấm các câu đã làm (câu chưa làm chấm sai) và ghi điểm vào hệ thống, khóa quyền thi lại môn học.
-- Xóa sạch file session tạm `temp_<MASV>.dat` sau khi nộp hoặc khi file bị hỏng.
-
----
-
-*Tài liệu được cập nhật đầy đủ và đồng bộ với toàn bộ tính năng của tầng Business Logic Layer (`ExamService`, `ReportService`, `FileStorage`,...).*
