@@ -13,10 +13,11 @@ Dòng thời gian so với bản cũ trước khi cập nhật GitHub (mốc so 
 
 ### Changed
 
+- **docs: tách `BUSINESS_BRIEF.md`** thành `docs/HANDOFF_CORE.md` + `docs/HANDOFF_BUSINESS.md`; xoá file gộp, spec R1–R8 giữ trong 2 file handoff.
 - **ui: xoá toàn bộ comment** trong `ui/*.cpp`, `ui/*.h` theo yêu cầu.
 - **ui: màn làm bài hiện MSSV + mã lớp** dưới tên môn.
 
-### Handoff — chưa triển khai (Người 3)
+### Handoff — chưa triển khai (Người 1 Core + Người 2 Business)
 
 - BST môn học cân bằng lại sau khi nạp file (business-only, không AVL).
 - `ExamConfig` **core** gắn vào `Class` + `int* questionIds`, freeze sau khi có SV thi, file `data/exam_configs.txt`; xoá cấu hình môn cũ (`Subject.examQuestionCount/examMinutes`, `setExamConfigWorkflow`, format 5 cột).
