@@ -34,6 +34,9 @@ Các cấu trúc chính dùng `char[]`, con trỏ và `new/delete`, không dùng
 
 ## Build và chạy
 
+> [!TIP]
+> Xem tài liệu chi tiết cho từng hệ điều hành (Linux, Windows, macOS, WSL2): **[HUONG_DAN_CHAY.md](HUONG_DAN_CHAY.md)**.
+
 Hỗ trợ cả môi trường **Linux** và **Windows** (GCC/Clang hỗ trợ C++17 và GNU Make).
 
 ### Chạy trên Windows (MinGW-w64)

@@ -11,11 +11,23 @@ ifeq ($(OS),Windows_NT)
 	MKDIR = @if not exist "$(subst /,\,$(@D))" mkdir "$(subst /,\,$(@D))"
 	RM_CMD = @if exist "$(subst /,\,$(BUILD_DIR))" rmdir /s /q "$(subst /,\,$(BUILD_DIR))"
 	RUN_TESTS = @for %%B in ($(subst /,\,$(TEST_BINS))) do @(echo Running %%B && %%B || exit /b 1)
+else ifeq ($(shell uname -s),Darwin)
+	# Cấu hình trên macOS (dùng raylib từ Homebrew)
+	BREW_PREFIX ?= $(shell brew --prefix 2>/dev/null || echo /opt/homebrew)
+	CPPFLAGS ?= -I$(BREW_PREFIX)/include -Icore -Ibusiness -Iui
+	LDFLAGS ?= -L$(BREW_PREFIX)/lib
+	LDLIBS ?= -lraylib -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
+	BIN_EXT :=
+	MKDIR = @mkdir -p $(@D)
+	RM_CMD = rm -rf -- $(BUILD_DIR)
+	RUN_TESTS = @set -e; for test_bin in $(TEST_BINS); do echo "Running $$test_bin"; "$$test_bin"; done
 else
 	# Cấu hình trên Linux
 	CPPFLAGS ?= -Ithird_party/raylib-6.2_linux_amd64/include -Icore -Ibusiness -Iui
 	LDFLAGS ?= -Lthird_party
-	LDLIBS ?= third_party/raylib-6.2_linux_amd64/lib/libraylib.a -lGL -lm -lpthread -ldl -lrt -lX11
+	GL_LIB ?= $(shell ld -lGL -o /dev/null 2>/dev/null && echo "-lGL" || (ld -l:libGL.so.1 -o /dev/null 2>/dev/null && echo "-l:libGL.so.1" || echo "-lGL"))
+	X11_LIB ?= $(shell ld -lX11 -o /dev/null 2>/dev/null && echo "-lX11" || (ld -l:libX11.so.6 -o /dev/null 2>/dev/null && echo "-l:libX11.so.6" || echo "-lX11"))
+	LDLIBS ?= third_party/raylib-6.2_linux_amd64/lib/libraylib.a $(GL_LIB) -lm -lpthread -ldl -lrt $(X11_LIB)
 	BIN_EXT :=
 	MKDIR = @mkdir -p $(@D)
 	RM_CMD = rm -rf -- $(BUILD_DIR)
