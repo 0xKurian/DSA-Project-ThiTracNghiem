@@ -193,6 +193,12 @@ Subject* deleteSubject(
         root->questionList =
             successor->questionList;
 
+        root->examQuestionCount =
+            successor->examQuestionCount;
+
+        root->examMinutes =
+            successor->examMinutes;
+
         successor->questionList = nullptr;
 
         root->right = deleteSubject(
@@ -241,6 +247,12 @@ bool editSubject(
 
     newSubject->questionList =
         subject->questionList;
+
+    newSubject->examQuestionCount =
+        subject->examQuestionCount;
+
+    newSubject->examMinutes =
+        subject->examMinutes;
 
     subject->questionList = nullptr;
 

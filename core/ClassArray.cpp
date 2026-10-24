@@ -1,4 +1,5 @@
 #include "ClassArray.h"
+#include "ExamConfigList.h"
 #include "StudentList.h"
 #include "StringUtils.h"
 
@@ -29,6 +30,7 @@ Class* createClass(
     );
 
     classroom->studentList = nullptr;
+    classroom->configList = nullptr;
 
     return classroom;
 }
@@ -142,6 +144,10 @@ bool deleteClass(
 
     deleteStudentListOfClass(
         classes[index]->studentList
+    );
+
+    deleteExamConfigList(
+        classes[index]->configList
     );
 
     delete classes[index];

@@ -2,7 +2,7 @@
 
 ## Module
 
-`Structures.h` và `Constants.h` định nghĩa dữ liệu. Mỗi module có header riêng: `SubjectBST`, `QuestionList`, `ClassArray`, `StudentList`, `ScoreList`, `StringUtils`. `FunctionPrototype.h` tổng hợp header core và giữ các khai báo nghiệp vụ chưa được core cài đặt.
+`Structures.h` và `Constants.h` định nghĩa dữ liệu. Mỗi module có header riêng: `SubjectBST`, `QuestionList`, `ClassArray`, `StudentList`, `ScoreList`, `ExamConfigList`, `StringUtils`. `FunctionPrototype.h` tổng hợp header core và giữ các khai báo nghiệp vụ chưa được core cài đặt.
 
 ## Cấu hình thi trên Subject
 
@@ -14,7 +14,16 @@
 - Khi khởi tạo node môn học mới thông qua `createSubject()`, cả hai trường đều được khởi tạo giá trị mặc định bằng `0`.
 - Giá trị `0` biểu thị môn học **chưa được cấu hình thi**. Khi giá trị bằng `0`, hệ thống coi môn học chưa sẵn sàng cho sinh viên thi và cần được giáo viên/quản trị viên cấu hình trước.
 - Khi cấu hình thông qua workflow nghiệp vụ `setExamConfigWorkflow()`, `examQuestionCount` phải nằm trong đoạn `1..countQuestions(subject->questionList)` và `examMinutes` phải nằm trong đoạn `1..180`.
-- Lưu ý về Core: `editSubject()` khi đổi mã môn (`oldId != newId`) tạo node `Subject` mới qua `createSubject()` nên hai trường này sẽ trở về `0`. Xem chi tiết phân tích ở tầng nghiệp vụ.
+- Lưu ý về Core: `editSubject()` khi đổi mã môn (`oldId != newId`) giữ nguyên cấu hình `examQuestionCount` và `examMinutes` từ node cũ sang node mới. `deleteSubject()` với node có 2 con sao chép cấu hình thi từ successor.
+
+## Cấu hình thi theo lớp (ExamConfig)
+
+`struct ExamConfig` gắn trực tiếp vào `Class.configList`. Module `ExamConfigList`:
+- `createExamConfig(subjectId, minutes, createdAt, questionIds, questionCount)`: Tạo node cấu hình thi, cấp phát động mảng `questionIds` (`new int[count]`). Từ chối (`nullptr`) nếu ID không hợp lệ, `count <= 0`, `minutes <= 0` hoặc `questionIds == nullptr`.
+- `addExamConfig(classroom, config)`: Nhận node mới gắn vào cuối danh sách của lớp. Từ chối (`false`) nếu lớp đã có cấu hình cho môn học này; khi thất bại bên gọi vẫn sở hữu node.
+- `findExamConfig(classroom, subjectId)`: Tìm cấu hình thi của môn trong lớp.
+- `deleteExamConfig(classroom, subjectId)`: Xóa và giải phóng node cấu hình cùng mảng `questionIds`.
+- `deleteClass`: Tự động gọi `deleteExamConfigList` giải phóng toàn bộ cấu hình thi thuộc lớp (cascade).
 
 ## ID và chuỗi
 

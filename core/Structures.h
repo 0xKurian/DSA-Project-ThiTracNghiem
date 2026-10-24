@@ -9,6 +9,7 @@ struct ExamDetail;
 struct Score;
 struct Student;
 struct Class;
+struct ExamConfig;
 
 struct Question {
     int id;
@@ -77,11 +78,21 @@ struct Student {
     Student* next;
 };
 
+struct ExamConfig {
+    char subjectId[SUBJECT_ID_LEN];
+    int questionCount;
+    int minutes;
+    char createdAt[20];
+    int* questionIds;
+    ExamConfig* next;
+};
+
 struct Class {
     char id[CLASS_ID_LEN];
     char name[CLASS_NAME_LEN];
 
     Student* studentList;
+    ExamConfig* configList;
 };
 
 enum LoginRole {

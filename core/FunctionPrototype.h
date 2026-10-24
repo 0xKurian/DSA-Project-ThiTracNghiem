@@ -2,6 +2,7 @@
 #define FUNCTION_PROTOTYPE_H
 
 #include "ClassArray.h"
+#include "ExamConfigList.h"
 #include "StudentList.h"
 #include "SubjectBST.h"
 #include "QuestionList.h"

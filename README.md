@@ -5,15 +5,17 @@
 ## Cấu trúc repo
 
 ```text
-core/          Cấu trúc dữ liệu cài tay: BST môn học, DSLK đơn câu hỏi/sinh viên/điểm/chi tiết, mảng lớp 10.000 phần tử
+core/          Cấu trúc dữ liệu cài tay: BST môn học, DSLK đơn câu hỏi/sinh viên/điểm/chi tiết/cấu hình thi, mảng lớp 10.000 phần tử
 business/      Dịch vụ nghiệp vụ: đăng nhập, CRUD môn/lớp/SV/câu hỏi, đăng ký + chấm thi, lưu/đọc file
 ui/            Giao diện raylib (các mô-đun Gui*) + giao diện console (ConsoleUI.cpp)
 data/          subjects.txt (môn + câu hỏi), classes.txt (lớp, sinh viên) — dữ liệu chạy thử
 assets/fonts/  Font dùng trong GUI
 examples/      Demo sử dụng core
-tests/         Kiểm tra hồi quy (mỗi file một main riêng)
-docs/          Hợp đồng API và tài liệu lịch sử
+tests/         Kiểm tra hồi quy (10 bộ test, mỗi file một main riêng)
+docs/          Tài liệu kiến trúc, cẩm nang vấn đáp, thiết kế và hợp đồng API
 third_party/   raylib 6.2 prebuilt (Linux amd64 & Win64 MinGW, link tĩnh)
+HUONG_DAN_CHAY.md Hướng dẫn biên dịch và chạy trên Linux, Windows, macOS
+CHANGELOG.md   Nhật ký thay đổi các phiên bản
 chay_gui.bat   Script chạy nhanh GUI trên Windows
 chay_console.bat Script chạy nhanh Console trên Windows
 Makefile       Build app, core_demo và các test
@@ -93,7 +95,16 @@ Mỗi file test có một `main` riêng, vì vậy không ghép tất cả `test
   - Widget tìm kiếm gợi ý (`GuiSearchSuggest`) và ô nhập văn bản có con trỏ UTF-8 (click đặt caret, phím Home/End/Arrows).
   - Chống click xuyên modal (`GuiModalAbsorbsInput`), click chọn hàng lớp thông minh, xử lý chống tràn chữ.
   - Hỗ trợ biên dịch và chạy test trên cả Windows (MinGW w64) và Linux.
-- Chi tiết từng phiên bản xem [CHANGELOG.md](CHANGELOG.md) và [BAO_CAO_CAP_NHAT.md](BAO_CAO_CAP_NHAT.md).
+- Chi tiết từng phiên bản xem [CHANGELOG.md](CHANGELOG.md) và [BAO_CAO_CAP_NHAT.md](docs/BAO_CAO_CAP_NHAT.md).
+
+## Tài liệu dự án
+
+- **[Cẩm nang toàn diện & Vấn đáp bảo vệ đồ án](docs/DOCS.md)**: Kiến trúc 3 tầng, phân tích độ phức tạp Big-O, thuật toán cốt lõi, quản lý bộ nhớ heap & cascade delete, bộ câu hỏi bảo vệ đồ án.
+- **[Hướng dẫn biên dịch & chạy](HUONG_DAN_CHAY.md)**: Thiết lập môi trường và chạy dự án trên Linux, Windows, macOS, WSL2.
+- **[Thiết kế cấu hình thi theo lớp](docs/CAU_HINH_THI_THEO_LOP.md)**: Đặc tả cấu trúc và luồng cấu hình thi riêng theo từng lớp học.
+- **[Hợp đồng API tầng Core](docs/CORE_API.md)**: Đặc tả API, quy ước tham số và ràng buộc dữ liệu tầng Core.
+- **[Kế hoạch bàn giao Core](docs/HANDOFF_CORE.md)** & **[Kế hoạch tích hợp Business/UI](docs/HANDOFF_BUSINESS.md)**: Đặc tả chi tiết các module chức năng.
+- **[Báo cáo cập nhật hệ thống](docs/BAO_CAO_CAP_NHAT.md)** & **[Lịch sử thay đổi](CHANGELOG.md)**: Nhật ký phát triển và tối ưu hóa hệ thống.
 
 ## Những điều cần biết khi gọi API
 

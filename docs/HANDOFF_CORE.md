@@ -20,7 +20,7 @@
 
 ### C01 — ExamConfig core-owned gắn Class (R2 core)
 
-- **Trạng thái:** Chờ core
+- **Trạng thái:** Xong
 - **UI đang chờ:** `ui/GuiAdminExamConfigs.cpp`, `ui/GuiExamPrepare.cpp`, `ui/GuiState.h`
 - **Mục tiêu:** mỗi cặp `(lớp, môn)` có cấu hình số câu, số phút, bộ câu đã bốc,
   ngày tạo; bốc N câu một lần khi lưu; freeze khi lớp đã thi; console dùng chung.
@@ -91,7 +91,7 @@ API workflow, freeze, persistence `data/exam_configs.txt`, xoá legacy
 
 ### C02 — `deleteSubject` giữ config của successor
 
-- **Trạng thái:** Chờ core
+- **Trạng thái:** Xong
 - **UI đang chờ:** gián tiếp qua `ui/GuiAdminSubjects.cpp` (hiển thị/sửa cấu hình môn)
 - **Vấn đề:** `core/SubjectBST.cpp` nhánh node có 2 con chỉ chép `id`, `name`,
   `questionList` từ successor; không chép `examQuestionCount`, `examMinutes`.
@@ -104,7 +104,7 @@ API workflow, freeze, persistence `data/exam_configs.txt`, xoá legacy
 
 ### C03 — `editSubject` giữ config khi đổi mã môn
 
-- **Trạng thái:** Chờ core
+- **Trạng thái:** Xong
 - **UI đang chờ:** `ui/GuiModalDialogs.cpp` (modal sửa môn), `ui/ConsoleUI.cpp` (sửa mã)
 - **Vấn đề:** `editSubject` tạo node mới qua `createSubject()` nên
   `examQuestionCount/examMinutes` về `0`.
