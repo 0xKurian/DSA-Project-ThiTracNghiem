@@ -6,10 +6,10 @@ Dòng thời gian so với bản cũ trước khi cập nhật GitHub (mốc so 
 
 ### Added
 
-- **docs: `BUSINESS_BRIEF.md`** — gom BST không suy biến, cấu hình thi theo lớp, timer/session runtime, pass/fail và query dùng chung; thay thế brief cũ `EXAM_CONFIG_BRIEF.md`.
+- **docs: `BUSINESS_BRIEF.md`** — gom BST không suy biến, cấu hình thi theo lớp (bản 2 chốt core-owned), timer/session runtime, pass/fail và query dùng chung; thay thế brief cũ `EXAM_CONFIG_BRIEF.md`.
 - **feat(ui): `Arr<T>` thay `std::vector`** toàn bộ UI; thêm `ui/GuiArr.h`, không còn STL container trong `ui/`.
 - **feat(ui): đồng hồ thi dùng `ExamTimer` của business** — bỏ `examTimerClock`/`examRemainingSeconds`, không còn delta `GetFrameTime` cho giờ thi.
-- **feat(ui): tab "Cau hinh thi (Lop-Mon)"** + xem trước bộ câu đã bốc — **bản tạm** đã commit, chờ `ExamConfigBook` bên business để thay thế.
+- **feat(ui): tab "Cau hinh thi (Lop-Mon)"** + xem trước bộ câu đã bốc — **bản tạm** đã commit, chờ `ExamConfig` core (gắn `Class`) để thay thế.
 
 ### Changed
 
@@ -19,7 +19,7 @@ Dòng thời gian so với bản cũ trước khi cập nhật GitHub (mốc so 
 ### Handoff — chưa triển khai (Người 3)
 
 - BST môn học cân bằng lại sau khi nạp file (business-only, không AVL).
-- `ExamConfigBook` + `data/exam_configs.txt` + `prepareExamFromConfig`.
+- `ExamConfig` **core** gắn vào `Class` + `int* questionIds`, freeze sau khi có SV thi, file `data/exam_configs.txt`; xoá cấu hình môn cũ (`Subject.examQuestionCount/examMinutes`, `setExamConfigWorkflow`, format 5 cột).
 - `ExamSessionRuntime`/`tickExamSession`, `formatExamClock`, pass/fail, điều kiện thi, query dùng chung.
 - Console bỏ prompt sinh viên nhập số câu/số phút, dùng cấu hình lớp.
 
