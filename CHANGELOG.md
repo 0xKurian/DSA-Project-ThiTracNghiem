@@ -2,6 +2,32 @@
 
 Dòng thời gian so với bản cũ trước khi cập nhật GitHub (mốc so sánh: commit `373b2a6 "Add files via upload"`). Kiểu viết theo Conventional Commits.
 
+## [Unreleased] — 2026-10-24
+
+### Added
+
+- **docs: `BUSINESS_BRIEF.md`** — gom BST không suy biến, cấu hình thi theo lớp, timer/session runtime, pass/fail và query dùng chung; thay thế brief cũ `EXAM_CONFIG_BRIEF.md`.
+- **feat(ui): `Arr<T>` thay `std::vector`** toàn bộ UI; thêm `ui/GuiArr.h`, không còn STL container trong `ui/`.
+- **feat(ui): đồng hồ thi dùng `ExamTimer` của business** — bỏ `examTimerClock`/`examRemainingSeconds`, không còn delta `GetFrameTime` cho giờ thi.
+- **feat(ui): tab "Cau hinh thi (Lop-Mon)"** + xem trước bộ câu đã bốc — **bản tạm** đã commit, chờ `ExamConfigBook` bên business để thay thế.
+
+### Changed
+
+- **ui: xoá toàn bộ comment** trong `ui/*.cpp`, `ui/*.h` theo yêu cầu.
+- **ui: màn làm bài hiện MSSV + mã lớp** dưới tên môn.
+
+### Handoff — chưa triển khai (Người 3)
+
+- BST môn học cân bằng lại sau khi nạp file (business-only, không AVL).
+- `ExamConfigBook` + `data/exam_configs.txt` + `prepareExamFromConfig`.
+- `ExamSessionRuntime`/`tickExamSession`, `formatExamClock`, pass/fail, điều kiện thi, query dùng chung.
+- Console bỏ prompt sinh viên nhập số câu/số phút, dùng cấu hình lớp.
+
+### Kiểm chứng
+
+- `make clean && make`: 0 warning, 0 error; `make test` PASS.
+- UI chạy được; ảnh kiểm tab cấu hình/prepare/exam room đã chụp trong phiên phát triển.
+
 ## [2.2.2] — 2026-10-19
 
 ### Added
