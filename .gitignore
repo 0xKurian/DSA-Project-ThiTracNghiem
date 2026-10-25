@@ -23,5 +23,6 @@ Thumbs.db
 
 # Personal/local docs, never in the repo
 /AGENTS.md
+/CHANGELOG.md
 /PROGRESS.md
 /agent.md
