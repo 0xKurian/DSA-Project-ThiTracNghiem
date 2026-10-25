@@ -102,10 +102,11 @@ struct GuiState {
     int configPage;
     int configPreviewPage;
     char searchConfig[64];
-    char searchConfigLast[64];
     bool activeSearchConfig;
     char formExamQ[8];
     char formExamMinutes[16];
+    bool activeConfigClassSearch;
+    bool activeConfigSubjectSearch;
 
     int studentTab;
     int studentSubChoice;

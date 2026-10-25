@@ -99,5 +99,5 @@ void drawAdminTabSubjects(GuiState& g) {
     Arr<SuggestItem> items;
     GuiMakeSubjectItems(g.subjects, true, items);
     GuiSearchSuggest(searchRec, g.searchSubject, sizeof(g.searchSubject), g.activeSearchSubject,
-                     items, g.selectedSubjectIdx, "Tim theo ma hoac ten mon...");
+                     items, "Tim theo ma hoac ten mon...");
 }

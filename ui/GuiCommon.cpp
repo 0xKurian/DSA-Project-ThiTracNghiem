@@ -404,14 +404,6 @@ void collectQuestions(Question* head, Arr<Question*>& list) {
     }
 }
 
-void collectStudents(Student* head, Arr<Student*>& list) {
-    Student* cur = head;
-    while (cur != nullptr) {
-        list.push_back(cur);
-        cur = cur->next;
-    }
-}
-
 void GuiLeaveOnlyDigits(char textBuffer[], int bufferSize) {
     if (textBuffer == nullptr || bufferSize <= 0) return;
     int w = 0;
@@ -440,13 +432,9 @@ bool GuiMatchText(const char* text, const char* query) {
 }
 
 int GuiSearchSuggest(Rectangle rec, char* query, int capacity, bool& active,
-                     const Arr<SuggestItem>& items, int currentValue,
-                     const char* placeholder, bool* textChanged) {
+                     const Arr<SuggestItem>& items, const char* placeholder) {
     bool wasActive = active;
-    (void)currentValue;
-    size_t lenBefore = strlen(query);
     GuiTextBoxInput(rec, query, capacity, active, placeholder);
-    if (textChanged != nullptr) *textChanged = (strlen(query) != lenBefore);
     if (!active && !wasActive) return -1;
 
     Arr<const SuggestItem*> matches;
@@ -455,8 +443,6 @@ int GuiSearchSuggest(Rectangle rec, char* query, int capacity, bool& active,
             matches.push_back(&it);
         }
     }
-    std::stable_sort(matches.begin(), matches.end(),
-                     [](const SuggestItem* a, const SuggestItem* b) { return a->id < b->id; });
 
     const int maxRows = 6;
     int shown = (int)matches.size();
@@ -553,19 +539,4 @@ void GuiMakeClassItems(Class* const classes[], int classCount, Arr<SuggestItem>&
         it.highlight = (n > 0);
         out.push_back(it);
     }
-    std::stable_sort(out.begin(), out.end(),
-                     [](const SuggestItem& a, const SuggestItem& b) { return a.id < b.id; });
-}
-
-void GuiMakeStudentItems(const Arr<Student*>& students, Arr<SuggestItem>& out) {
-    out.clear();
-    for (size_t i = 0; i < students.size(); ++i) {
-        SuggestItem it;
-        it.value = (int)i;
-        it.id = students[i]->id;
-        it.name = std::string(students[i]->ho) + " " + students[i]->ten;
-        out.push_back(it);
-    }
-    std::stable_sort(out.begin(), out.end(),
-                     [](const SuggestItem& a, const SuggestItem& b) { return a.id < b.id; });
 }

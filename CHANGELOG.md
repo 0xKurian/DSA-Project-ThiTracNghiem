@@ -21,11 +21,25 @@ Dòng thời gian so với bản cũ trước khi cập nhật GitHub (mốc so 
 - **docs: `HANDOFF_CORE.md` / `HANDOFF_BUSINESS.md`** ghi trạng thái UI đã nối; thêm B09
   (dọn file session hỏng trong `cancelPendingExamWorkflow`).
 
+- **refactor(ui): gọn tab cấu hình thi + panel gợi ý dùng chung**
+  - Modal tạo/sửa cấu hình: chọn mã lớp/môn qua `GuiSearchSuggest` dùng cờ active
+    persistent (`g.activeConfigClassSearch` / `g.activeConfigSubjectSearch`) — panel tự
+    đóng khi chọn; ở modal sửa, mã lớp/môn chỉ là text hiển thị.
+  - Hợp nhất click chọn row (frozen & không frozen): bấm thân row để chọn, bấm `Xoa`
+    trên row không kéo theo chọn row.
+  - Bỏ buffer kép `searchConfigLast` (reset theo đúng pattern `strlen` của tab Lớp học);
+    bỏ 2 tham số chết `currentValue`/`textChanged` của `GuiSearchSuggest` (7 call site);
+    bỏ 3 `std::stable_sort` (danh sách giữ thứ tự nạp); bỏ dòng "Ngan hang hien co" +
+    include thừa ở Chuẩn bị thi.
+
 ### Kiểm chứng
 
-- `make -j$(nproc)`: 0 warning, 0 error; `make test` PASS; `./build/core_demo` exit 0.
+- `make -j$(nproc)`: 0 warning, 0 error; `make test` PASS (18 executable); `./build/core_demo` exit 0.
 - Console smoke: đăng nhập GV + đăng nhập SV thi theo config lớp (2 câu/10 phút) → nộp → lưu file.
-- GUI: chỉ build, **chưa verify chuột/màn hình** (máy không có display).
+- GUI: đã smoke test thật bằng driver X11 tự viết (XTest, `xctl.py`): đăng nhập GV, vào tab
+  cấu hình, mở modal tạo, dropdown lớp/môn (tự đóng khi chọn), báo lỗi freeze của business,
+  tạo/sửa cấu hình thành công, click row đổi selection + preview bộ đề (row Khoá vẫn chọn
+  được); **chưa verify 3 mục**: `Sua` trên row Khoá, `Xoa` trên row/preview.
 
 ## [Unreleased] — 2026-10-24
 

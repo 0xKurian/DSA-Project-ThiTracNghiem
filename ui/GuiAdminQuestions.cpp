@@ -99,7 +99,7 @@ void drawAdminTabQuestions(GuiState& g) {
         Arr<SuggestItem> items;
         GuiMakeSubjectItems(g.subjects, true, items);
         int picked = GuiSearchSuggest(questionSearchRec, g.searchQuestion, sizeof(g.searchQuestion),
-                                      g.activeSearchQuestion, items, g.selectedSubjectIdx,
+                                      g.activeSearchQuestion, items,
                                       "Tim theo ma hoac ten mon...");
         if (picked >= 0) {
             g.selectedSubjectIdx = picked;

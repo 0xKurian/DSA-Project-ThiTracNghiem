@@ -5,7 +5,6 @@
 #include "../business/ExamConfigService.h"
 #include "../business/ExamService.h"
 #include "../core/ExamConfigList.h"
-#include "../core/QuestionList.h"
 
 #include <cstdio>
 
@@ -62,9 +61,6 @@ void drawExamPrepareTab(GuiState& g) {
                                                       g.loggedStudent, chosenSub->id, &reason);
         bool canTake = (canRes == SUCCESS);
 
-        DrawTxt(TextFormat("-> Mon: %s | Ngan hang hien co: %d cau hoi", chosenSub->name, countQuestions(chosenSub->questionList)),
-                contentRec.x + 30, (float)formStartY + 85, 15, COLOR_TEXT_MUTED);
-
         if (!canTake) {
             const char* msg = (reason != nullptr) ? reason : getErrorMessage(canRes);
             DrawTxt(TextFormat("Khong the thi: %s.", msg), contentRec.x + 30, (float)formStartY + 125, 16, COLOR_WARNING, true);
@@ -104,7 +100,7 @@ void drawExamPrepareTab(GuiState& g) {
         Arr<SuggestItem> items;
         GuiMakeSubjectItems(g.subjects, true, items);
         int picked = GuiSearchSuggest(prepSearchRec, g.searchPrepare, sizeof(g.searchPrepare),
-                                      g.activeSearchPrepare, items, g.studentSubChoice,
+                                      g.activeSearchPrepare, items,
                                       "Tim theo ma hoac ten mon...");
         if (picked >= 0) g.studentSubChoice = picked;
     }

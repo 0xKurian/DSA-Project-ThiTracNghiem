@@ -53,9 +53,6 @@ void drawAdminTabClasses(GuiState& g) {
             classView.push_back(i);
         }
     }
-    std::stable_sort(classView.begin(), classView.end(), [&](int a, int b) {
-        return strcmp(g.classes[a]->id, g.classes[b]->id) < 0;
-    });
 
     Rectangle allRec = { leftPane.x + 10, leftPane.y + 128, leftPane.width - 20, 34 };
     if (GuiBtn(allRec, "Tat ca cac lop (Toan truong)", g.classShowAll ? COLOR_SIDEBAR_ACTIVE : COLOR_SIDEBAR, COLOR_SIDEBAR_HOVER, WHITE, 14, g.classShowAll)) {

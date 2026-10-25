@@ -41,26 +41,42 @@ static int collectConfigRows(GuiState& g, Arr<ConfigRow>& out) {
 
 static void openEditModal(GuiState& g, const Class* classroom, const ExamConfig* cfg) {
     g.currentModal = MODAL_CLASS_EXAM_CONFIG;
-    snprintf(g.configClassId, sizeof(g.configClassId), "%s", classroom != nullptr ? classroom->id : "");
-    snprintf(g.configEditClass, sizeof(g.configEditClass), "%s", classroom != nullptr ? classroom->id : "");
+    const char* cls = (classroom != nullptr) ? classroom->id : "";
+    snprintf(g.configClassId, sizeof(g.configClassId), "%s", cls);
+    snprintf(g.configEditClass, sizeof(g.configEditClass), "%s", cls);
     snprintf(g.configEditSubject, sizeof(g.configEditSubject), "%s", cfg != nullptr ? cfg->subjectId : "");
     snprintf(g.formExamQ, sizeof(g.formExamQ), "%d", cfg != nullptr ? cfg->questionCount : 0);
     snprintf(g.formExamMinutes, sizeof(g.formExamMinutes), "%d", cfg != nullptr ? cfg->minutes : 0);
+    g.configSubjectId[0] = '\0';
     if (cfg == nullptr) {
-        g.configEditClass[0] = '\0';
         g.formExamQ[0] = '\0';
         g.formExamMinutes[0] = '\0';
     }
+    g.activeConfigClassSearch = false;
+    g.activeConfigSubjectSearch = false;
     g.modalError[0] = '\0';
     g.activeFormBox = (cfg == nullptr) ? 1 : 3;
+}
+
+static void openDeleteConfigModal(GuiState& g, const Class* classroom, const ExamConfig* cfg) {
+    g.currentModal = MODAL_DELETE_CLASS_EXAM_CONFIG;
+    snprintf(g.configEditClass, sizeof(g.configEditClass), "%s", classroom->id);
+    snprintf(g.configEditSubject, sizeof(g.configEditSubject), "%s", cfg->subjectId);
+    g.modalError[0] = '\0';
 }
 
 static void drawConfigList(GuiState& g, Rectangle pane) {
     Arr<ConfigRow> rows;
     int total = collectConfigRows(g, rows);
 
+    size_t searchLenBefore = strlen(g.searchConfig);
     GuiTextBoxInput({ pane.x + 15, pane.y + 8, pane.width - 30, 34 }, g.searchConfig, sizeof(g.searchConfig),
                     g.activeSearchConfig, "Tim lop / ma mon / ten mon...");
+    if (strlen(g.searchConfig) != searchLenBefore) {
+        g.configSelected = -1;
+        g.configPage = 0;
+        g.configPreviewPage = 0;
+    }
     DrawTxt(TextFormat("DANH SACH CAU HINH (%d)", total), pane.x + 15, pane.y + 50, 15, COLOR_TEXT_DARK, true);
 
     int totalPages = (total <= 0) ? 1 : (total + CONFIGS_PER_PAGE - 1) / CONFIGS_PER_PAGE;
@@ -92,31 +108,20 @@ static void drawConfigList(GuiState& g, Rectangle pane) {
         DrawTxt(TextFormat("%s | %d cau / %d phut", rowRef.config->subjectId, rowRef.config->questionCount, rowRef.config->minutes),
                 row.x + 12, row.y + 27, 13, COLOR_TEXT_MUTED);
 
-        if (frozen) {
-            DrawTxt("Khoa", row.x + row.width - 95, row.y + 17, 13, COLOR_WARNING, true);
-        } else {
-            Rectangle xoaRec = { row.x + row.width - 62, row.y + 10, 50, 28 };
-            if (GuiBtnOutline(xoaRec, "Xoa", COLOR_DANGER, COLOR_DANGER, 13)) {
-                g.currentModal = MODAL_DELETE_CLASS_EXAM_CONFIG;
-                snprintf(g.configEditClass, sizeof(g.configEditClass), "%s", rowRef.classroom->id);
-                snprintf(g.configEditSubject, sizeof(g.configEditSubject), "%s", rowRef.config->subjectId);
-                g.modalError[0] = '\0';
-            }
-            Vector2 mouse = GetMousePosition();
-            if (!GuiModalAbsorbsInput() && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)
-                && CheckCollisionPointRec(mouse, row) && !CheckCollisionPointRec(mouse, xoaRec)) {
-                g.configSelected = i;
-                g.configPreviewPage = 0;
-            }
-        }
+        Rectangle xoaRec = { row.x + row.width - 62, row.y + 10, 50, 28 };
+        Vector2 mouse = GetMousePosition();
+        bool rowPressed = !GuiModalAbsorbsInput() && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)
+                          && CheckCollisionPointRec(mouse, row);
 
         if (frozen) {
-            Vector2 mouse = GetMousePosition();
-            if (!GuiModalAbsorbsInput() && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)
-                && CheckCollisionPointRec(mouse, row)) {
-                g.configSelected = i;
-                g.configPreviewPage = 0;
-            }
+            DrawTxt("Khoa", row.x + row.width - 95, row.y + 17, 13, COLOR_WARNING, true);
+        } else if (GuiBtnOutline(xoaRec, "Xoa", COLOR_DANGER, COLOR_DANGER, 13)) {
+            openDeleteConfigModal(g, rowRef.classroom, rowRef.config);
+        }
+
+        if (rowPressed && (frozen || !CheckCollisionPointRec(mouse, xoaRec))) {
+            g.configSelected = i;
+            g.configPreviewPage = 0;
         }
     }
 
@@ -158,10 +163,7 @@ static void drawConfigPreview(GuiState& g, Rectangle pane) {
             openEditModal(g, cls, cfg);
         }
         if (GuiBtnOutline({ pane.x + pane.width - 110, pane.y + 10, 90, 30 }, "Xoa", COLOR_DANGER, COLOR_DANGER, 14)) {
-            g.currentModal = MODAL_DELETE_CLASS_EXAM_CONFIG;
-            snprintf(g.configEditClass, sizeof(g.configEditClass), "%s", cls->id);
-            snprintf(g.configEditSubject, sizeof(g.configEditSubject), "%s", cfg->subjectId);
-            g.modalError[0] = '\0';
+            openDeleteConfigModal(g, cls, cfg);
         }
     }
 
@@ -219,13 +221,6 @@ void drawAdminTabExamConfigs(GuiState& g) {
         openEditModal(g, nullptr, nullptr);
     }
 
-    if (strcmp(g.searchConfig, g.searchConfigLast) != 0) {
-        snprintf(g.searchConfigLast, sizeof(g.searchConfigLast), "%s", g.searchConfig);
-        g.configSelected = -1;
-        g.configPage = 0;
-        g.configPreviewPage = 0;
-    }
-
     Rectangle leftPane = { contentRec.x + 20, contentRec.y + 70, 440, contentRec.height - 90 };
     Rectangle rightPane = { contentRec.x + 475, contentRec.y + 70, contentRec.width - 495, contentRec.height - 90 };
     DrawCardPanel(leftPane);
@@ -245,19 +240,11 @@ void drawClassExamConfigModal(GuiState& g) {
     DrawTxt("Ma lop:", rec.x + 30, rec.y + 60, 14, COLOR_TEXT_DARK);
     if (editing) {
         DrawTxt(g.configEditClass, rec.x + 30, rec.y + 84, 16, COLOR_TEXT_DARK, true);
-    } else {
-        bool actClass = (g.activeFormBox == 1);
-        GuiTextBoxInput({ rec.x + 30, rec.y + 82, 230, 36 }, g.configClassId, CLASS_ID_LEN, actClass, "VD: D23CQCN01");
-        if (actClass) g.activeFormBox = 1;
     }
 
     DrawTxt("Ma mon:", rec.x + 290, rec.y + 60, 14, COLOR_TEXT_DARK);
     if (editing) {
         DrawTxt(g.configEditSubject, rec.x + 290, rec.y + 84, 16, COLOR_TEXT_DARK, true);
-    } else {
-        bool actSub = (g.activeFormBox == 2);
-        GuiTextBoxInput({ rec.x + 290, rec.y + 82, 230, 36 }, g.configSubjectId, SUBJECT_ID_LEN, actSub, "VD: CSDL");
-        if (actSub) g.activeFormBox = 2;
     }
 
     DrawTxt("So cau hoi thi:", rec.x + 30, rec.y + 140, 14, COLOR_TEXT_DARK);
@@ -308,6 +295,22 @@ void drawClassExamConfigModal(GuiState& g) {
     }
     if (GuiBtnOutline({ rec.x + 270, rec.y + 330, 200, 42 }, "Huy bo", COLOR_PRIMARY, COLOR_PRIMARY, 16, true)) {
         g.currentModal = MODAL_NONE;
+    }
+
+    // Goi y lop/mon ve cuoi de panel dropdown nam tren cac o nhap phia duoi.
+    if (!editing) {
+        Arr<SuggestItem> classItems;
+        GuiMakeClassItems(g.classes, g.classCount, classItems);
+        GuiSearchSuggest({ rec.x + 30, rec.y + 82, 230, 36 }, g.configClassId, sizeof(g.configClassId),
+                         g.activeConfigClassSearch, classItems, "Tim ma lop...");
+
+        Arr<SuggestItem> subjectItems;
+        GuiMakeSubjectItems(g.subjects, true, subjectItems);
+        GuiSearchSuggest({ rec.x + 290, rec.y + 82, 230, 36 }, g.configSubjectId, sizeof(g.configSubjectId),
+                         g.activeConfigSubjectSearch, subjectItems, "Tim ma mon...");
+
+        if (g.activeConfigClassSearch) g.activeFormBox = 1;
+        else if (g.activeConfigSubjectSearch) g.activeFormBox = 2;
     }
 }
 

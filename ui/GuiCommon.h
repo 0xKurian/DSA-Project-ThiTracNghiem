@@ -81,12 +81,10 @@ void GuiBeginFrame();
 bool GuiMatchText(const char* text, const char* query);
 
 int GuiSearchSuggest(Rectangle rec, char* query, int capacity, bool& active,
-                     const Arr<SuggestItem>& items, int currentValue,
-                     const char* placeholder = "", bool* textChanged = nullptr);
+                     const Arr<SuggestItem>& items, const char* placeholder = "");
 
 void GuiMakeSubjectItems(const Arr<Subject*>& subjects, bool withCount, Arr<SuggestItem>& out);
 void GuiMakeClassItems(Class* const classes[], int classCount, Arr<SuggestItem>& out);
-void GuiMakeStudentItems(const Arr<Student*>& students, Arr<SuggestItem>& out);
 
 void DrawCardPanel(Rectangle rec, Color bg = COLOR_CARD, Color border = COLOR_BORDER);
 
@@ -94,6 +92,5 @@ void DrawToastNotification(const char* message, float timer, bool isError = fals
 
 void collectSubjects(Subject* root, Arr<Subject*>& list);
 void collectQuestions(Question* head, Arr<Question*>& list);
-void collectStudents(Student* head, Arr<Student*>& list);
 
 #endif

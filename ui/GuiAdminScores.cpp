@@ -164,7 +164,7 @@ void drawAdminTabScores(GuiState& g) {
     Arr<SuggestItem> subItems;
     GuiMakeSubjectItems(g.subjects, true, subItems);
     int pickedSub = GuiSearchSuggest(subjectSearchRec, g.searchReviewSubject, sizeof(g.searchReviewSubject),
-                                     g.activeSearchReviewSubject, subItems, -1,
+                                     g.activeSearchReviewSubject, subItems,
                                      "Tim mon hoc...");
     if (pickedSub >= 0 && pickedSub < (int)g.subjects.size()) {
         snprintf(g.reviewSubjectId, sizeof(g.reviewSubjectId), "%s", g.subjects[pickedSub]->id);
@@ -175,7 +175,7 @@ void drawAdminTabScores(GuiState& g) {
     Arr<SuggestItem> classItems;
     GuiMakeClassItems(g.classes, g.classCount, classItems);
     int pickedClass = GuiSearchSuggest(classSearchRec, g.searchReviewClass, sizeof(g.searchReviewClass),
-                                       g.activeSearchReviewClass, classItems, -1,
+                                       g.activeSearchReviewClass, classItems,
                                        "Tim lop hoc...");
     if (pickedClass >= 0 && pickedClass < g.classCount && g.classes[pickedClass] != nullptr) {
         snprintf(g.reviewClassId, sizeof(g.reviewClassId), "%s", g.classes[pickedClass]->id);
