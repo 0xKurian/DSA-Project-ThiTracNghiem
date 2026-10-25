@@ -67,6 +67,7 @@ bool GuiBtnOutline(Rectangle rec, const char* text,
 
 void GuiTextBoxInput(Rectangle rec, char textBuffer[], int maxLen, bool& isActive,
                      const char* placeholder = "", bool isPassword = false);
+void GuiLeaveOnlyDigits(char textBuffer[], int bufferSize);
 
 struct SuggestItem {
     int value = -1;

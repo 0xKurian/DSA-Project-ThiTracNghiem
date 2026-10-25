@@ -263,11 +263,13 @@ void drawClassExamConfigModal(GuiState& g) {
     DrawTxt("So cau hoi thi:", rec.x + 30, rec.y + 140, 14, COLOR_TEXT_DARK);
     bool actQ = (g.activeFormBox == 3);
     GuiTextBoxInput({ rec.x + 30, rec.y + 162, 230, 36 }, g.formExamQ, sizeof(g.formExamQ), actQ, "VD: 10");
+    GuiLeaveOnlyDigits(g.formExamQ, sizeof(g.formExamQ));
     if (actQ) g.activeFormBox = 3;
 
     DrawTxt("Thoi gian (phut):", rec.x + 290, rec.y + 140, 14, COLOR_TEXT_DARK);
     bool actM = (g.activeFormBox == 4);
     GuiTextBoxInput({ rec.x + 290, rec.y + 162, 230, 36 }, g.formExamMinutes, sizeof(g.formExamMinutes), actM, "VD: 15");
+    GuiLeaveOnlyDigits(g.formExamMinutes, sizeof(g.formExamMinutes));
     if (actM) g.activeFormBox = 4;
 
     DrawTxt("De duoc boc mot lan; moi sinh vien trong lop thi cung bo cau nay.",

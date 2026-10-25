@@ -412,6 +412,15 @@ void collectStudents(Student* head, Arr<Student*>& list) {
     }
 }
 
+void GuiLeaveOnlyDigits(char textBuffer[], int bufferSize) {
+    if (textBuffer == nullptr || bufferSize <= 0) return;
+    int w = 0;
+    for (int i = 0; textBuffer[i] != '\0' && w < bufferSize - 1; ++i) {
+        if (textBuffer[i] >= '0' && textBuffer[i] <= '9') textBuffer[w++] = textBuffer[i];
+    }
+    textBuffer[w] = '\0';
+}
+
 bool GuiMatchText(const char* text, const char* query) {
     if (query == nullptr || query[0] == '\0') return true;
 
