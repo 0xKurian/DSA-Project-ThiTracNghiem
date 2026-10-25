@@ -6,6 +6,10 @@
 > Việc core thuần → `docs/HANDOFF_CORE.md`.
 > UI **không tự sửa business**; các mục dưới đây là yêu cầu bàn giao.
 > Trạng thái: `Chờ business` / `Đang làm` / `Xong` / `Từ chối`.
+> **UI đã nối B01–B08 ngày 25/10/2026** (`ui/GuiAdminExamConfigs.cpp`,
+> `ui/GuiExamPrepare.cpp`, `ui/GuiExamRoom.cpp`, `ui/GuiModalDialogs.cpp`,
+> `ui/GuiCommon.cpp`, `ui/ConsoleUI.cpp`). Phần UI tự làm (bốc đề RAM, đếm SV,
+> ngưỡng đạt, lưu session mỗi giây, hủy phiên = xoá) đã xoá.
 
 ## Nguyên tắc
 
@@ -183,6 +187,25 @@ Nghiệm thu chung:
 - Migration tự động cấu hình môn cũ sang lớp (không map được; giáo viên tạo lại).
 - Thêm `Student.classId` (giữ `findStudentClass`).
 - Menu console quản lý cấu hình (GUI đã có).
+
+---
+
+## Đang mở
+
+### B09 — `cancelPendingExamWorkflow` dọn phiên thi hỏng
+
+- **Trạng thái:** Chờ business
+- **UI đang chờ:** `ui/GuiExamPrepare.cpp` (banner phiên dở), `ui/GuiModalDialogs.cpp`
+  (`MODAL_CANCEL_EXAM`), `ui/ConsoleUI.cpp` (`takeExamSession`)
+- **Vấn đề:** `business/ExamService.cpp` — nếu file `temp_<MASV>.dat` không đọc được,
+  `cancelPendingExamWorkflow` trả `ERR_NOT_FOUND` và **không xoá file**. UI không còn
+  được gọi `removeExamSession` trực tiếp (R6), nên sinh viên kẹt banner "phiên dở"
+  vĩnh viễn cho tới khi có người xoá file tay.
+- **Hành vi mong muốn:** khi `loadExamSession` thất bại trong
+  `cancelPendingExamWorkflow`, gọi `removeExamSession` rồi trả `ERR_NOT_FOUND`
+  (hoặc `SUCCESS` kèm cờ) để UI thoát trạng thái kẹt.
+- **Acceptance/test:** tạo `temp_SV001.dat` rác → gọi `cancelPendingExamWorkflow`
+  → file bị xoá, lần gọi sau không còn cảnh báo phiên dở.
 
 ---
 

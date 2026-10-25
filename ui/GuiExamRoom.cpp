@@ -2,44 +2,50 @@
 #include "GuiState.h"
 
 #include "../business/BusinessErrors.h"
+#include "../business/ExamConfigService.h"
 #include "../business/ExamService.h"
-#include "../business/FileStorage.h"
 
 #include <cstdio>
 
 void updateExamSession(GuiState& g) {
     if (g.currentScreen != SCREEN_STUDENT_EXAM) return;
 
-    int remaining = g.examTimer.getRemainingSeconds();
-    if (g.examTimer.isRunning && g.examTimer.isExpired()) {
+    ExamTickResult tick = tickExamSession(g.examTimer, g.examTracker,
+                                          g.loggedStudent->id,
+                                          g.activeExamSubId.c_str(), g.examHead);
+    if (tick.expired) {
         g.examTimer.stop();
         g.currentModal = MODAL_NONE;
-        submitExamWorkflow(g.loggedStudent, g.activeExamSubId.c_str(), g.examHead, g.lastScore, g.lastCorrect, g.lastTotal);
-        removeExamSession(g.loggedStudent->id);
-        saveAllData(g.root, g.classes, g.classCount, "data");
-        g.examHead = nullptr;
+        bool saveFailed = false;
+        BusinessResult res = submitExpiredExamWorkflow(
+            g.root, g.classes, g.classCount, g.loggedStudent,
+            g.activeExamSubId.c_str(), g.examHead,
+            g.lastScore, g.lastCorrect, g.lastTotal, &saveFailed);
         g.examList.clear();
         g.currentScreen = SCREEN_EXAM_RESULT;
-        g.showToast("Het gio lam bai! He thong da tu dong nop bai thi.", 4.0f, false);
-    } else if (remaining != g.examLastSavedSec) {
-        saveExamSession(g.loggedStudent->id, g.activeExamSubId.c_str(), remaining, g.examHead);
-        g.examLastSavedSec = remaining;
+        if (res == SUCCESS && !saveFailed) {
+            g.showToast("Het gio lam bai! He thong da tu dong nop bai thi.", 4.0f, false);
+        } else if (res == SUCCESS) {
+            g.showToast("Het gio! Da nop bai nhung chua luu duoc file diem.", 5.0f, true);
+        } else {
+            g.showToast(TextFormat("Het gio nhung khong nop duoc bai: %s", getErrorMessage(res)), 5.0f, true);
+        }
     }
 }
 
 void drawExamRoom(GuiState& g) {
     DrawRectangle(0, 0, GUI_WIDTH, 70, COLOR_SIDEBAR);
     DrawTxt(TextFormat("BAI THI MON: %s", g.activeExamSubId.c_str()), 30, 12, 20, WHITE, true);
-    Class* myClass = GuiFindStudentClass(g.classes, g.classCount, g.loggedStudent->id);
+    Class* myClass = findStudentClass(g.classes, g.classCount, g.loggedStudent->id);
     DrawTxt(TextFormat("MSSV: %s | Lop: %s", g.loggedStudent->id, myClass != nullptr ? myClass->id : "?"),
             30, 40, 14, COLOR_BORDER);
 
     int remaining = g.examTimer.getRemainingSeconds();
-    int mins = remaining / 60;
-    int secs = remaining % 60;
+    char clockTxt[16] = {};
+    formatExamClock(remaining, clockTxt, sizeof(clockTxt));
     Rectangle timerRec = { (float)(GUI_WIDTH / 2 - 120), 12, 240, 46 };
     DrawRectangleRounded(timerRec, 0.2f, 4, (remaining < 60) ? COLOR_DANGER : COLOR_PRIMARY);
-    DrawTxt(TextFormat("THOI GIAN: %02d:%02d", mins, secs), timerRec.x + 30, timerRec.y + 12, 20, WHITE, true);
+    DrawTxt(TextFormat("THOI GIAN: %s", clockTxt), timerRec.x + 30, timerRec.y + 12, 20, WHITE, true);
 
     if (GuiBtn({ (float)(GUI_WIDTH - 160), 15, 130, 40 }, "NOP BAI", COLOR_WARNING, COLOR_PRIMARY_HOVER, WHITE, 17, true)) {
         g.currentModal = MODAL_CONFIRM_SUBMIT;
@@ -79,8 +85,8 @@ void drawExamRoom(GuiState& g) {
         Vector2 mouse = GetMousePosition();
         if (g.currentModal == MODAL_NONE && CheckCollisionPointRec(mouse, ansRec) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             curQ->selectedAnswer = choices[i].letter;
-            g.examLastSavedSec = g.examTimer.getRemainingSeconds();
-            saveExamSession(g.loggedStudent->id, g.activeExamSubId.c_str(), g.examLastSavedSec, g.examHead);
+            tickExamSession(g.examTimer, g.examTracker, g.loggedStudent->id,
+                            g.activeExamSubId.c_str(), g.examHead);
         }
     }
 
@@ -146,13 +152,20 @@ void drawExamSubmitConfirmDialog(GuiState& g) {
     if (GuiBtn({ modalRec.x + 30, modalRec.y + 210, 200, 44 }, "Dong Y Nop Bai", COLOR_SUCCESS, COLOR_SUCCESS_HOVER, WHITE, 16, true)) {
         g.currentModal = MODAL_NONE;
         g.examTimer.stop();
-        submitExamWorkflow(g.loggedStudent, g.activeExamSubId.c_str(), g.examHead, g.lastScore, g.lastCorrect, g.lastTotal);
-        removeExamSession(g.loggedStudent->id);
-        saveAllData(g.root, g.classes, g.classCount, "data");
-        g.examHead = nullptr;
+        bool saveFailed = false;
+        BusinessResult res = finishExamWorkflow(
+            g.root, g.classes, g.classCount, g.loggedStudent,
+            g.activeExamSubId.c_str(), g.examHead,
+            g.lastScore, g.lastCorrect, g.lastTotal, &saveFailed);
         g.examList.clear();
         g.currentScreen = SCREEN_EXAM_RESULT;
-        g.showToast("Da nop bai thi thanh cong!", 3.5f, false);
+        if (res == SUCCESS && !saveFailed) {
+            g.showToast("Da nop bai thi thanh cong!", 3.5f, false);
+        } else if (res == SUCCESS) {
+            g.showToast("Da nop bai nhung chua luu duoc file diem.", 5.0f, true);
+        } else {
+            g.showToast(TextFormat("Khong nop duoc bai: %s", getErrorMessage(res)), 5.0f, true);
+        }
     }
     if (GuiBtnOutline({ modalRec.x + 270, modalRec.y + 210, 200, 44 }, "Quay Lai Lam Tiep", COLOR_PRIMARY, COLOR_PRIMARY, 16, true)) {
         g.currentModal = MODAL_NONE;

@@ -5,6 +5,8 @@
 > Chỉ chứa việc đụng `core/**` hoặc API core. Việc business thuần → `docs/HANDOFF_BUSINESS.md`.
 > UI **không tự sửa core**; các mục dưới đây là yêu cầu bàn giao.
 > Trạng thái: `Chờ core` / `Đang làm` / `Xong` / `Từ chối`.
+> **UI đã nối C01–C03 ngày 25/10/2026**: `UiExamConfig` + bốc đề RAM đã xoá,
+> GUI/console đọc `Class.configList`, xoá môn/lớp không cần dọn config tay.
 
 ## Nguyên tắc
 

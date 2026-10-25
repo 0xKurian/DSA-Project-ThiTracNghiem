@@ -412,16 +412,6 @@ void collectStudents(Student* head, Arr<Student*>& list) {
     }
 }
 
-Class* GuiFindStudentClass(Class* const classes[], int classCount, const char* studentId) {
-    if (classes == nullptr || studentId == nullptr) return nullptr;
-    for (int i = 0; i < classCount; ++i) {
-        if (classes[i] != nullptr && findStudent(classes[i]->studentList, studentId) != nullptr) {
-            return classes[i];
-        }
-    }
-    return nullptr;
-}
-
 bool GuiMatchText(const char* text, const char* query) {
     if (query == nullptr || query[0] == '\0') return true;
 

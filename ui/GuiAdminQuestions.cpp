@@ -40,22 +40,7 @@ void drawAdminTabQuestions(GuiState& g) {
         if (g.questionPage >= totalQPages) g.questionPage = totalQPages - 1;
         if (g.questionPage < 0) g.questionPage = 0;
 
-        char cfgText[80];
-        if (curSub->examQuestionCount > 0 && curSub->examMinutes > 0) {
-            snprintf(cfgText, sizeof(cfgText), "Cau hinh console: %d cau / %d phut", curSub->examQuestionCount, curSub->examMinutes);
-        } else {
-            snprintf(cfgText, sizeof(cfgText), "Chua cau hinh thi");
-        }
-        DrawTxt(TextFormat("Mon: %s - Tong so: %d cau hoi | %s", curSub->id, (int)qList.size(), cfgText), contentRec.x + 25, contentRec.y + 110, 15, COLOR_TEXT_MUTED, true);
-
-        if (GuiBtnOutline({ contentRec.x + contentRec.width - 180, contentRec.y + 103, 155, 30 }, "Cau hinh console", COLOR_PRIMARY, COLOR_PRIMARY, 14, true)) {
-            g.currentModal = MODAL_EXAM_CONFIG;
-            snprintf(g.configSubjectId, sizeof(g.configSubjectId), "%s", curSub->id);
-            snprintf(g.formExamQ, sizeof(g.formExamQ), "%d", curSub->examQuestionCount > 0 ? curSub->examQuestionCount : 10);
-            snprintf(g.formExamMinutes, sizeof(g.formExamMinutes), "%d", curSub->examMinutes > 0 ? curSub->examMinutes : 15);
-            g.modalError[0] = '\0';
-            g.activeFormBox = 1;
-        }
+        DrawTxt(TextFormat("Mon: %s - Tong so: %d cau hoi", curSub->id, (int)qList.size()), contentRec.x + 25, contentRec.y + 110, 15, COLOR_TEXT_MUTED, true);
 
         if (qList.empty()) {
             DrawTxt("Mon hoc nay chua co cau hoi thi nao. Hay bam '+ Them Cau Hoi' de bo sung.", contentRec.x + 30, contentRec.y + 150, 16, COLOR_TEXT_MUTED);

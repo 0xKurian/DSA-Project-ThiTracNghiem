@@ -1,6 +1,8 @@
 #include "GuiCommon.h"
 #include "GuiState.h"
 
+#include "../business/BusinessQueries.h"
+
 #include "../core/ClassArray.h"
 #include "../core/ScoreList.h"
 #include "../core/StudentList.h"
@@ -9,12 +11,6 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
-
-static int countStudentsInClass(Class* classroom) {
-    int n = 0;
-    for (Student* s = classroom != nullptr ? classroom->studentList : nullptr; s != nullptr; s = s->next) n++;
-    return n;
-}
 
 void drawAdminTabScores(GuiState& g) {
     Rectangle contentRec = { 260, 85, (float)(GUI_WIDTH - 280), (float)(GUI_HEIGHT - 105) };

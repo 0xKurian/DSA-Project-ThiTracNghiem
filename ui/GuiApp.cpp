@@ -3,10 +3,8 @@
 #include "GuiCommon.h"
 #include "GuiState.h"
 
+#include "../business/BusinessQueries.h"
 #include "../business/FileStorage.h"
-
-#include "../core/ClassArray.h"
-#include "../core/SubjectBST.h"
 
 #include <cstdio>
 
@@ -70,14 +68,7 @@ void runGraphicApp() {
 
     saveAllData(g.root, g.classes, g.classCount, "data");
 
-    while (g.classCount > 0) {
-        deleteClass(g.classes, g.classCount, g.classes[0]->id);
-    }
-    while (g.root != nullptr) {
-        g.root = deleteSubject(g.root, g.root->id);
-    }
-
-    GuiFreeExamConfigs(g);
+    freeAllData(g.root, g.classes, g.classCount);
 
     unloadVietnameseFonts();
     CloseWindow();

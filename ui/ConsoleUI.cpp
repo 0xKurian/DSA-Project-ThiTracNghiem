@@ -3,6 +3,8 @@
 #include "../business/AuthService.h"
 #include "../business/BusinessErrors.h"
 #include "../business/ClassService.h"
+#include "../business/BusinessQueries.h"
+#include "../business/ExamConfigService.h"
 #include "../business/ExamService.h"
 #include "../business/FileStorage.h"
 #include "../business/QuestionService.h"
@@ -11,6 +13,7 @@
 #include "../business/SubjectService.h"
 
 #include "../core/ClassArray.h"
+#include "../core/ExamConfigList.h"
 #include "../core/QuestionList.h"
 #include "../core/StudentList.h"
 #include "../core/SubjectBST.h"
@@ -58,13 +61,6 @@ static int countSubjects(Subject* root) {
     return 1 + countSubjects(root->left) + countSubjects(root->right);
 }
 
-static void collectSubjectsInOrder(Subject* root, Subject* arr[], int& index) {
-    if (root == nullptr) return;
-    collectSubjectsInOrder(root->left, arr, index);
-    arr[index++] = root;
-    collectSubjectsInOrder(root->right, arr, index);
-}
-
 static Subject* selectSubjectFromList(Subject* root) {
     if (root == nullptr) {
         cout << "-> Danh sach mon hoc hien dang trong!\n";
@@ -73,8 +69,7 @@ static Subject* selectSubjectFromList(Subject* root) {
 
     int total = countSubjects(root);
     Subject** subjectList = new Subject*[total];
-    int count = 0;
-    collectSubjectsInOrder(root, subjectList, count);
+    int count = collectSubjectsInOrder(root, subjectList, total);
 
     cout << "\n=============================================================\n";
     cout << "                    DANH SACH MON HOC                        \n";
@@ -140,17 +135,6 @@ static Class* selectClassFromList(Class* classes[], int classCount) {
     }
 
     return selected;
-}
-
-static int countStudentsInClass(const Class* c) {
-    if (c == nullptr) return 0;
-    int count = 0;
-    Student* cur = c->studentList;
-    while (cur != nullptr) {
-        count++;
-        cur = cur->next;
-    }
-    return count;
 }
 
 static Student* selectStudentFromClass(Class* c) {
@@ -286,7 +270,7 @@ static void teacherSubjectMenu(Subject*& root, Class* classes[], int classCount)
     }
 }
 
-static void teacherQuestionMenu(Subject* root) {
+static void teacherQuestionMenu(Subject* root, Class* classes[], int classCount) {
     while (true) {
         cout << "\n-------------------------------------------------------------\n";
         cout << "                  QUAN LY CAU HOI THI                        \n";
@@ -392,7 +376,7 @@ static void teacherQuestionMenu(Subject* root) {
                 }
                 cout << "\n-> Xoa cau hoi thuoc mon: [" << sub->id << "] " << sub->name << "\n";
                 int qId = readInt("Nhap ID cau hoi can xoa: ");
-                BusinessResult res = deleteQuestionWorkflow(root, sub->id, qId);
+                BusinessResult res = deleteQuestionWorkflow(root, classes, classCount, sub->id, qId);
                 if (res == SUCCESS) {
                     cout << "-> Xoa cau hoi thanh cong!\n";
                 } else {
@@ -626,7 +610,7 @@ static void teacherMenu(Subject*& root, Class* classes[], int& classCount) {
                 teacherSubjectMenu(root, classes, classCount);
                 break;
             case 2:
-                teacherQuestionMenu(root);
+                teacherQuestionMenu(root, classes, classCount);
                 break;
             case 3:
                 teacherClassMenu(classes, classCount);
@@ -681,7 +665,9 @@ static void teacherMenu(Subject*& root, Class* classes[], int& classCount) {
 }
 
 static void runExamLoop(
-    Subject*,
+    Subject* root,
+    Class* classes[],
+    int classCount,
     Student* student,
     const string& subId,
     ExamDetail* examHead,
@@ -690,6 +676,10 @@ static void runExamLoop(
 ) {
     ExamTimer timer;
     timer.resume(initialRemainingSeconds);
+    ExamSessionTracker tracker;
+    auto tick = [&]() {
+        tickExamSession(timer, tracker, student->id, subId.c_str(), examHead);
+    };
 
     cout << "\n>>> DANG THI MON " << subId << " (" << totalQuestions << " cau, con " 
          << (initialRemainingSeconds / 60) << " phut " << (initialRemainingSeconds % 60) << " giay) <<<\n";
@@ -703,11 +693,13 @@ static void runExamLoop(
         cur = cur->next;
     }
 
-    saveExamSession(student->id, subId.c_str(), timer.getRemainingSeconds(), examHead);
+    tick();
 
     int currentIdx = 0;
+    bool expired = false;
     while (true) {
         if (timer.isExpired()) {
+            expired = true;
             cout << "\n=============================================================\n";
             cout << ">>> DA HET THOI GIAN LAM BAI! He thong tu dong nop bai... <<<\n";
             cout << "=============================================================\n";
@@ -733,6 +725,7 @@ static void runExamLoop(
         string act = readLine("Hanh dong cua ban: ");
 
         if (timer.isExpired()) {
+            expired = true;
             cout << "\n=============================================================\n";
             cout << ">>> DA HET THOI GIAN LAM BAI! He thong tu dong nop bai... <<<\n";
             cout << "=============================================================\n";
@@ -746,22 +739,22 @@ static void runExamLoop(
 
         if (cmd == 'A' || cmd == 'B' || cmd == 'C' || cmd == 'D') {
             q->selectedAnswer = cmd;
-            saveExamSession(student->id, subId.c_str(), timer.getRemainingSeconds(), examHead);
+            tick();
             if (currentIdx < totalQuestions - 1) {
                 currentIdx++;
-                saveExamSession(student->id, subId.c_str(), timer.getRemainingSeconds(), examHead);
+                tick();
             }
         } else if (cmd == 'N') {
             if (currentIdx < totalQuestions - 1) {
                 currentIdx++;
-                saveExamSession(student->id, subId.c_str(), timer.getRemainingSeconds(), examHead);
+                tick();
             } else {
                 cout << "Ban dang o cau cuoi cung!\n";
             }
         } else if (cmd == 'P') {
             if (currentIdx > 0) {
                 currentIdx--;
-                saveExamSession(student->id, subId.c_str(), timer.getRemainingSeconds(), examHead);
+                tick();
             } else {
                 cout << "Ban dang o cau dau tien!\n";
             }
@@ -779,8 +772,12 @@ static void runExamLoop(
     int correctCount = 0;
     int totalCount = 0;
 
-    BusinessResult subRes = submitExamWorkflow(student, subId.c_str(), examHead, finalScore, correctCount, totalCount);
-    removeExamSession(student->id);
+    bool saveFailed = false;
+    BusinessResult subRes = expired
+        ? submitExpiredExamWorkflow(root, classes, classCount, student, subId.c_str(),
+                                    examHead, finalScore, correctCount, totalCount, &saveFailed)
+        : finishExamWorkflow(root, classes, classCount, student, subId.c_str(),
+                             examHead, finalScore, correctCount, totalCount, &saveFailed);
 
     if (subRes == SUCCESS) {
         cout << "\n=============================================================\n";
@@ -789,6 +786,7 @@ static void runExamLoop(
         cout << "Mon thi       : " << subId << "\n";
         cout << "So cau dung   : " << correctCount << " / " << totalCount << "\n";
         cout << "Diem so dat duoc: " << finalScore << " / 10.0\n";
+        if (saveFailed) cout << "-> Canh bao: chua luu duoc file diem vao thu muc 'data'.\n";
         cout << "=============================================================\n";
     } else {
         cout << "-> Loi khi ghi nhan ket qua: " << getErrorMessage(subRes) << "\n";
@@ -797,40 +795,43 @@ static void runExamLoop(
     pauseScreen();
 }
 
-static void takeExamSession(Subject* root, Student* student) {
+static void takeExamSession(Subject* root, Class* classes[], int classCount, Student* student) {
     char pendSubId[SUBJECT_ID_LEN] = {};
     int pendSeconds = 0;
     if (checkExamSession(student->id, pendSubId, pendSeconds)) {
         cout << "\n=============================================================\n";
         cout << " [THONG BAO] Tim thay phien thi do dang chua hoan thanh:\n";
-        cout << " Mon thi: " << pendSubId << " | Thoi gian con lai: " 
+        cout << " Mon thi: " << pendSubId << " | Thoi gian con lai: "
              << (pendSeconds / 60) << " phut " << (pendSeconds % 60) << " giay\n";
         cout << "=============================================================\n";
         string resumeChoice = readLine("Ban co muon tiep tuc lam tiep phien thi nay? (Y/N): ");
         if (!resumeChoice.empty() && (resumeChoice[0] == 'Y' || resumeChoice[0] == 'y')) {
             ExamDetail* examHead = nullptr;
-            if (loadExamSession(student->id, pendSubId, pendSeconds, examHead, root)) {
+            BusinessResult resumeRes = resumeExamWorkflow(root, classes, classCount, student,
+                                                          examHead, pendSubId, pendSeconds);
+            if (resumeRes == SUCCESS) {
                 int totalQ = 0;
-                ExamDetail* t = examHead;
-                while (t != nullptr) {
-                    totalQ++;
-                    t = t->next;
-                }
-                runExamLoop(root, student, pendSubId, examHead, pendSeconds, totalQ);
-                return;
+                for (ExamDetail* t = examHead; t != nullptr; t = t->next) totalQ++;
+                runExamLoop(root, classes, classCount, student, pendSubId, examHead, pendSeconds, totalQ);
             } else {
-                cout << "-> Khong the khoi phuc phien thi cu. Se tien hanh xoa file tam.\n";
-                removeExamSession(student->id);
+                cout << "-> Khong the khoi phuc phien thi cu: " << getErrorMessage(resumeRes) << "\n";
+                pauseScreen();
             }
-        } else {
-            string discardChoice = readLine("Ban co muon huy bo phien thi do dang nay de thi mon khac? (Y/N): ");
-            if (!discardChoice.empty() && (discardChoice[0] == 'Y' || discardChoice[0] == 'y')) {
-                removeExamSession(student->id);
-                cout << "-> Da xoa phien thi do dang.\n";
-            } else {
-                return;
-            }
+            return;
         }
+        string discardChoice = readLine("Ban co muon NOP BAI va huy phien thi do dang nay? (Y/N): ");
+        if (!discardChoice.empty() && (discardChoice[0] == 'Y' || discardChoice[0] == 'y')) {
+            bool saveFailed = false;
+            BusinessResult cancelRes = cancelPendingExamWorkflow(root, classes, classCount, student, &saveFailed);
+            if (cancelRes == SUCCESS) {
+                cout << "-> Da tu dong nop bai phien thi do dang";
+                cout << (saveFailed ? " (chua luu duoc file diem).\n" : ".\n");
+            } else {
+                cout << "-> Khong huy duoc phien thi: " << getErrorMessage(cancelRes) << "\n";
+            }
+            pauseScreen();
+        }
+        return;
     }
 
     Subject* targetSub = selectSubjectFromList(root);
@@ -839,43 +840,42 @@ static void takeExamSession(Subject* root, Student* student) {
         return;
     }
     string subId = targetSub->id;
-    int availableQ = countQuestions(targetSub->questionList);
-    cout << "\n-> Mon [" << subId << " - " << targetSub->name << "] hien co " << availableQ << " cau hoi trong ngan hang de.\n";
 
-    if (availableQ <= 0) {
-        cout << "-> Mon nay hien chua co cau hoi nao! Khong the bat dau thi.\n";
+    const char* reason = nullptr;
+    BusinessResult canRes = canStudentTakeSubject(root, classes, classCount, student,
+                                                  subId.c_str(), &reason);
+    if (canRes != SUCCESS) {
+        cout << "-> Khong the thi mon nay: " << (reason != nullptr ? reason : getErrorMessage(canRes)) << "\n";
         pauseScreen();
         return;
     }
 
-    string promptQ = "Nhap So luong cau hoi (1 - " + to_string(availableQ) + " cau): ";
-    int numQuestions = readInt(promptQ.c_str());
-    if (numQuestions <= 0 || numQuestions > availableQ) {
-        cout << "-> So luong cau hoi khong hop le (phai tu 1 den " << availableQ << " cau)!\n";
+    Class* myClass = findStudentClass(classes, classCount, student->id);
+    ExamConfig* cfg = (myClass != nullptr) ? findExamConfig(myClass, subId.c_str()) : nullptr;
+    if (cfg == nullptr) {
+        cout << "-> Lop cua ban chua duoc cau hinh thi mon nay.\n";
         pauseScreen();
         return;
     }
 
-    int minutes = readInt("Nhap Thoi gian thi (so phut): ");
-    if (minutes <= 0) {
-        cout << "-> Thoi gian thi phai lon hon 0 phut!\n";
-        pauseScreen();
-        return;
-    }
+    cout << "\n-> Lop [" << myClass->id << "] thi mon [" << subId << " - " << targetSub->name << "]\n";
+    cout << "   So cau: " << cfg->questionCount << " | Thoi gian: " << cfg->minutes << " phut\n";
+    string confirm = readLine("Bat dau thi ngay? (Y/N): ");
+    if (confirm.empty() || (confirm[0] != 'Y' && confirm[0] != 'y')) return;
 
     ExamDetail* examHead = nullptr;
-    BusinessResult prepRes = prepareExamWorkflow(root, student, subId.c_str(), numQuestions, minutes, examHead);
-
+    BusinessResult prepRes = prepareExamFromConfig(root, classes, classCount, student,
+                                                   subId.c_str(), examHead);
     if (prepRes != SUCCESS) {
         cout << "-> Khong the bat dau thi: " << getErrorMessage(prepRes) << "\n";
         pauseScreen();
         return;
     }
 
-    runExamLoop(root, student, subId, examHead, minutes * 60, numQuestions);
+    runExamLoop(root, classes, classCount, student, subId, examHead, cfg->minutes * 60, cfg->questionCount);
 }
 
-static void studentMenu(Subject* root, Student* student) {
+static void studentMenu(Subject* root, Class* classes[], int classCount, Student* student) {
     while (true) {
         cout << "\n=============================================================\n";
         cout << " MENU SINH VIEN: " << student->id << " - " << student->ho << " " << student->ten << "\n";
@@ -890,7 +890,7 @@ static void studentMenu(Subject* root, Student* student) {
 
         switch (choice) {
             case 1:
-                takeExamSession(root, student);
+                takeExamSession(root, classes, classCount, student);
                 break;
             case 2:
                 printStudentScores(student, root);
@@ -982,17 +982,12 @@ void runConsoleApp() {
                     cout << "=============================================================\n";
                 }
 
-                studentMenu(root, loggedStudent);
+                studentMenu(root, classes, classCount, loggedStudent);
             }
         }
     }
 
     cout << "Dang giai phong bo nho RAM...\n";
-    while (classCount > 0) {
-        deleteClass(classes, classCount, classes[0]->id);
-    }
-    while (root != nullptr) {
-        root = deleteSubject(root, root->id);
-    }
+    freeAllData(root, classes, classCount);
     cout << "-> Da thoat chuong trinh an toan.\n";
 }

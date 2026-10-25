@@ -94,6 +94,5 @@ void DrawToastNotification(const char* message, float timer, bool isError = fals
 void collectSubjects(Subject* root, Arr<Subject*>& list);
 void collectQuestions(Question* head, Arr<Question*>& list);
 void collectStudents(Student* head, Arr<Student*>& list);
-Class* GuiFindStudentClass(Class* const classes[], int classCount, const char* studentId);
 
 #endif

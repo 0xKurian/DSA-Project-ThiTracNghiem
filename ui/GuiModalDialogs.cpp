@@ -76,7 +76,7 @@ static void drawSubjectDeleteModal(GuiState& g) {
     if (GuiBtn({ rec.x + 30, rec.y + 210, 200, 42 }, "Xac Nhan Xoa", COLOR_DANGER, COLOR_DANGER_HOVER, WHITE, 16, true)) {
         BusinessResult res = deleteSubjectWorkflow(g.root, g.classes, g.classCount, g.formId);
         if (res == SUCCESS) {
-            GuiRemoveExamConfigs(g, nullptr, g.formId);
+            g.configSelected = -1;
             g.currentModal = MODAL_NONE;
             g.showToast(TextFormat("Da xoa mon hoc [%s]!", g.formId), 3.0f, false);
         } else {
@@ -149,7 +149,7 @@ static void drawClassDeleteModal(GuiState& g) {
                             && strcmp(g.classes[g.selectedClassIdx]->id, g.formId) == 0);
         BusinessResult res = deleteClassWorkflow(g.classes, g.classCount, g.formId);
         if (res == SUCCESS) {
-            GuiRemoveExamConfigs(g, g.formId, nullptr);
+            g.configSelected = -1;
             if (g.classCount > 0) {
                 if (wasSelected) g.selectedClassIdx = 0;
                 if (g.selectedClassIdx >= g.classCount) g.selectedClassIdx = g.classCount - 1;
@@ -329,7 +329,8 @@ static void drawQuestionDeleteModal(GuiState& g) {
     DrawCardPanel(rec);
     DrawTxt("XAC NHAN XOA CAU HOI THI", rec.x + 30, rec.y + 30, 20, COLOR_DANGER, true);
     DrawTxt(TextFormat("Ban co chac chan muon xoa cau hoi ID: %d?", g.formEditQId), rec.x + 30, rec.y + 80, 16, COLOR_TEXT_DARK);
-    DrawTxt("Luu y: Chi xoa duoc cau hoi neu chua co sinh vien thi mon nay.", rec.x + 30, rec.y + 115, 14, COLOR_TEXT_MUTED);
+    DrawTxt("Luu y: Chi xoa duoc khi mon chua co diem thi va cau hoi", rec.x + 30, rec.y + 110, 14, COLOR_TEXT_MUTED);
+    DrawTxt("chua nam trong cau hinh thi cua lop nao.", rec.x + 30, rec.y + 130, 14, COLOR_TEXT_MUTED);
 
     if (g.modalError[0] != '\0') {
         DrawTxt(g.modalError, rec.x + 30, rec.y + 155, 15, COLOR_DANGER, true);
@@ -338,7 +339,7 @@ static void drawQuestionDeleteModal(GuiState& g) {
     if (GuiBtn({ rec.x + 30, rec.y + 210, 200, 42 }, "Xac Nhan Xoa", COLOR_DANGER, COLOR_DANGER_HOVER, WHITE, 16, true)) {
         if (g.selectedSubjectIdx < (int)g.subjects.size()) {
             Subject* sNode = g.subjects[g.selectedSubjectIdx];
-            BusinessResult res = deleteQuestionWorkflow(g.root, sNode->id, g.formEditQId);
+            BusinessResult res = deleteQuestionWorkflow(g.root, g.classes, g.classCount, sNode->id, g.formEditQId);
             if (res == SUCCESS) {
                 g.currentModal = MODAL_NONE;
                 g.showToast(TextFormat("Da xoa cau hoi ID %d!", g.formEditQId), 3.0f, false);
@@ -348,58 +349,6 @@ static void drawQuestionDeleteModal(GuiState& g) {
         }
     }
     if (GuiBtnOutline({ rec.x + 270, rec.y + 210, 200, 42 }, "Huy bo", COLOR_PRIMARY, COLOR_PRIMARY, 16, true)) {
-        g.currentModal = MODAL_NONE;
-    }
-}
-
-static void drawExamConfigModal(GuiState& g) {
-    Rectangle rec = modalRec();
-    DrawCardPanel(rec);
-    DrawTxt("CAU HINH THI CONSOLE (THEO MON)", rec.x + 30, rec.y + 25, 20, COLOR_TEXT_DARK, true);
-
-    Subject* sub = findSubject(g.root, g.configSubjectId);
-    int bank = (sub != nullptr) ? countQuestions(sub->questionList) : 0;
-    DrawTxt(TextFormat("Mon: %s | Ngan hang: %d cau hoi", sub != nullptr ? sub->id : "?", bank),
-            rec.x + 30, rec.y + 62, 14, COLOR_TEXT_MUTED);
-
-    DrawTxt("So cau hoi thi:", rec.x + 30, rec.y + 100, 14, COLOR_TEXT_DARK);
-    bool actQ = (g.activeFormBox == 1);
-    GuiTextBoxInput({ rec.x + 30, rec.y + 122, 200, 38 }, g.formExamQ, sizeof(g.formExamQ), actQ, "VD: 10");
-    if (actQ) g.activeFormBox = 1;
-
-    DrawTxt("Thoi gian (phut):", rec.x + 270, rec.y + 100, 14, COLOR_TEXT_DARK);
-    bool actM = (g.activeFormBox == 2);
-    GuiTextBoxInput({ rec.x + 270, rec.y + 122, 200, 38 }, g.formExamMinutes, sizeof(g.formExamMinutes), actM, "VD: 15");
-    if (actM) g.activeFormBox = 2;
-
-    DrawTxt("Chi ap dung cho giao dien console; GUI dung cau hinh theo lop.", rec.x + 30, rec.y + 178, 14, COLOR_TEXT_MUTED);
-
-    if (g.modalError[0] != '\0') {
-        DrawTxt(g.modalError, rec.x + 30, rec.y + 208, 15, COLOR_DANGER, true);
-    }
-
-    bool submit = GuiBtn({ rec.x + 30, rec.y + 270, 200, 42 }, "Luu Cau Hinh", COLOR_SUCCESS, COLOR_SUCCESS_HOVER, WHITE, 16, true);
-    if (IsKeyPressed(KEY_ENTER)) submit = true;
-    if (submit) {
-        int q = atoi(g.formExamQ);
-        int m = atoi(g.formExamMinutes);
-        if (bank <= 0) {
-            snprintf(g.modalError, sizeof(g.modalError), "Mon nay chua co cau hoi nao.");
-        } else if (q <= 0 || q > bank) {
-            snprintf(g.modalError, sizeof(g.modalError), "So cau phai tu 1 den %d.", bank);
-        } else if (m <= 0 || m > 180) {
-            snprintf(g.modalError, sizeof(g.modalError), "Thoi gian phai tu 1 den 180 phut.");
-        } else {
-            BusinessResult res = setExamConfigWorkflow(g.root, g.configSubjectId, q, m);
-            if (res == SUCCESS) {
-                g.currentModal = MODAL_NONE;
-                g.showToast("Da luu cau hinh de thi cho mon nay!", 3.0f, false);
-            } else {
-                snprintf(g.modalError, sizeof(g.modalError), "%s", getErrorMessage(res));
-            }
-        }
-    }
-    if (GuiBtnOutline({ rec.x + 270, rec.y + 270, 200, 42 }, "Huy bo", COLOR_PRIMARY, COLOR_PRIMARY, 16, true)) {
         g.currentModal = MODAL_NONE;
     }
 }
@@ -415,34 +364,17 @@ static void drawCancelExamSessionModal(GuiState& g) {
     DrawTxt("Ban co chac chan?", rec.x + 30, rec.y + 180, 15, COLOR_TEXT_DARK);
 
     if (GuiBtn({ rec.x + 30, rec.y + 240, 200, 44 }, "Nop bai & Huy", COLOR_DANGER, COLOR_DANGER_HOVER, WHITE, 16, true)) {
-        char pendSub[32] = {};
-        int pendSec = 0;
-        bool ok = checkExamSession(g.loggedStudent->id, pendSub, pendSec)
-                  && loadExamSession(g.loggedStudent->id, pendSub, pendSec, g.examHead, g.root);
-        if (!ok) {
-            removeExamSession(g.loggedStudent->id);
-            g.examHead = nullptr;
-            g.examList.clear();
-            g.currentModal = MODAL_NONE;
-            g.showToast("Khong khoi phuc duoc phien thi cu, da xoa.", 3.5f, true);
-            return;
-        }
-
-        float finalScore = 0.0f;
-        int correctCount = 0, totalCount = 0;
-        BusinessResult res = submitExamWorkflow(g.loggedStudent, pendSub, g.examHead, finalScore, correctCount, totalCount);
-        g.examHead = nullptr;
-        g.examList.clear();
         g.currentModal = MODAL_NONE;
-
+        bool saveFailed = false;
+        BusinessResult res = cancelPendingExamWorkflow(g.root, g.classes, g.classCount,
+                                                       g.loggedStudent, &saveFailed);
         char msg[160];
         if (res == SUCCESS) {
-            saveAllData(g.root, g.classes, g.classCount, "data");
-            snprintf(msg, sizeof(msg), "Da nop bai tu dong (diem %.2f - dung %d/%d cau), huy phien thi do dang.", finalScore, correctCount, totalCount);
-            g.showToast(msg, 4.0f, false);
+            snprintf(msg, sizeof(msg), "Da tu dong nop phien thi do dang%s.",
+                     saveFailed ? " (chua luu duoc file diem)" : "");
+            g.showToast(msg, 4.0f, saveFailed);
         } else {
-            removeExamSession(g.loggedStudent->id);
-            snprintf(msg, sizeof(msg), "Khong nop duoc: %s Da xoa phien thi do dang.", getErrorMessage(res));
+            snprintf(msg, sizeof(msg), "Khong huy duoc phien thi: %s", getErrorMessage(res));
             g.showToast(msg, 4.0f, true);
         }
     }
@@ -470,8 +402,6 @@ void renderModalDialogs(GuiState& g) {
         } else if (g.currentModal == MODAL_ADD_QUESTION || g.currentModal == MODAL_EDIT_QUESTION) {
             g.activeFormBox++;
             if (g.activeFormBox > 5) g.activeFormBox = 1;
-        } else if (g.currentModal == MODAL_EXAM_CONFIG) {
-            g.activeFormBox = (g.activeFormBox == 1) ? 2 : 1;
         }
     }
 
@@ -502,9 +432,6 @@ void renderModalDialogs(GuiState& g) {
         break;
     case MODAL_DELETE_QUESTION:
         drawQuestionDeleteModal(g);
-        break;
-    case MODAL_EXAM_CONFIG:
-        drawExamConfigModal(g);
         break;
     case MODAL_CLASS_EXAM_CONFIG:
         drawClassExamConfigModal(g);

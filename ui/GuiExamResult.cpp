@@ -1,6 +1,8 @@
 #include "GuiCommon.h"
 #include "GuiState.h"
 
+#include "../business/BusinessQueries.h"
+
 #include <cstdio>
 
 void drawExamResult(GuiState& g) {
@@ -18,7 +20,7 @@ void drawExamResult(GuiState& g) {
 
     DrawTxt(TextFormat("Ket qua: %d / %d cau dung", g.lastCorrect, g.lastTotal), card.x + (500 - MeasureTxt(TextFormat("Ket qua: %d / %d cau dung", g.lastCorrect, g.lastTotal), 17)) / 2.0f, card.y + 240, 17, COLOR_TEXT_DARK);
 
-    bool passed = (g.lastScore >= 5.0f);
+    bool passed = isPassingScore(g.lastScore);
     const char* badge = passed ? "[ DAT ]" : "[ CHUA DAT ]";
     Color badgeC = passed ? COLOR_SUCCESS : COLOR_DANGER;
     DrawTxt(badge, card.x + (500 - MeasureTxt(badge, 17, true)) / 2.0f, card.y + 275, 17, badgeC, true);

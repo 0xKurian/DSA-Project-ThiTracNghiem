@@ -1,15 +1,11 @@
 #include "GuiCommon.h"
 #include "GuiState.h"
 
+#include "../business/BusinessQueries.h"
+
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
-
-static int countStudents(Class* classroom) {
-    int n = 0;
-    for (Student* s = classroom != nullptr ? classroom->studentList : nullptr; s != nullptr; s = s->next) n++;
-    return n;
-}
 
 static bool studentMatches(Student* s, const char* query) {
     if (GuiMatchText(s->id, query)) return true;
@@ -99,7 +95,7 @@ void drawAdminTabClasses(GuiState& g) {
         DrawRectangleRoundedLines(row, 0.08f, 4, active ? COLOR_PRIMARY : COLOR_BORDER);
 
         DrawTxt(cls->id, row.x + 10, row.y + 8, 15, COLOR_PRIMARY, true);
-        int siSo = countStudents(cls);
+        int siSo = countStudentsInClass(cls);
         const char* badge = TextFormat("%d SV", siSo);
         DrawTxt(badge, row.x + row.width - MeasureTxt(badge, 13, true) - 10, row.y + 9, 13, COLOR_TEXT_MUTED, true);
 
@@ -206,7 +202,7 @@ void drawAdminTabClasses(GuiState& g) {
     bool classHasNoStudents = (curClass != nullptr && curClass->studentList == nullptr);
     bool filterNoMatch = (!rows.empty() || g.searchStudent[0] == '\0') ? false : true;
     if (!g.classShowAll && curClass != nullptr) {
-        int rawCount = countStudents(curClass);
+        int rawCount = countStudentsInClass(curClass);
         if (rawCount > 0 && rows.empty()) filterNoMatch = true;
     }
 

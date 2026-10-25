@@ -11,14 +11,6 @@
 #include <cstring>
 #include <string>
 
-struct UiExamConfig {
-    char classId[CLASS_ID_LEN];
-    char subjectId[SUBJECT_ID_LEN];
-    int questionCount;
-    int minutes;
-    int* questionIds;
-};
-
 enum ScreenState {
     SCREEN_LOGIN,
     SCREEN_TEACHER_DASHBOARD,
@@ -40,7 +32,6 @@ enum ModalType {
     MODAL_ADD_STUDENT,
     MODAL_EDIT_STUDENT,
     MODAL_DELETE_STUDENT,
-    MODAL_EXAM_CONFIG,
     MODAL_CLASS_EXAM_CONFIG,
     MODAL_DELETE_CLASS_EXAM_CONFIG,
     MODAL_CONFIRM_SUBMIT,
@@ -103,10 +94,10 @@ struct GuiState {
     bool reviewDetailOpen;
 
     char formClassId[CLASS_ID_LEN + 4];
-    char configSubjectId[SUBJECT_ID_LEN];
     char configClassId[CLASS_ID_LEN + 4];
-    int configEditIndex = -1;
-    Arr<UiExamConfig> examConfigs;
+    char configSubjectId[SUBJECT_ID_LEN];
+    char configEditClass[CLASS_ID_LEN];
+    char configEditSubject[SUBJECT_ID_LEN];
     int configSelected = -1;
     int configPage;
     int configPreviewPage;
@@ -122,7 +113,7 @@ struct GuiState {
     int currentExamQuestionIdx;
     std::string activeExamSubId;
     ExamTimer examTimer;
-    int examLastSavedSec;
+    ExamSessionTracker examTracker;
 
     float lastScore;
     int lastCorrect;
@@ -157,9 +148,6 @@ void drawAdminTabScores(GuiState& g);
 void drawAdminTabExamConfigs(GuiState& g);
 void drawClassExamConfigModal(GuiState& g);
 void drawDeleteClassExamConfigModal(GuiState& g);
-int GuiFindExamConfigIndex(const GuiState& g, const char* classId, const char* subjectId);
-void GuiFreeExamConfigs(GuiState& g);
-void GuiRemoveExamConfigs(GuiState& g, const char* classId, const char* subjectId);
 
 void drawStudentHome(GuiState& g);void drawStudentTabScores(GuiState& g);
 

@@ -2,6 +2,31 @@
 
 Dòng thời gian so với bản cũ trước khi cập nhật GitHub (mốc so sánh: commit `373b2a6 "Add files via upload"`). Kiểu viết theo Conventional Commits.
 
+## [Unreleased] — 2026-10-25
+
+### Changed
+
+- **feat(ui): nối API core/business sau merge `194a5db` + `df80429`**
+  - Tab cấu hình lớp-môn đọc `Class.configList`, lưu/xoá qua `setClassExamConfigWorkflow` /
+    `deleteClassExamConfigWorkflow`; freeze khi lớp đã thi; preview `questionIds`.
+  - Xoá `UiExamConfig`, `drawDeck`, `GuiFindExamConfigIndex/GuiFreeExamConfigs/GuiRemoveExamConfigs`,
+    `GuiFindStudentClass`, `examLastSavedSec`, modal "Cau hinh console".
+  - Chuẩn bị thi: `canStudentTakeSubject` + `prepareExamFromConfig`; resume/huỷ phiên qua
+    `resumeExamWorkflow` / `cancelPendingExamWorkflow`.
+  - Phòng thi: `tickExamSession` (auto-save), `formatExamClock`, nộp/hết giờ qua
+    `finishExamWorkflow` / `submitExpiredExamWorkflow`.
+  - Kết quả: `isPassingScore`; đếm SV: `countStudentsInClass`; console hết hỏi N/phút,
+    dùng `collectSubjectsInOrder`, xoá câu hỏi qua overload có kiểm tra điểm + config.
+  - Teardown: `freeAllData`.
+- **docs: `HANDOFF_CORE.md` / `HANDOFF_BUSINESS.md`** ghi trạng thái UI đã nối; thêm B09
+  (dọn file session hỏng trong `cancelPendingExamWorkflow`).
+
+### Kiểm chứng
+
+- `make -j$(nproc)`: 0 warning, 0 error; `make test` PASS; `./build/core_demo` exit 0.
+- Console smoke: đăng nhập GV + đăng nhập SV thi theo config lớp (2 câu/10 phút) → nộp → lưu file.
+- GUI: chỉ build, **chưa verify chuột/màn hình** (máy không có display).
+
 ## [Unreleased] — 2026-10-24
 
 ### Added
