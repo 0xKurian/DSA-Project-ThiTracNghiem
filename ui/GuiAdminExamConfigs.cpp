@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <cstring>
 
 static const int CONFIGS_PER_PAGE = 8;
 
@@ -19,12 +20,20 @@ struct ConfigRow {
     ExamConfig* config;
 };
 
+static bool configMatches(GuiState& g, const ConfigRow& row, const char* query) {
+    if (query == nullptr || query[0] == '\0') return true;
+    if (GuiMatchText(row.classroom->id, query)) return true;
+    if (GuiMatchText(row.config->subjectId, query)) return true;
+    Subject* sub = findSubject(g.root, row.config->subjectId);
+    return sub != nullptr && GuiMatchText(sub->name, query);
+}
+
 static int collectConfigRows(GuiState& g, Arr<ConfigRow>& out) {
     for (int i = 0; i < g.classCount; ++i) {
         if (g.classes[i] == nullptr) continue;
         for (ExamConfig* cfg = g.classes[i]->configList; cfg != nullptr; cfg = cfg->next) {
             ConfigRow row { g.classes[i], cfg };
-            out.push_back(row);
+            if (configMatches(g, row, g.searchConfig)) out.push_back(row);
         }
     }
     return (int)out.size();
@@ -50,14 +59,16 @@ static void drawConfigList(GuiState& g, Rectangle pane) {
     Arr<ConfigRow> rows;
     int total = collectConfigRows(g, rows);
 
-    DrawTxt(TextFormat("DANH SACH CAU HINH (%d)", total), pane.x + 15, pane.y + 12, 16, COLOR_TEXT_DARK, true);
+    GuiTextBoxInput({ pane.x + 15, pane.y + 8, pane.width - 30, 34 }, g.searchConfig, sizeof(g.searchConfig),
+                    g.activeSearchConfig, "Tim lop / ma mon / ten mon...");
+    DrawTxt(TextFormat("DANH SACH CAU HINH (%d)", total), pane.x + 15, pane.y + 50, 15, COLOR_TEXT_DARK, true);
 
     int totalPages = (total <= 0) ? 1 : (total + CONFIGS_PER_PAGE - 1) / CONFIGS_PER_PAGE;
     if (g.configPage >= totalPages) g.configPage = totalPages - 1;
     if (g.configPage < 0) g.configPage = 0;
     if (g.configSelected >= total) g.configSelected = -1;
 
-    int listTop = (int)pane.y + 45;
+    int listTop = (int)pane.y + 75;
     if (total == 0) {
         DrawTxt("Chua co cau hinh nao.", pane.x + 15, (float)listTop + 15, 15, COLOR_TEXT_MUTED);
         DrawTxt("Bam '+ Tao Cau Hinh' de tao cau hinh lop - mon.", pane.x + 15, (float)listTop + 42, 15, COLOR_TEXT_MUTED);
@@ -206,6 +217,13 @@ void drawAdminTabExamConfigs(GuiState& g) {
     DrawTxt("CAU HINH THI THEO LOP & MON", contentRec.x + 25, contentRec.y + 20, 20, COLOR_TEXT_DARK, true);
     if (GuiBtn({ contentRec.x + contentRec.width - 180, contentRec.y + 18, 155, 38 }, "+ Tao Cau Hinh", COLOR_SUCCESS, COLOR_SUCCESS_HOVER, WHITE, 15, true)) {
         openEditModal(g, nullptr, nullptr);
+    }
+
+    if (strcmp(g.searchConfig, g.searchConfigLast) != 0) {
+        snprintf(g.searchConfigLast, sizeof(g.searchConfigLast), "%s", g.searchConfig);
+        g.configSelected = -1;
+        g.configPage = 0;
+        g.configPreviewPage = 0;
     }
 
     Rectangle leftPane = { contentRec.x + 20, contentRec.y + 70, 440, contentRec.height - 90 };
