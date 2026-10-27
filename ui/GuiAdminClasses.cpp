@@ -197,7 +197,7 @@ void drawAdminTabClasses(GuiState& g) {
 
     bool noClassAtAll = (g.classCount == 0);
     bool classHasNoStudents = (curClass != nullptr && curClass->studentList == nullptr);
-    bool filterNoMatch = (!rows.empty() || g.searchStudent[0] == '\0') ? false : true;
+    bool filterNoMatch = rows.empty() && g.searchStudent[0] != '\0';
     if (!g.classShowAll && curClass != nullptr) {
         int rawCount = countStudentsInClass(curClass);
         if (rawCount > 0 && rows.empty()) filterNoMatch = true;

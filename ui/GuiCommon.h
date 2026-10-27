@@ -88,6 +88,9 @@ void GuiMakeClassItems(Class* const classes[], int classCount, Arr<SuggestItem>&
 
 void DrawCardPanel(Rectangle rec, Color bg = COLOR_CARD, Color border = COLOR_BORDER);
 
+struct ExamDetail;
+void GuiDrawTakenExamCard(const ExamDetail* d, int index, Rectangle dCard);
+
 void DrawToastNotification(const char* message, float timer, bool isError = false);
 
 void collectSubjects(Subject* root, Arr<Subject*>& list);

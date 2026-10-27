@@ -209,6 +209,22 @@ Nghiệm thu chung:
 
 ---
 
+### B10 — API ghi nhận đáp án đang chọn của sinh viên
+
+- **Trạng thái:** Chờ business
+- **UI đang chờ:** `ui/GuiExamRoom.cpp:87`
+- **Vấn đề:** UI gán trực tiếp `curQ->selectedAnswer = choices[i].letter` vào node
+  `ExamDetail` của core khi sinh viên click đáp án trong phòng thi. Việc ghi nhận
+  lựa chọn là thao tác trên dữ liệu phiên thi nhưng chưa có API business nào;
+  UI không được tự quyết định rule (vd: chữ hợp lệ, chạm để chấm điểm).
+- **API/hành vi mong muốn:** `BusinessResult recordSelectedAnswer(ExamDetail* detail,
+  char answer)` (hoặc hàm tương đương nhận `ExamDetail*` đang mở): chỉ nhận
+  'A'..'D', trả SUCCESS khi gán được; chữ khác/trả ERR_INVALID... để UI disable.
+- **Acceptance/test:** gọi với 'A'..'D' → `selectedAnswer` đổi đúng; gọi với 'E'
+  → lỗi BusinessResult, node không đổi; tick/nộp bài vẫn đọc được lựa chọn như cũ.
+
+---
+
 ## Mẫu thêm item
 
 ```md

@@ -54,8 +54,11 @@ void drawAdminTabQuestions(GuiState& g) {
                 Rectangle qCard = { contentRec.x + 25, (float)startY + offset * 155, contentRec.width - 50, 145 };
                 DrawCardPanel(qCard, COLOR_ROW_ALT);
 
-                DrawTxt(TextFormat("ID %d:", qList[i]->id), qCard.x + 15, qCard.y + 12, 16, COLOR_PRIMARY, true);
-                DrawTxtWrapped(qList[i]->content, qCard.x + 75, qCard.y + 12, qCard.width - 160, 16, COLOR_TEXT_DARK, true);
+                char idLabel[32];
+                snprintf(idLabel, sizeof(idLabel), "ID %d:", qList[i]->id);
+                DrawTxt(idLabel, qCard.x + 15, qCard.y + 12, 16, COLOR_PRIMARY, true);
+                float qx = std::max(qCard.x + 75.0f, qCard.x + 15 + MeasureTxt(idLabel, 16, true) + 10);
+                DrawTxtWrapped(qList[i]->content, qx, qCard.y + 12, qCard.x + qCard.width - 85 - (qx - qCard.x), 16, COLOR_TEXT_DARK, true);
 
                 DrawTxt(TextFormat("A. %s", qList[i]->answerA), qCard.x + 25, qCard.y + 45, 14, (qList[i]->correctAnswer == 'A') ? COLOR_SUCCESS : COLOR_TEXT_MUTED);
                 DrawTxt(TextFormat("B. %s", qList[i]->answerB), qCard.x + 25, qCard.y + 70, 14, (qList[i]->correctAnswer == 'B') ? COLOR_SUCCESS : COLOR_TEXT_MUTED);

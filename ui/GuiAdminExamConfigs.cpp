@@ -13,27 +13,23 @@
 #include <cstdio>
 #include <cstring>
 
-static const int CONFIGS_PER_PAGE = 8;
+static const int PREVIEW_PER_PAGE = 2;
 
 struct ConfigRow {
     Class* classroom;
     ExamConfig* config;
 };
 
-static bool configMatches(GuiState& g, const ConfigRow& row, const char* query) {
-    if (query == nullptr || query[0] == '\0') return true;
-    if (GuiMatchText(row.classroom->id, query)) return true;
-    if (GuiMatchText(row.config->subjectId, query)) return true;
-    Subject* sub = findSubject(g.root, row.config->subjectId);
-    return sub != nullptr && GuiMatchText(sub->name, query);
-}
-
 static int collectConfigRows(GuiState& g, Arr<ConfigRow>& out) {
+    size_t clsLen = strlen(g.configFilterClass);
     for (int i = 0; i < g.classCount; ++i) {
         if (g.classes[i] == nullptr) continue;
+        if (clsLen > 0 && strncmp(g.classes[i]->id, g.configFilterClass, clsLen) != 0) continue;
         for (ExamConfig* cfg = g.classes[i]->configList; cfg != nullptr; cfg = cfg->next) {
+            if (g.configFilterSubject[0] != '\0'
+                && strncmp(cfg->subjectId, g.configFilterSubject, strlen(g.configFilterSubject)) != 0) continue;
             ConfigRow row { g.classes[i], cfg };
-            if (configMatches(g, row, g.searchConfig)) out.push_back(row);
+            out.push_back(row);
         }
     }
     return (int)out.size();
@@ -54,6 +50,8 @@ static void openEditModal(GuiState& g, const Class* classroom, const ExamConfig*
     }
     g.activeConfigClassSearch = false;
     g.activeConfigSubjectSearch = false;
+    g.activeConfigFilterClass = false;
+    g.activeConfigFilterSubject = false;
     g.modalError[0] = '\0';
     g.activeFormBox = (cfg == nullptr) ? 1 : 3;
 }
@@ -66,20 +64,16 @@ static void openDeleteConfigModal(GuiState& g, const Class* classroom, const Exa
 }
 
 static void drawConfigList(GuiState& g, Rectangle pane) {
+    if (g.configFilterClass[0] != '\0' && findClass(g.classes, g.classCount, g.configFilterClass) == nullptr)
+        g.configFilterClass[0] = '\0';
+    if (g.configFilterSubject[0] != '\0' && findSubject(g.root, g.configFilterSubject) == nullptr)
+        g.configFilterSubject[0] = '\0';
+
     Arr<ConfigRow> rows;
     int total = collectConfigRows(g, rows);
-
-    size_t searchLenBefore = strlen(g.searchConfig);
-    GuiTextBoxInput({ pane.x + 15, pane.y + 8, pane.width - 30, 34 }, g.searchConfig, sizeof(g.searchConfig),
-                    g.activeSearchConfig, "Tim lop / ma mon / ten mon...");
-    if (strlen(g.searchConfig) != searchLenBefore) {
-        g.configSelected = -1;
-        g.configPage = 0;
-        g.configPreviewPage = 0;
-    }
     DrawTxt(TextFormat("DANH SACH CAU HINH (%d)", total), pane.x + 15, pane.y + 50, 15, COLOR_TEXT_DARK, true);
 
-    int totalPages = (total <= 0) ? 1 : (total + CONFIGS_PER_PAGE - 1) / CONFIGS_PER_PAGE;
+    int totalPages = (total <= 0) ? 1 : (total + SCORES_PER_PAGE - 1) / SCORES_PER_PAGE;
     if (g.configPage >= totalPages) g.configPage = totalPages - 1;
     if (g.configPage < 0) g.configPage = 0;
     if (g.configSelected >= total) g.configSelected = -1;
@@ -91,18 +85,18 @@ static void drawConfigList(GuiState& g, Rectangle pane) {
         return;
     }
 
-    int start = g.configPage * CONFIGS_PER_PAGE;
-    int end = std::min(start + CONFIGS_PER_PAGE, total);
+    int start = g.configPage * SCORES_PER_PAGE;
+    int end = std::min(start + SCORES_PER_PAGE, total);
     for (int i = start; i < end; ++i) {
         ConfigRow& rowRef = rows[i];
         int rowY = listTop + (i - start) * 52;
         Rectangle row = { pane.x + 10, (float)rowY, pane.width - 20, 48 };
         bool selected = (g.configSelected == i);
-        DrawRectangleRounded(row, 0.1f, 4, selected ? MakeColor(219, 234, 254) : COLOR_ROW_ALT);
-        DrawRectangleRoundedLines(row, 0.1f, 4, selected ? COLOR_PRIMARY : COLOR_BORDER);
+        bool frozen = classHasTakenSubject(g.classes, g.classCount, rowRef.classroom->id, rowRef.config->subjectId);
+        DrawRectangleRounded(row, 0.1f, 4, selected ? MakeColor(219, 234, 254) : (frozen ? MakeColor(254, 226, 226) : COLOR_ROW_ALT));
+        DrawRectangleRoundedLines(row, 0.1f, 4, selected ? COLOR_PRIMARY : (frozen ? COLOR_WARNING : COLOR_BORDER));
 
         Subject* sub = findSubject(g.root, rowRef.config->subjectId);
-        bool frozen = classHasTakenSubject(g.classes, g.classCount, rowRef.classroom->id, rowRef.config->subjectId);
         DrawTxt(TextFormat("%s - %s", rowRef.classroom->id, sub != nullptr ? sub->name : rowRef.config->subjectId),
                 row.x + 12, row.y + 8, 15, COLOR_TEXT_DARK, true);
         DrawTxt(TextFormat("%s | %d cau / %d phut", rowRef.config->subjectId, rowRef.config->questionCount, rowRef.config->minutes),
@@ -113,9 +107,7 @@ static void drawConfigList(GuiState& g, Rectangle pane) {
         bool rowPressed = !GuiModalAbsorbsInput() && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)
                           && CheckCollisionPointRec(mouse, row);
 
-        if (frozen) {
-            DrawTxt("Khoa", row.x + row.width - 95, row.y + 17, 13, COLOR_WARNING, true);
-        } else if (GuiBtnOutline(xoaRec, "Xoa", COLOR_DANGER, COLOR_DANGER, 13)) {
+        if (!frozen && GuiBtnOutline(xoaRec, "Xoa", COLOR_DANGER, COLOR_DANGER, 13)) {
             openDeleteConfigModal(g, rowRef.classroom, rowRef.config);
         }
 
@@ -133,6 +125,54 @@ static void drawConfigList(GuiState& g, Rectangle pane) {
     if (GuiBtnOutline({ pane.x + pane.width - 120, (float)pageBarY, 100, 28 }, "Sau >", COLOR_PRIMARY, COLOR_PRIMARY, 13, false, g.configPage >= totalPages - 1)) {
         if (g.configPage < totalPages - 1) g.configPage++;
     }
+
+    Arr<SuggestItem> classItems;
+    GuiMakeClassItems(g.classes, g.classCount, classItems);
+    int pickedClass = GuiSearchSuggest({ pane.x + 15, pane.y + 8, 190, 34 }, g.configFilterClass, sizeof(g.configFilterClass),
+                                       g.activeConfigFilterClass, classItems, "Loc theo lop...");
+    if (pickedClass >= 0) {
+        g.configPage = 0;
+        g.configSelected = -1;
+        g.configPreviewPage = 0;
+    }
+
+    Arr<SuggestItem> subjItems;
+    GuiMakeSubjectItems(g.subjects, true, subjItems);
+    int pickedSub = GuiSearchSuggest({ pane.x + 215, pane.y + 8, 190, 34 }, g.configFilterSubject, sizeof(g.configFilterSubject),
+                                     g.activeConfigFilterSubject, subjItems, "Loc theo mon...");
+    if (pickedSub >= 0) {
+        g.configPage = 0;
+        g.configSelected = -1;
+        g.configPreviewPage = 0;
+    }
+
+    if (g.configFilterClass[0] != '\0'
+        && GuiBtnOutline({ pane.x + 182, pane.y + 11, 20, 28 }, "X", COLOR_BORDER, COLOR_TEXT_MUTED, 12)) {
+        g.configFilterClass[0] = '\0';
+        g.activeConfigFilterClass = false;
+        g.configPage = 0;
+        g.configSelected = -1;
+    }
+    if (g.configFilterSubject[0] != '\0'
+        && GuiBtnOutline({ pane.x + 380, pane.y + 11, 20, 28 }, "X", COLOR_BORDER, COLOR_TEXT_MUTED, 12)) {
+        g.configFilterSubject[0] = '\0';
+        g.activeConfigFilterSubject = false;
+        g.configPage = 0;
+        g.configSelected = -1;
+    }
+}
+
+static void DrawTxtClipped(const char* text, float x, float y, float fontSize, Color color, bool bold, float maxW) {
+    // std::string chi lam text tam trong helper hien thi, khong lam cau truc du lieu
+    std::string out;
+    if (MeasureTxt(text, fontSize, bold) > maxW) {
+        out = text;
+        while (!out.empty() && MeasureTxt((out + "...").c_str(), fontSize, bold) > maxW) out.pop_back();
+        out += "...";
+    }
+    BeginScissorMode((int)x, (int)y - 1, (int)maxW, (int)fontSize + 4);
+    DrawTxt(out.empty() ? text : out.c_str(), x, y, fontSize, color, bold);
+    EndScissorMode();
 }
 
 static void drawConfigPreview(GuiState& g, Rectangle pane) {
@@ -149,15 +189,22 @@ static void drawConfigPreview(GuiState& g, Rectangle pane) {
     bool frozen = classHasTakenSubject(g.classes, g.classCount, cls->id, cfg->subjectId);
 
     DrawTxt("DE THI DA BOC", pane.x + 20, pane.y + 12, 17, COLOR_TEXT_DARK, true);
-    DrawTxt(TextFormat("Lop: %s - %s | Mon: %s - %s", cls->id, cls->name,
-                       cfg->subjectId, sub != nullptr ? sub->name : "?"),
-            pane.x + 20, pane.y + 50, 14, COLOR_TEXT_MUTED);
-    DrawTxt(TextFormat("%d cau / %d phut | Ngan hang: %d cau | Tao luc: %s", cfg->questionCount, cfg->minutes,
-                       sub != nullptr ? countQuestions(sub->questionList) : 0, cfg->createdAt),
-            pane.x + 20, pane.y + 70, 14, COLOR_SUCCESS, true);
+    DrawTxtClipped(TextFormat("Lop: %s - %s", cls->id, cls->name),
+                   pane.x + 20, pane.y + 46, 14, COLOR_TEXT_MUTED, false, pane.width - 60);
+    DrawTxtClipped(TextFormat("Mon: %s - %s", cfg->subjectId, sub != nullptr ? sub->name : "?"),
+                   pane.x + 20, pane.y + 62, 14, COLOR_TEXT_MUTED, false, pane.width - 60);
+    char rightStat[48];
+    snprintf(rightStat, sizeof(rightStat), "Tao luc: %s", cfg->createdAt);
+    float rightW = MeasureTxt(rightStat, 13, true);
+    float leftX = pane.x + 20;
+    float rightX = pane.x + pane.width - 20 - rightW;
+    DrawTxtClipped(TextFormat("%d cau / %d phut | Ngan hang: %d cau", cfg->questionCount, cfg->minutes,
+                              sub != nullptr ? countQuestions(sub->questionList) : 0),
+                   leftX, pane.y + 78, 13, COLOR_SUCCESS, true, rightX - leftX - 12);
+    DrawTxtClipped(rightStat, rightX, pane.y + 78, 13, COLOR_SUCCESS, true, rightW + 1);
 
     if (frozen) {
-        DrawTxt("Da co sinh vien thi mon nay - cau hinh bi khoa.", pane.x + 20, pane.y + 92, 13, COLOR_WARNING, true);
+        DrawTxtClipped("Da co sinh vien thi mon nay - cau hinh bi khoa.", pane.x + 20, pane.y + 94, 13, COLOR_WARNING, true, pane.width - 60);
     } else {
         if (GuiBtnOutline({ pane.x + pane.width - 210, pane.y + 10, 90, 30 }, "Sua", COLOR_PRIMARY, COLOR_PRIMARY, 14)) {
             openEditModal(g, cls, cfg);
@@ -172,18 +219,20 @@ static void drawConfigPreview(GuiState& g, Rectangle pane) {
         return;
     }
 
-    int totalPages = (cfg->questionCount + QUESTIONS_PER_PAGE - 1) / QUESTIONS_PER_PAGE;
+    int totalPages = (cfg->questionCount + PREVIEW_PER_PAGE - 1) / PREVIEW_PER_PAGE;
     if (totalPages < 1) totalPages = 1;
     if (g.configPreviewPage >= totalPages) g.configPreviewPage = totalPages - 1;
     if (g.configPreviewPage < 0) g.configPreviewPage = 0;
 
-    int start = g.configPreviewPage * QUESTIONS_PER_PAGE;
-    int end = std::min(start + QUESTIONS_PER_PAGE, cfg->questionCount);
+    int start = g.configPreviewPage * PREVIEW_PER_PAGE;
+    int end = std::min(start + PREVIEW_PER_PAGE, cfg->questionCount);
     int top = (int)pane.y + 120;
     for (int k = start; k < end; ++k) {
         Rectangle card = { pane.x + 15, (float)(top + (k - start) * 150), pane.width - 30, 140 };
         DrawCardPanel(card, COLOR_ROW_ALT);
-        DrawTxt(TextFormat("Cau %d:", k + 1), card.x + 12, card.y + 10, 15, COLOR_PRIMARY, true);
+        char label[32];
+        snprintf(label, sizeof(label), "Cau %d:", k + 1);
+        DrawTxt(label, card.x + 12, card.y + 10, 15, COLOR_PRIMARY, true);
 
         Question* q = findQuestion(sub->questionList, cfg->questionIds[k]);
         if (q == nullptr) {
@@ -191,15 +240,16 @@ static void drawConfigPreview(GuiState& g, Rectangle pane) {
             continue;
         }
 
-        DrawTxtWrapped(q->content, card.x + 70, card.y + 8, card.width - 85, 13, COLOR_TEXT_DARK);
+        float qx = std::max(card.x + 70.0f, card.x + 12 + MeasureTxt(label, 15, true) + 8);
+        DrawTxtWrapped(q->content, qx, card.y + 8, card.x + card.width - 15 - qx, 13, COLOR_TEXT_DARK);
         bool isA = (q->correctAnswer == 'A');
         bool isB = (q->correctAnswer == 'B');
         bool isC = (q->correctAnswer == 'C');
         bool isD = (q->correctAnswer == 'D');
-        DrawTxt(TextFormat("A. %s", q->answerA), card.x + 20, card.y + 52, 13, isA ? COLOR_SUCCESS : COLOR_TEXT_MUTED, isA);
-        DrawTxt(TextFormat("B. %s", q->answerB), card.x + 20, card.y + 68, 13, isB ? COLOR_SUCCESS : COLOR_TEXT_MUTED, isB);
-        DrawTxt(TextFormat("C. %s", q->answerC), card.x + 20, card.y + 84, 13, isC ? COLOR_SUCCESS : COLOR_TEXT_MUTED, isC);
-        DrawTxt(TextFormat("D. %s", q->answerD), card.x + 20, card.y + 100, 13, isD ? COLOR_SUCCESS : COLOR_TEXT_MUTED, isD);
+        DrawTxtClipped(TextFormat("A. %s", q->answerA), card.x + 20, card.y + 52, 13, isA ? COLOR_SUCCESS : COLOR_TEXT_MUTED, isA, card.width - 44);
+        DrawTxtClipped(TextFormat("B. %s", q->answerB), card.x + 20, card.y + 68, 13, isB ? COLOR_SUCCESS : COLOR_TEXT_MUTED, isB, card.width - 44);
+        DrawTxtClipped(TextFormat("C. %s", q->answerC), card.x + 20, card.y + 84, 13, isC ? COLOR_SUCCESS : COLOR_TEXT_MUTED, isC, card.width - 44);
+        DrawTxtClipped(TextFormat("D. %s", q->answerD), card.x + 20, card.y + 100, 13, isD ? COLOR_SUCCESS : COLOR_TEXT_MUTED, isD, card.width - 44);
         DrawTxt(TextFormat("Dap an dung: %c", q->correctAnswer), card.x + 20, card.y + 118, 13, COLOR_SUCCESS, true);
     }
 
@@ -226,8 +276,8 @@ void drawAdminTabExamConfigs(GuiState& g) {
     DrawCardPanel(leftPane);
     DrawCardPanel(rightPane);
 
-    drawConfigList(g, leftPane);
     drawConfigPreview(g, rightPane);
+    drawConfigList(g, leftPane);
 }
 
 void drawClassExamConfigModal(GuiState& g) {

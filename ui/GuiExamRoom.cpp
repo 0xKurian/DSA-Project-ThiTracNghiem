@@ -7,6 +7,33 @@
 
 #include <cstdio>
 
+static void finishExamAndShowResult(GuiState& g, bool expired) {
+    g.currentModal = MODAL_NONE;
+    g.examTimer.stop();
+    bool saveFailed = false;
+    BusinessResult res = expired
+        ? submitExpiredExamWorkflow(g.root, g.classes, g.classCount, g.loggedStudent,
+                                    g.activeExamSubId.c_str(), g.examHead,
+                                    g.lastScore, g.lastCorrect, g.lastTotal, &saveFailed)
+        : finishExamWorkflow(g.root, g.classes, g.classCount, g.loggedStudent,
+                             g.activeExamSubId.c_str(), g.examHead,
+                             g.lastScore, g.lastCorrect, g.lastTotal, &saveFailed);
+    g.examList.clear();
+    g.currentScreen = SCREEN_EXAM_RESULT;
+    if (res == SUCCESS && !saveFailed) {
+        g.showToast(expired ? "Het gio lam bai! He thong da tu dong nop bai thi."
+                            : "Da nop bai thi thanh cong!",
+                    expired ? 4.0f : 3.5f, false);
+    } else if (res == SUCCESS) {
+        g.showToast(expired ? "Het gio! Da nop bai nhung chua luu duoc file diem."
+                            : "Da nop bai nhung chua luu duoc file diem.", 5.0f, true);
+    } else {
+        g.showToast(TextFormat(expired ? "Het gio nhung khong nop duoc bai: %s"
+                                       : "Khong nop duoc bai: %s",
+                               getErrorMessage(res)), 5.0f, true);
+    }
+}
+
 void updateExamSession(GuiState& g) {
     if (g.currentScreen != SCREEN_STUDENT_EXAM) return;
 
@@ -14,22 +41,7 @@ void updateExamSession(GuiState& g) {
                                           g.loggedStudent->id,
                                           g.activeExamSubId.c_str(), g.examHead);
     if (tick.expired) {
-        g.examTimer.stop();
-        g.currentModal = MODAL_NONE;
-        bool saveFailed = false;
-        BusinessResult res = submitExpiredExamWorkflow(
-            g.root, g.classes, g.classCount, g.loggedStudent,
-            g.activeExamSubId.c_str(), g.examHead,
-            g.lastScore, g.lastCorrect, g.lastTotal, &saveFailed);
-        g.examList.clear();
-        g.currentScreen = SCREEN_EXAM_RESULT;
-        if (res == SUCCESS && !saveFailed) {
-            g.showToast("Het gio lam bai! He thong da tu dong nop bai thi.", 4.0f, false);
-        } else if (res == SUCCESS) {
-            g.showToast("Het gio! Da nop bai nhung chua luu duoc file diem.", 5.0f, true);
-        } else {
-            g.showToast(TextFormat("Het gio nhung khong nop duoc bai: %s", getErrorMessage(res)), 5.0f, true);
-        }
+        finishExamAndShowResult(g, true);
     }
 }
 
@@ -150,22 +162,7 @@ void drawExamSubmitConfirmDialog(GuiState& g) {
     DrawTxt("Ban co chac chan muon nop bai ngay bay gio?", modalRec.x + 30, modalRec.y + 115, 15, COLOR_TEXT_MUTED);
 
     if (GuiBtn({ modalRec.x + 30, modalRec.y + 210, 200, 44 }, "Dong Y Nop Bai", COLOR_SUCCESS, COLOR_SUCCESS_HOVER, WHITE, 16, true)) {
-        g.currentModal = MODAL_NONE;
-        g.examTimer.stop();
-        bool saveFailed = false;
-        BusinessResult res = finishExamWorkflow(
-            g.root, g.classes, g.classCount, g.loggedStudent,
-            g.activeExamSubId.c_str(), g.examHead,
-            g.lastScore, g.lastCorrect, g.lastTotal, &saveFailed);
-        g.examList.clear();
-        g.currentScreen = SCREEN_EXAM_RESULT;
-        if (res == SUCCESS && !saveFailed) {
-            g.showToast("Da nop bai thi thanh cong!", 3.5f, false);
-        } else if (res == SUCCESS) {
-            g.showToast("Da nop bai nhung chua luu duoc file diem.", 5.0f, true);
-        } else {
-            g.showToast(TextFormat("Khong nop duoc bai: %s", getErrorMessage(res)), 5.0f, true);
-        }
+        finishExamAndShowResult(g, false);
     }
     if (GuiBtnOutline({ modalRec.x + 270, modalRec.y + 210, 200, 44 }, "Quay Lai Lam Tiep", COLOR_PRIMARY, COLOR_PRIMARY, 16, true)) {
         g.currentModal = MODAL_NONE;

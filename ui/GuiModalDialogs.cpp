@@ -4,17 +4,13 @@
 #include "../business/BusinessErrors.h"
 #include "../business/ClassService.h"
 #include "../business/ExamService.h"
-#include "../business/FileStorage.h"
 #include "../business/QuestionService.h"
 #include "../business/StudentService.h"
 #include "../business/SubjectService.h"
 
 #include "../core/ClassArray.h"
-#include "../core/QuestionList.h"
-#include "../core/SubjectBST.h"
 
 #include <cstdio>
-#include <cstdlib>
 
 static Rectangle modalRec() {
     return { (float)(GUI_WIDTH / 2 - 250), (float)(GUI_HEIGHT / 2 - 180), 500, 360 };

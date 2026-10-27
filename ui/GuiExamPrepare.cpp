@@ -8,6 +8,17 @@
 
 #include <cstdio>
 
+static void applyExamSessionToUi(GuiState& g, const char* subId, int totalSeconds, bool useResume) {
+    g.examList.clear();
+    ExamDetail* cur = g.examHead;
+    while (cur != nullptr) { g.examList.push_back(cur); cur = cur->next; }
+    g.activeExamSubId = subId;
+    if (useResume) g.examTimer.resume(totalSeconds); else g.examTimer.start(totalSeconds);
+    g.examTracker.lastSavedSecond = -1;
+    g.currentExamQuestionIdx = 0;
+    g.currentScreen = SCREEN_STUDENT_EXAM;
+}
+
 void drawExamPrepareTab(GuiState& g) {
     Rectangle contentRec = { 260, 85, (float)(GUI_WIDTH - 280), (float)(GUI_HEIGHT - 105) };
 
@@ -27,14 +38,7 @@ void drawExamPrepareTab(GuiState& g) {
             BusinessResult res = resumeExamWorkflow(g.root, g.classes, g.classCount, g.loggedStudent,
                                                     g.examHead, pendSub, pendSec);
             if (res == SUCCESS) {
-                g.examList.clear();
-                ExamDetail* cur = g.examHead;
-                while (cur != nullptr) { g.examList.push_back(cur); cur = cur->next; }
-                g.activeExamSubId = pendSub;
-                g.examTimer.resume(pendSec);
-                g.examTracker.lastSavedSecond = -1;
-                g.currentExamQuestionIdx = 0;
-                g.currentScreen = SCREEN_STUDENT_EXAM;
+                applyExamSessionToUi(g, pendSub, pendSec, true);
             } else {
                 g.showToast(TextFormat("Khong the khoi phuc phien thi: %s", getErrorMessage(res)), 3.5f, true);
             }
@@ -74,14 +78,7 @@ void drawExamPrepareTab(GuiState& g) {
             BusinessResult res = prepareExamFromConfig(g.root, g.classes, g.classCount,
                                                        g.loggedStudent, chosenSub->id, g.examHead);
             if (res == SUCCESS && cfg != nullptr) {
-                g.examList.clear();
-                ExamDetail* cur = g.examHead;
-                while (cur != nullptr) { g.examList.push_back(cur); cur = cur->next; }
-                g.activeExamSubId = chosenSub->id;
-                g.examTimer.start(cfg->minutes * 60);
-                g.examTracker.lastSavedSecond = -1;
-                g.currentExamQuestionIdx = 0;
-                g.currentScreen = SCREEN_STUDENT_EXAM;
+                applyExamSessionToUi(g, chosenSub->id, cfg->minutes * 60, false);
             } else {
                 if (g.examHead != nullptr) {
                     cancelExam(g.examHead);

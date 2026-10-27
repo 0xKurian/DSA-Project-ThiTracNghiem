@@ -3,6 +3,7 @@
 #include "../core/QuestionList.h"
 #include "../core/StudentList.h"
 #include "../core/SubjectBST.h"
+#include "../core/Structures.h"
 
 #include <algorithm>
 #include <cctype>
@@ -138,58 +139,44 @@ float DrawTxtWrapped(const char* text, float posX, float posY, float maxWidth, f
     return currentY - posY;
 }
 
+static bool drawBtnShell(Rectangle rec, const char* text, float fontSize, bool bold,
+                         Color fillColor, Color borderColor, Color textColor, bool disabledLike) {
+    DrawRectangleRounded(rec, 0.15f, 4, fillColor);
+    DrawRectangleRoundedLines(rec, 0.15f, 4, borderColor);
+    float textW = MeasureTxt(text, fontSize, bold);
+    float posX = rec.x + (rec.width - textW) / 2.0f;
+    float posY = rec.y + (rec.height - fontSize) / 2.0f;
+    DrawTxt(text, posX, posY, fontSize, textColor, bold);
+    if (disabledLike) return false;
+    Vector2 mouse = GetMousePosition();
+    if (CheckCollisionPointRec(mouse, rec) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) return !clickShielded(mouse);
+    return false;
+}
+
 bool GuiBtn(Rectangle rec, const char* text, Color bg, Color hoverBg, Color textColor, float fontSize, bool bold, bool disabled) {
     if (disabled || (gModalOpen && !gInsideModal)) {
-        DrawRectangleRounded(rec, 0.15f, 4, MakeColor(bg.r, bg.g, bg.b, 160));
-        DrawRectangleRoundedLines(rec, 0.15f, 4, MakeColor(bg.r, bg.g, bg.b, 160));
-        float textW = MeasureTxt(text, fontSize, bold);
-        float posX = rec.x + (rec.width - textW) / 2.0f;
-        float posY = rec.y + (rec.height - fontSize) / 2.0f;
-        DrawTxt(text, posX, posY, fontSize, MakeColor(textColor.r, textColor.g, textColor.b, 160), bold);
-        return false;
+        return drawBtnShell(rec, text, fontSize, bold,
+                            MakeColor(bg.r, bg.g, bg.b, 160), MakeColor(bg.r, bg.g, bg.b, 160),
+                            MakeColor(textColor.r, textColor.g, textColor.b, 160), true);
     }
 
     Vector2 mouse = GetMousePosition();
     bool hovered = CheckCollisionPointRec(mouse, rec);
     Color currentBg = hovered ? hoverBg : bg;
 
-    DrawRectangleRounded(rec, 0.15f, 4, currentBg);
-    DrawRectangleRoundedLines(rec, 0.15f, 4, currentBg);
-
-    float textW = MeasureTxt(text, fontSize, bold);
-    float posX = rec.x + (rec.width - textW) / 2.0f;
-    float posY = rec.y + (rec.height - fontSize) / 2.0f;
-    DrawTxt(text, posX, posY, fontSize, textColor, bold);
-
-    if (hovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) return !clickShielded(mouse);
-    return false;
+    return drawBtnShell(rec, text, fontSize, bold, currentBg, currentBg, textColor, false);
 }
 
 bool GuiBtnOutline(Rectangle rec, const char* text, Color borderColor, Color textColor, float fontSize, bool bold, bool disabled) {
     if (disabled || (gModalOpen && !gInsideModal)) {
-        DrawRectangleRounded(rec, 0.15f, 4, COLOR_CARD);
-        DrawRectangleRoundedLines(rec, 0.15f, 4, COLOR_BORDER);
-        float textW = MeasureTxt(text, fontSize, bold);
-        float posX = rec.x + (rec.width - textW) / 2.0f;
-        float posY = rec.y + (rec.height - fontSize) / 2.0f;
-        DrawTxt(text, posX, posY, fontSize, COLOR_TEXT_MUTED, bold);
-        return false;
+        return drawBtnShell(rec, text, fontSize, bold, COLOR_CARD, COLOR_BORDER, COLOR_TEXT_MUTED, true);
     }
 
     Vector2 mouse = GetMousePosition();
     bool hovered = CheckCollisionPointRec(mouse, rec);
     Color currentBg = hovered ? MakeColor(borderColor.r, borderColor.g, borderColor.b, 35) : COLOR_CARD;
 
-    DrawRectangleRounded(rec, 0.15f, 4, currentBg);
-    DrawRectangleRoundedLines(rec, 0.15f, 4, borderColor);
-
-    float textW = MeasureTxt(text, fontSize, bold);
-    float posX = rec.x + (rec.width - textW) / 2.0f;
-    float posY = rec.y + (rec.height - fontSize) / 2.0f;
-    DrawTxt(text, posX, posY, fontSize, textColor, bold);
-
-    if (hovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) return !clickShielded(mouse);
-    return false;
+    return drawBtnShell(rec, text, fontSize, bold, currentBg, borderColor, textColor, false);
 }
 
 static int utf8CharLen(const char* s) {
@@ -385,8 +372,26 @@ void DrawToastNotification(const char* message, float timer, bool isError) {
     DrawRectangleRounded(rec, 0.3f, 6, bg);
     DrawRectangleRoundedLines(rec, 0.3f, 6, border);
 
-    float fullW = MeasureTxt(fullMsg.c_str(), fontSize, true);
-    DrawTxt(fullMsg.c_str(), cardX + (cardW - fullW) / 2.0f, cardY + (cardH - fontSize) / 2.0f, fontSize, textC, true);
+    DrawTxt(fullMsg.c_str(), cardX + (cardW - textW) / 2.0f, cardY + (cardH - fontSize) / 2.0f, fontSize, textC, true);
+}
+
+void GuiDrawTakenExamCard(const ExamDetail* d, int index, Rectangle dCard) {
+    char qLabel[32];
+    snprintf(qLabel, sizeof(qLabel), "Cau %d:", index + 1);
+    DrawTxt(qLabel, dCard.x + 15, dCard.y + 12, 16, COLOR_PRIMARY, true);
+    float qx = std::max(dCard.x + 80.0f, dCard.x + 15 + MeasureTxt(qLabel, 16, true) + 10);
+    DrawTxtWrapped(d->content, qx, dCard.y + 12, dCard.x + dCard.width - 15 - qx, 16, COLOR_TEXT_DARK, true);
+
+    DrawTxt(TextFormat("A. %s", d->answerA), dCard.x + 25, dCard.y + 42, 14, COLOR_TEXT_MUTED);
+    DrawTxt(TextFormat("B. %s", d->answerB), dCard.x + 25, dCard.y + 68, 14, COLOR_TEXT_MUTED);
+    DrawTxt(TextFormat("C. %s", d->answerC), dCard.x + 450, dCard.y + 42, 14, COLOR_TEXT_MUTED);
+    DrawTxt(TextFormat("D. %s", d->answerD), dCard.x + 450, dCard.y + 68, 14, COLOR_TEXT_MUTED);
+
+    bool isCorrect = (d->selectedAnswer == d->correctAnswer);
+    DrawTxt(TextFormat("Ban chon: %c | Dap an dung: %c", d->selectedAnswer ? d->selectedAnswer : '-', d->correctAnswer),
+            dCard.x + 25, dCard.y + 100, 15, isCorrect ? COLOR_SUCCESS : COLOR_DANGER, true);
+    DrawTxt(isCorrect ? "[ CHINH XAC ]" : "[ SAI ]", dCard.x + 350, dCard.y + 100, 15,
+            isCorrect ? COLOR_SUCCESS : COLOR_DANGER, true);
 }
 
 void collectSubjects(Subject* root, Arr<Subject*>& list) {
