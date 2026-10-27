@@ -1,133 +1,935 @@
 15
 D21CQCN01-N
 Lop Cong nghe thong tin 1 K21
-2
+9
 SV001|Nguyen Van|An|Nam|pass123|2
 CTDL
 10.0
-5
-41|Do phuc tap thoi gian truy xuat phan tu theo chi so trong mang mot chieu la bao nhieu?|O(1)|O(n)|O(log n)|O(n^2)|A|A
-42|Trong danh sach lien ket don, con tro cua node cuoi cung tro toi dau?|nullptr (NULL)|Node dau tien|Chinh no|Node lien truoc no|A|A
-43|Cau truc du lieu Stack (Ngan xep) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|FILO (First In Last Out)|Random Access|A|A
-44|Cau truc du lieu Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|FIFO (First In First Out)|LIFO (Last In First Out)|Priority Only|Random Access|A|A
-45|Trong cay BST, gia tri cua node con ben trai luon co quan he gi voi node cha?|Luon nho hon node cha|Luon lon hon node cha|Bang node cha|Khong co quy tac xac dinh|A|A
+10
+81|Do phuc tap thoi gian truy xuat phan tu theo chi so trong mang mot chieu la bao nhieu?|O(1)|O(n)|O(log n)|O(n^2)|A|A
+82|Trong danh sach lien ket don, con tro cua node cuoi cung tro toi dau?|nullptr (NULL)|Node dau tien|Chinh no|Node lien truoc no|A|A
+83|Cau truc du lieu Stack (Ngan xep) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|FILO (First In Last Out)|Random Access|A|A
+84|Cau truc du lieu Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|FIFO (First In First Out)|LIFO (Last In First Out)|Priority Only|Random Access|A|A
+85|Trong cay BST, gia tri cua node con ben trai luon co quan he gi voi node cha?|Luon nho hon node cha|Luon lon hon node cha|Bang node cha|Khong co quy tac xac dinh|A|A
+86|Phep duyet cay BST nao cho thu tu cac khoa theo chieu tang dan?|In-order (LNR)|Pre-order (NLR)|Post-order (LRN)|Level-order|A|A
+87|Do phuc tap thoi gian trung binh cua thuat toan Quick Sort la bao nhieu?|O(n log n)|O(n^2)|O(n)|O(log n)|A|A
+88|Hien tuong hai khoa khac nhau qua ham bam cho cung mot chi so goi la gi?|Xung dot (Collision)|Trang bo nho (Overflow)|Loi chi muc (Index Error)|Phan manh bo nho|A|A
+89|Thuat toan duyet do thi theo chieu rong (BFS) su dung cau truc du lieu nao?|Queue (Hang doi)|Stack (Ngan xep)|BST|Priority Queue|A|A
+90|Thuat toan Dijkstra duoc dung de tim duong di ngan nhat tren do thi nao?|Do thi co trong so khong am|Do thi co chu trinh am|Do thi cay khong co trong so|Chi ap dung cho do thi vo huong day du|A|A
 OOP
-8.0
-5
-111|Bon dac tinh co ban nhat cua Lap trinh huong doi tuong la gi?|Dong goi, Ke thua, Da hinh, Truu tuong|Lien ket, Con tro, Vung nho, Giai phong|Lop, Doi tuong, Thuoc tinh, Phuong thuc|Dong goi, Bien dich, Thuc thi, Toi uu|A|A
-112|Pham vi truy cap private trong C++ co y nghia nao sau day?|Chi co the truy cap tu ben trong chinh lop do hoac thong qua friend|Co the truy cap tu bat cu dau trong toan bo chuong trinh|Cho phep lop con ke thua tu do truy xuat|Tu dong cong khai khi tao doi tuong|A|A
-113|Ham tao (Constructor) trong C++ co dac diem noi bat nao?|Ten trung voi ten lop va khong he co kieu tra ve|Kieu tra ve bat buoc phai la void|Phai duoc goi mot cach thu cong sau khi tao doi tuong|Moi lop chi duoc co duy nhat mot ham tao|A|A
-114|Ky tu dau nga (~) dat truoc ten ham trong lop the hien ham gi?|Ham huy (Destructor)|Ham sao chep|Ham tao mac dinh|Ham thuan ao|A|A
-115|Con tro this trong phuong thuc thanh vien cua class tro toi dau?|Tro toi chinh the hien doi tuong dang thuc thi phuong thuc do|Tro toi lop co so cha|Tro toi ham main cua chuong trinh|Tro toi dia chi dau tien cua bang ao vtable|A|B
+9.0
+10
+221|Bon dac tinh co ban nhat cua Lap trinh huong doi tuong la gi?|Dong goi, Ke thua, Da hinh, Truu tuong|Lien ket, Con tro, Vung nho, Giai phong|Lop, Doi tuong, Thuoc tinh, Phuong thuc|Dong goi, Bien dich, Thuc thi, Toi uu|A|A
+222|Pham vi truy cap private trong C++ co y nghia nao sau day?|Chi co the truy cap tu ben trong lop do hoac ham friend|Co the truy cap tu bat cu dau trong toan bo chuong trinh|Cho phep lop con ke thua tu do truy xuat|Tu dong cong khai khi tao doi tuong|A|A
+223|Ham tao (Constructor) trong C++ co dac diem noi bat nao?|Ten trung voi ten lop va khong he co kieu tra ve|Kieu tra ve bat buoc phai la void|Phai duoc goi mot cach thu cong sau khi tao doi tuong|Moi lop chi duoc co duy nhat mot ham tao|A|A
+224|Ky tu dau nga (~) dat truoc ten ham trong lop the hien ham gi?|Ham huy (Destructor)|Ham sao chep|Ham tao mac dinh|Ham thuan ao|A|A
+225|Con tro this trong phuong thuc thanh vien cua class tro toi dau?|Tro toi chinh the hien doi tuong dang thuc thi phuong thuc do|Tro toi lop co so cha|Tro toi ham main cua chuong trinh|Tro toi dia chi dau tien cua bang ao vtable|A|A
+226|Tu khoa virtual dat truoc ham thanh vien lop cha dung de lam gi?|Kich hoat co che da hinh dong luc runtime va ho tro ghi de|Ngan chan khong cho lop con ke thua|Bien ham thanh phuong thuc tinh static|Tang toc do bien dich chuong trinh|A|A
+227|Ham thuan ao (Pure Virtual Function) trong C++ duoc khai bao bang cu phap nao?|virtual void func() = 0;|void func() = 0;|virtual void func() = default;|pure virtual void func();|A|A
+228|Lop truu tuong (Abstract Class) la lop co dac diem nao sau day?|Chua it nhat mot ham thuan ao va khong the khoi tao doi tuong truc tiep|Khong chua bat ky thuoc tinh thanh vien nao|Tat ca cac ham deu phai duoc cai dat day du ma nguon|Khong the cho phep bat ky lop nao ke thua|A|A
+229|Van de kim cuong (Diamond Problem) trong da ke thua C++ duoc giai quyet bang gi?|Ke thua ao (Virtual Inheritance)|Ham ban friend|Nap chong toan tu|Khong the xu ly duoc trong C++|A|A
+230|Dac diem nao dung voi thanh vien tinh (static) trong mot lop?|Duoc chia se dung chung cho tat ca doi tuong thuoc lop do|Moi doi tuong tao ra se so huu mot ban sao rieng biet|Chi duoc phep goi ben trong ham main|Tu dong bi huy ngay khi mot doi tuong ket thuc|A|B
 SV002|Tran Thi|Binh|Nu|pass123|1
 CTDL
+8.0
+10
+81|Do phuc tap thoi gian truy xuat phan tu theo chi so trong mang mot chieu la bao nhieu?|O(1)|O(n)|O(log n)|O(n^2)|A|A
+82|Trong danh sach lien ket don, con tro cua node cuoi cung tro toi dau?|nullptr (NULL)|Node dau tien|Chinh no|Node lien truoc no|A|A
+83|Cau truc du lieu Stack (Ngan xep) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|FILO (First In Last Out)|Random Access|A|A
+84|Cau truc du lieu Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|FIFO (First In First Out)|LIFO (Last In First Out)|Priority Only|Random Access|A|A
+85|Trong cay BST, gia tri cua node con ben trai luon co quan he gi voi node cha?|Luon nho hon node cha|Luon lon hon node cha|Bang node cha|Khong co quy tac xac dinh|A|A
+86|Phep duyet cay BST nao cho thu tu cac khoa theo chieu tang dan?|In-order (LNR)|Pre-order (NLR)|Post-order (LRN)|Level-order|A|A
+87|Do phuc tap thoi gian trung binh cua thuat toan Quick Sort la bao nhieu?|O(n log n)|O(n^2)|O(n)|O(log n)|A|A
+88|Hien tuong hai khoa khac nhau qua ham bam cho cung mot chi so goi la gi?|Xung dot (Collision)|Trang bo nho (Overflow)|Loi chi muc (Index Error)|Phan manh bo nho|A|A
+89|Thuat toan duyet do thi theo chieu rong (BFS) su dung cau truc du lieu nao?|Queue (Hang doi)|Stack (Ngan xep)|BST|Priority Queue|A|B
+90|Thuat toan Dijkstra duoc dung de tim duong di ngan nhat tren do thi nao?|Do thi co trong so khong am|Do thi co chu trinh am|Do thi cay khong co trong so|Chi ap dung cho do thi vo huong day du|A|B
+SV003|Le Hoang|Cuong|Nam|pass123|1
+CTDL
 6.0
-5
-41|Do phuc tap thoi gian truy xuat phan tu theo chi so trong mang mot chieu la bao nhieu?|O(1)|O(n)|O(log n)|O(n^2)|A|A
-42|Trong danh sach lien ket don, con tro cua node cuoi cung tro toi dau?|nullptr (NULL)|Node dau tien|Chinh no|Node lien truoc no|A|A
-43|Cau truc du lieu Stack (Ngan xep) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|FILO (First In Last Out)|Random Access|A|C
-44|Cau truc du lieu Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|FIFO (First In First Out)|LIFO (Last In First Out)|Priority Only|Random Access|A|A
-45|Trong cay BST, gia tri cua node con ben trai luon co quan he gi voi node cha?|Luon nho hon node cha|Luon lon hon node cha|Bang node cha|Khong co quy tac xac dinh|A|D
+10
+81|Do phuc tap thoi gian truy xuat phan tu theo chi so trong mang mot chieu la bao nhieu?|O(1)|O(n)|O(log n)|O(n^2)|A|A
+82|Trong danh sach lien ket don, con tro cua node cuoi cung tro toi dau?|nullptr (NULL)|Node dau tien|Chinh no|Node lien truoc no|A|A
+83|Cau truc du lieu Stack (Ngan xep) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|FILO (First In Last Out)|Random Access|A|A
+84|Cau truc du lieu Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|FIFO (First In First Out)|LIFO (Last In First Out)|Priority Only|Random Access|A|A
+85|Trong cay BST, gia tri cua node con ben trai luon co quan he gi voi node cha?|Luon nho hon node cha|Luon lon hon node cha|Bang node cha|Khong co quy tac xac dinh|A|A
+86|Phep duyet cay BST nao cho thu tu cac khoa theo chieu tang dan?|In-order (LNR)|Pre-order (NLR)|Post-order (LRN)|Level-order|A|A
+87|Do phuc tap thoi gian trung binh cua thuat toan Quick Sort la bao nhieu?|O(n log n)|O(n^2)|O(n)|O(log n)|A|B
+88|Hien tuong hai khoa khac nhau qua ham bam cho cung mot chi so goi la gi?|Xung dot (Collision)|Trang bo nho (Overflow)|Loi chi muc (Index Error)|Phan manh bo nho|A|B
+89|Thuat toan duyet do thi theo chieu rong (BFS) su dung cau truc du lieu nao?|Queue (Hang doi)|Stack (Ngan xep)|BST|Priority Queue|A|B
+90|Thuat toan Dijkstra duoc dung de tim duong di ngan nhat tren do thi nao?|Do thi co trong so khong am|Do thi co chu trinh am|Do thi cay khong co trong so|Chi ap dung cho do thi vo huong day du|A|B
+SV004|Pham Minh|Dung|Nam|pass123|1
+MMT
+5.0
+10
+201|Mo hinh tham chieu OSI gom co bao nhieu tang tat ca?|7 tang|4 tang|5 tang|6 tang|A|A
+202|Dac diem khac biet co ban giua giao thuc TCP va UDP la gi?|TCP co thiet lap ket noi bat tay va tin cay con UDP huong khong ket noi|UDP co bat tay 3 buoc con TCP truyen khong can xac nhan|TCP chi hoat dong tren mang khong day con UDP dung tren cap mang|UDP kiem soat luu luong tot hon TCP|A|A
+203|Chieu dai dia chi IPv4 tieu chuan la bao nhieu bit?|32 bit|64 bit|128 bit|16 bit|A|A
+204|Chuc nang chinh cua he thong ten mien DNS la gi?|Chuyen doi ten mien de nho thanh dia chi IP va nguoc lai|Ma hoa du lieu truyen qua trinh duyet Web|Cap phat dia chi IP tu dong cho thiet bi|Quan ly luu luong bang thong mang|A|A
+205|Cong (Port) mac dinh cua giao thuc HTTPS la bao nhieu?|443|80|21|22|A|A
+206|Thiet bi Router mang hoat dong chu yeu o tang nao trong mo hinh OSI?|Tang Mang (Network Layer)|Tang Lien ket du lieu (Data Link Layer)|Tang Giao van (Transport Layer)|Tang Vat ly (Physical Layer)|A|B
+207|Dia chi MAC la dia chi vat ly thuoc tang nao trong mo hinh OSI?|Tang Lien ket du lieu (Data Link Layer)|Tang Mang (Network Layer)|Tang Vat ly (Physical Layer)|Tang Ung dung (Application Layer)|A|B
+208|Giao thuc nao duoc dung de tu dong cap phat dia chi IP cho may khach?|DHCP|DNS|ARP|SNMP|A|B
+209|Lenh Ping su dung ban tin cua giao thuc mang nao de kiem tra thong mang?|ICMP|IGMP|TCP|UDP|A|B
+210|Cong nghe NAT (Network Address Translation) co tac dung chinh la gi?|Anh xa dia chi IP Private noi bo thanh dia chi IP Public tren Internet|Dinh tuyen goi tin giua cac vung mang ao VLAN|Tang toc do duyet web bang cach luu cache|Loc cac goi tin doc hai bang chu ky so|A|B
+SV005|Dang Thu|En|Nu|pass123|0
+SV006|Vu Quoc|Giang|Nam|pass123|0
+SV007|Bui Van|Hai|Nam|pass123|0
+SV008|Do Thi|Hoa|Nu|pass123|0
+SV009|Hoang Van|Hung|Nam|pass123|0
 D21CQCN02-N
 Lop Cong nghe thong tin 2 K21
-2
-SV003|Le Hoang|Cuong|Nam|pass123|0
-SV004|Pham Minh|Dung|Nam|pass123|0
-D21CQAT01-N
-Lop An toan thong tin 1 K21
-2
-SV005|Vu Thi|En|Nu|pass123|1
-ATTT
-10.0
-5
-11|Ba yeu to cot loi trong tam giac bao mat thong tin CIA la gi?|Confidentiality, Integrity, Availability|Control, Identification, Authentication|Cipher, Integrity, Authorization|Cryptography, Internet, Access|A|A
-12|Thuat toan ma hoa nao sau day la thuat toan ma hoa doi xung (Symmetric Encryption)?|AES (Advanced Encryption Standard)|RSA|ECC (Elliptic Curve Cryptography)|Diffie-Hellman|A|A
-13|Thuat toan RSA dua tren do kho cua bai toan toan hoc nao sau day?|Phan tich so nguyen lon thanh thua so nguyen to|Tinh logarit roi rac tren truong huu han|Tim duong di Euler tren do thi|Giai he phuong trinh tuyen tinh bac nhat|A|A
-14|Ham bam mat ma (Cryptographic Hash Function) nhu SHA-256 co dac diem noi bat nao?|Ham mot chieu khong the suy nguoc lai thong diep goc|Co the giai ma bang khoa bi mat|Dau ra co chieu dai thay doi theo dau vao|Hai thong diep khac nhau de dang tao ra cung ma bam|A|A
-15|Hinh thuc tan cong nao chen ma doc JavaScript vao website de thuc thi tren trinh duyet?|Cross-Site Scripting (XSS)|SQL Injection|Buffer Overflow|Denial of Service (DoS)|A|A
-SV006|Dang Quoc|Giang|Nam|pass123|0
-D22CQCN01-N
-Lop Cong nghe thong tin 1 K22
-2
-SV007|Bui Van|Hai|Nam|pass123|1
-MMT
-8.0
-5
-101|Mo hinh tham chieu OSI gom co bao nhieu tang tat ca?|7 tang|4 tang|5 tang|6 tang|A|A
-102|Dac diem khac biet co ban giua giao thuc TCP va UDP la gi?|TCP co thiet lap ket noi bat tay va tin cay con UDP huong khong ket noi|UDP co bat tay 3 buoc con TCP truyen khong can xac nhan|TCP chi hoat dong tren mang khong day con UDP dung tren cap mang|UDP kiem soat luu luong tot hon TCP|A|A
-103|Chieu dai dia chi IPv4 tieu chuan la bao nhieu bit?|32 bit|64 bit|128 bit|16 bit|A|A
-104|Chuc nang chinh cua dich vu he thong ten mien DNS la gi?|Chuyen doi ten mien de nho thanh dia chi IP va nguoc lai|Ma hoa du lieu truyen qua trinh duyet Web|Cap phat dia chi IP tu dong cho thiet bi|Quan ly luu luong bang thong mang|A|A
-105|Cong (Port) mac dinh cua giao thuc bao mat HTTPS la bao nhieu?|443|80|21|22|A|B
-SV008|Do Thi|Hoa|Nu|pass123|0
-D22CQCN02-N
-Lop Cong nghe thong tin 2 K22
-2
-SV009|Hoang Van|Hung|Nam|pass123|0
-SV010|Ngo Thi|Mai|Nu|pass123|0
-D22CQCN03-N
-Lop Cong nghe thong tin 3 K22
-2
-SV011|Duong Van|Khoa|Nam|pass123|0
-SV012|Trinh Thi|Lan|Nu|pass123|0
-D22CQAT01-N
-Lop An toan thong tin 1 K22
-2
-SV013|Phan Van|Long|Nam|pass123|0
-SV014|Dinh Thi|My|Nu|pass123|0
-D22CQVT01-N
-Lop Vien thong 1 K22
-2
-SV015|Mai Van|Nam|Nam|pass123|0
-SV016|Cao Thi|Nga|Nu|pass123|0
-D23CQCN01-N
-Lop Cong nghe thong tin 1 K23
-3
-SV017|Nguyen Van|Phong|Nam|pass123|1
-CTDL
-10.0
-5
-41|Do phuc tap thoi gian truy xuat phan tu theo chi so trong mang mot chieu la bao nhieu?|O(1)|O(n)|O(log n)|O(n^2)|A|A
-42|Trong danh sach lien ket don, con tro cua node cuoi cung tro toi dau?|nullptr (NULL)|Node dau tien|Chinh no|Node lien truoc no|A|A
-43|Cau truc du lieu Stack (Ngan xep) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|FILO (First In Last Out)|Random Access|A|A
-44|Cau truc du lieu Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|FIFO (First In First Out)|LIFO (Last In First Out)|Priority Only|Random Access|A|A
-45|Trong cay BST, gia tri cua node con ben trai luon co quan he gi voi node cha?|Luon nho hon node cha|Luon lon hon node cha|Bang node cha|Khong co quy tac xac dinh|A|A
-SV018|Tran Thi|Phuong|Nu|pass123|0
-SV019|Le Van|Quan|Nam|pass123|0
-D23CQCN02-N
-Lop Cong nghe thong tin 2 K23
-2
-SV020|Pham Van|Sang|Nam|pass123|1
+9
+SV010|Ngo Thi|Mai|Nu|pass123|1
 CSDL
 10.0
-5
-31|Khoa chinh (Primary Key) trong bang CSDL dung de lam gi?|Dinh danh duy nhat cho moi ban ghi trong bang|Lien ket toi bang khac ma khong can rang buoc|Luu tru du lieu trung lap de tang toc truy van|Cho phep gia tri NULL de tiet kiem bo nho|A|A
-32|Thao tac LEFT JOIN trong SQL co y nghia gi?|Lay tat ca ban ghi bang trai va ban ghi thoa man o bang phai|Chi lay cac ban ghi co mat o ca hai bang|Lay tat ca ban ghi bang phai va ban ghi thoa man o bang trai|Loai bo tat ca ban ghi trung lap giua hai bang|A|A
-33|Menh de GROUP BY trong SQL thuong duoc ket hop voi cac ham nao?|Cac ham tong hop nhu COUNT, SUM, AVG, MAX, MIN|Cac ham xu ly chuoi nhu SUBSTRING, TRIM|Cac toan tu logic AND, OR, NOT|Lenh tao bang CREATE TABLE|A|A
-34|Dieu kien loc du lieu ap dung tren ket qua nhom cua GROUP BY dung tu khoa nao?|HAVING|WHERE|ORDER BY|LIMIT|A|A
-35|Bon dac tinh ACID cua mot giao dich trong CSDL quan he la gi?|Atomicity, Consistency, Isolation, Durability|Access, Control, Integrity, Data|Action, State, Identity, Dependency|Accuracy, Concurrency, Indexing, Distribution|A|A
-SV021|Vu Thi|Thao|Nu|pass123|0
+10
+61|Khoa chinh (Primary Key) trong bang CSDL dung de lam gi?|Dinh danh duy nhat cho moi ban ghi trong bang|Lien ket toi bang khac ma khong can rang buoc|Luu tru du lieu trung lap de tang toc truy van|Cho phep gia tri NULL de tiet kiem bo nho|A|A
+62|Thao tac LEFT JOIN trong SQL co y nghia gi?|Lay tat ca ban ghi bang trai va ban ghi thoa man o bang phai|Chi lay cac ban ghi co mat o ca hai bang|Lay tat ca ban ghi bang phai va ban ghi thoa man o bang trai|Loai bo tat ca ban ghi trung lap giua hai bang|A|A
+63|Menh de GROUP BY trong SQL thuong duoc ket hop voi cac ham nao?|Cac ham tong hop nhu COUNT, SUM, AVG, MAX, MIN|Cac ham xu ly chuoi nhu SUBSTRING, TRIM|Cac toan tu logic AND, OR, NOT|Lenh tao bang CREATE TABLE|A|A
+64|Dieu kien loc du lieu ap dung tren ket qua nhom cua GROUP BY dung tu khoa nao?|HAVING|WHERE|ORDER BY|LIMIT|A|A
+65|Bon dac tinh ACID cua mot giao dich trong CSDL quan he la gi?|Atomicity, Consistency, Isolation, Durability|Access, Control, Integrity, Data|Action, State, Identity, Dependency|Accuracy, Concurrency, Indexing, Distribution|A|A
+66|Dang chuan hoa 1NF yeu cau cac thuoc tinh trong bang phai thoa man dieu kien nao?|Tat ca gia tri cua thuoc tinh phai mang tinh nguyen to (Atomic)|Khong duoc ton tai phu thuoc ham bac cau|Moi thuoc tinh khong khoa phai phu thuoc day du vao khoa chinh|Bang phai co it nhat hai khoa ngoai|A|A
+67|Index (Chi muc) trong CSDL quan he co tac dung chinh la gi?|Tang toc do tim kiem va truy van du lieu|Tiet kiem dung luong o dia|Tang toc do thuc thi lenh INSERT va UPDATE|Tu dong sua loi du lieu sai dinh dang|A|A
+68|Khoa ngoai (Foreign Key) dung de dam bao rang buoc toan ven nao?|Toan ven tham chieu (Referential Integrity)|Toan ven thuc the (Entity Integrity)|Toan ven mien gia tri (Domain Integrity)|Toan ven ngu nghia nguoi dung|A|A
+69|Cau lenh SQL nao duoc dung de thu hoi quyen da cap cho nguoi dung?|REVOKE|GRANT|DROP|ALTER|A|A
+70|He quan tri CSDL NoSQL MongoDB luu tru du lieu duoi dang nao?|Tai lieu JSON/BSON linh hoat|Bang voi hang va cot co dinh|Cay nhi phan can bang|Do thi voi canh va dinh|A|A
+SV011|Duong Van|Khoa|Nam|pass123|1
+CSDL
+8.0
+10
+61|Khoa chinh (Primary Key) trong bang CSDL dung de lam gi?|Dinh danh duy nhat cho moi ban ghi trong bang|Lien ket toi bang khac ma khong can rang buoc|Luu tru du lieu trung lap de tang toc truy van|Cho phep gia tri NULL de tiet kiem bo nho|A|A
+62|Thao tac LEFT JOIN trong SQL co y nghia gi?|Lay tat ca ban ghi bang trai va ban ghi thoa man o bang phai|Chi lay cac ban ghi co mat o ca hai bang|Lay tat ca ban ghi bang phai va ban ghi thoa man o bang trai|Loai bo tat ca ban ghi trung lap giua hai bang|A|A
+63|Menh de GROUP BY trong SQL thuong duoc ket hop voi cac ham nao?|Cac ham tong hop nhu COUNT, SUM, AVG, MAX, MIN|Cac ham xu ly chuoi nhu SUBSTRING, TRIM|Cac toan tu logic AND, OR, NOT|Lenh tao bang CREATE TABLE|A|A
+64|Dieu kien loc du lieu ap dung tren ket qua nhom cua GROUP BY dung tu khoa nao?|HAVING|WHERE|ORDER BY|LIMIT|A|A
+65|Bon dac tinh ACID cua mot giao dich trong CSDL quan he la gi?|Atomicity, Consistency, Isolation, Durability|Access, Control, Integrity, Data|Action, State, Identity, Dependency|Accuracy, Concurrency, Indexing, Distribution|A|A
+66|Dang chuan hoa 1NF yeu cau cac thuoc tinh trong bang phai thoa man dieu kien nao?|Tat ca gia tri cua thuoc tinh phai mang tinh nguyen to (Atomic)|Khong duoc ton tai phu thuoc ham bac cau|Moi thuoc tinh khong khoa phai phu thuoc day du vao khoa chinh|Bang phai co it nhat hai khoa ngoai|A|A
+67|Index (Chi muc) trong CSDL quan he co tac dung chinh la gi?|Tang toc do tim kiem va truy van du lieu|Tiet kiem dung luong o dia|Tang toc do thuc thi lenh INSERT va UPDATE|Tu dong sua loi du lieu sai dinh dang|A|A
+68|Khoa ngoai (Foreign Key) dung de dam bao rang buoc toan ven nao?|Toan ven tham chieu (Referential Integrity)|Toan ven thuc the (Entity Integrity)|Toan ven mien gia tri (Domain Integrity)|Toan ven ngu nghia nguoi dung|A|A
+69|Cau lenh SQL nao duoc dung de thu hoi quyen da cap cho nguoi dung?|REVOKE|GRANT|DROP|ALTER|A|B
+70|He quan tri CSDL NoSQL MongoDB luu tru du lieu duoi dang nao?|Tai lieu JSON/BSON linh hoat|Bang voi hang va cot co dinh|Cay nhi phan can bang|Do thi voi canh va dinh|A|B
+SV012|Trinh Thi|Lan|Nu|pass123|1
+CSDL
+7.0
+10
+61|Khoa chinh (Primary Key) trong bang CSDL dung de lam gi?|Dinh danh duy nhat cho moi ban ghi trong bang|Lien ket toi bang khac ma khong can rang buoc|Luu tru du lieu trung lap de tang toc truy van|Cho phep gia tri NULL de tiet kiem bo nho|A|A
+62|Thao tac LEFT JOIN trong SQL co y nghia gi?|Lay tat ca ban ghi bang trai va ban ghi thoa man o bang phai|Chi lay cac ban ghi co mat o ca hai bang|Lay tat ca ban ghi bang phai va ban ghi thoa man o bang trai|Loai bo tat ca ban ghi trung lap giua hai bang|A|A
+63|Menh de GROUP BY trong SQL thuong duoc ket hop voi cac ham nao?|Cac ham tong hop nhu COUNT, SUM, AVG, MAX, MIN|Cac ham xu ly chuoi nhu SUBSTRING, TRIM|Cac toan tu logic AND, OR, NOT|Lenh tao bang CREATE TABLE|A|A
+64|Dieu kien loc du lieu ap dung tren ket qua nhom cua GROUP BY dung tu khoa nao?|HAVING|WHERE|ORDER BY|LIMIT|A|A
+65|Bon dac tinh ACID cua mot giao dich trong CSDL quan he la gi?|Atomicity, Consistency, Isolation, Durability|Access, Control, Integrity, Data|Action, State, Identity, Dependency|Accuracy, Concurrency, Indexing, Distribution|A|A
+66|Dang chuan hoa 1NF yeu cau cac thuoc tinh trong bang phai thoa man dieu kien nao?|Tat ca gia tri cua thuoc tinh phai mang tinh nguyen to (Atomic)|Khong duoc ton tai phu thuoc ham bac cau|Moi thuoc tinh khong khoa phai phu thuoc day du vao khoa chinh|Bang phai co it nhat hai khoa ngoai|A|A
+67|Index (Chi muc) trong CSDL quan he co tac dung chinh la gi?|Tang toc do tim kiem va truy van du lieu|Tiet kiem dung luong o dia|Tang toc do thuc thi lenh INSERT va UPDATE|Tu dong sua loi du lieu sai dinh dang|A|A
+68|Khoa ngoai (Foreign Key) dung de dam bao rang buoc toan ven nao?|Toan ven tham chieu (Referential Integrity)|Toan ven thuc the (Entity Integrity)|Toan ven mien gia tri (Domain Integrity)|Toan ven ngu nghia nguoi dung|A|B
+69|Cau lenh SQL nao duoc dung de thu hoi quyen da cap cho nguoi dung?|REVOKE|GRANT|DROP|ALTER|A|B
+70|He quan tri CSDL NoSQL MongoDB luu tru du lieu duoi dang nao?|Tai lieu JSON/BSON linh hoat|Bang voi hang va cot co dinh|Cay nhi phan can bang|Do thi voi canh va dinh|A|B
+SV013|Phan Van|Long|Nam|pass123|0
+SV014|Dinh Thi|My|Nu|pass123|0
+SV015|Mai Van|Nam|Nam|pass123|0
+SV016|Cao Thi|Nga|Nu|pass123|0
+SV017|Ta Van|Oanh|Nu|pass123|0
+SV018|Luu Van|Phuc|Nam|pass123|0
+D21CQAT01-N
+Lop An toan thong tin 1 K21
+9
+SV019|Nguyen Van|Phong|Nam|pass123|1
+ATTT
+10.0
+10
+21|Ba yeu to cot loi trong tam giac bao mat thong tin CIA la gi?|Confidentiality, Integrity, Availability|Control, Identification, Authentication|Cipher, Integrity, Authorization|Cryptography, Internet, Access|A|A
+22|Thuat toan ma hoa nao sau day la thuat toan ma hoa doi xung?|AES (Advanced Encryption Standard)|RSA|ECC (Elliptic Curve Cryptography)|Diffie-Hellman|A|A
+23|Thuat toan RSA dua tren do kho cua bai toan toan hoc nao sau day?|Phan tich so nguyen lon thanh thua so nguyen to|Tinh logarit roi rac tren truong huu han|Tim duong di Euler tren do thi|Giai he phuong trinh tuyen tinh bac nhat|A|A
+24|Ham bam mat ma nhu SHA-256 co dac diem noi bat nao?|Ham mot chieu khong the suy nguoc lai thong diep goc|Co the giai ma bang khoa bi mat|Dau ra co chieu dai thay doi theo dau vao|Hai thong diep khac nhau de dang tao ra cung ma bam|A|A
+25|Hinh thuc tan cong nao chen ma doc JavaScript vao website de thuc thi tren trinh duyet?|Cross-Site Scripting (XSS)|SQL Injection|Buffer Overflow|Denial of Service (DoS)|A|A
+26|Nguyen nhan chinh dan toi lo hong SQL Injection la gi?|Khong kiem tra va loc du lieu dau vao truoc khi ghep vao truy van|He dieu hanh chua cap nhat ban va loi|He thong mang khong dung tuong lua|Mat khau quan tri qua ngan|A|A
+27|Giao thuc mang bao mat SSL/TLS hoat dong giua hai tang nao cua mo hinh OSI?|Tang Ung dung (Application) va Tang Giao van (Transport)|Tang Mang (Network) va Tang Lien ket (Data Link)|Tang Vat ly va Tang Mang|Tang Trinh dien va Tang Ung dung|A|A
+28|Chung chi so theo chuan X.509 duoc xac thuc va cap phat boi to chuc nao?|Certificate Authority (CA)|Internet Engineering Task Force (IETF)|W3C|ISO|A|A
+29|Hinh thuc tan cong gui luong lon yeu cau lam qua tai he thong goi la gi?|Distributed Denial of Service (DDoS)|Man-in-the-Middle (MitM)|Phishing|Ransomware|A|A
+30|Co che xac thuc da yeu to (MFA) yeu cau toi thieu bao nhieu yeu to xac minh?|Tu hai yeu to xac minh khac nhau tro len|Dung 1 mat khau dai|Chi can ma PIN|Chi can sinh trac hoc|A|A
+SV020|Tran Thi|Phuong|Nu|pass123|1
+ATTT
+8.0
+10
+21|Ba yeu to cot loi trong tam giac bao mat thong tin CIA la gi?|Confidentiality, Integrity, Availability|Control, Identification, Authentication|Cipher, Integrity, Authorization|Cryptography, Internet, Access|A|A
+22|Thuat toan ma hoa nao sau day la thuat toan ma hoa doi xung?|AES (Advanced Encryption Standard)|RSA|ECC (Elliptic Curve Cryptography)|Diffie-Hellman|A|A
+23|Thuat toan RSA dua tren do kho cua bai toan toan hoc nao sau day?|Phan tich so nguyen lon thanh thua so nguyen to|Tinh logarit roi rac tren truong huu han|Tim duong di Euler tren do thi|Giai he phuong trinh tuyen tinh bac nhat|A|A
+24|Ham bam mat ma nhu SHA-256 co dac diem noi bat nao?|Ham mot chieu khong the suy nguoc lai thong diep goc|Co the giai ma bang khoa bi mat|Dau ra co chieu dai thay doi theo dau vao|Hai thong diep khac nhau de dang tao ra cung ma bam|A|A
+25|Hinh thuc tan cong nao chen ma doc JavaScript vao website de thuc thi tren trinh duyet?|Cross-Site Scripting (XSS)|SQL Injection|Buffer Overflow|Denial of Service (DoS)|A|A
+26|Nguyen nhan chinh dan toi lo hong SQL Injection la gi?|Khong kiem tra va loc du lieu dau vao truoc khi ghep vao truy van|He dieu hanh chua cap nhat ban va loi|He thong mang khong dung tuong lua|Mat khau quan tri qua ngan|A|A
+27|Giao thuc mang bao mat SSL/TLS hoat dong giua hai tang nao cua mo hinh OSI?|Tang Ung dung (Application) va Tang Giao van (Transport)|Tang Mang (Network) va Tang Lien ket (Data Link)|Tang Vat ly va Tang Mang|Tang Trinh dien va Tang Ung dung|A|A
+28|Chung chi so theo chuan X.509 duoc xac thuc va cap phat boi to chuc nao?|Certificate Authority (CA)|Internet Engineering Task Force (IETF)|W3C|ISO|A|A
+29|Hinh thuc tan cong gui luong lon yeu cau lam qua tai he thong goi la gi?|Distributed Denial of Service (DDoS)|Man-in-the-Middle (MitM)|Phishing|Ransomware|A|B
+30|Co che xac thuc da yeu to (MFA) yeu cau toi thieu bao nhieu yeu to xac minh?|Tu hai yeu to xac minh khac nhau tro len|Dung 1 mat khau dai|Chi can ma PIN|Chi can sinh trac hoc|A|B
+SV021|Le Van|Quan|Nam|pass123|1
+ATTT
+6.0
+10
+21|Ba yeu to cot loi trong tam giac bao mat thong tin CIA la gi?|Confidentiality, Integrity, Availability|Control, Identification, Authentication|Cipher, Integrity, Authorization|Cryptography, Internet, Access|A|A
+22|Thuat toan ma hoa nao sau day la thuat toan ma hoa doi xung?|AES (Advanced Encryption Standard)|RSA|ECC (Elliptic Curve Cryptography)|Diffie-Hellman|A|A
+23|Thuat toan RSA dua tren do kho cua bai toan toan hoc nao sau day?|Phan tich so nguyen lon thanh thua so nguyen to|Tinh logarit roi rac tren truong huu han|Tim duong di Euler tren do thi|Giai he phuong trinh tuyen tinh bac nhat|A|A
+24|Ham bam mat ma nhu SHA-256 co dac diem noi bat nao?|Ham mot chieu khong the suy nguoc lai thong diep goc|Co the giai ma bang khoa bi mat|Dau ra co chieu dai thay doi theo dau vao|Hai thong diep khac nhau de dang tao ra cung ma bam|A|A
+25|Hinh thuc tan cong nao chen ma doc JavaScript vao website de thuc thi tren trinh duyet?|Cross-Site Scripting (XSS)|SQL Injection|Buffer Overflow|Denial of Service (DoS)|A|A
+26|Nguyen nhan chinh dan toi lo hong SQL Injection la gi?|Khong kiem tra va loc du lieu dau vao truoc khi ghep vao truy van|He dieu hanh chua cap nhat ban va loi|He thong mang khong dung tuong lua|Mat khau quan tri qua ngan|A|A
+27|Giao thuc mang bao mat SSL/TLS hoat dong giua hai tang nao cua mo hinh OSI?|Tang Ung dung (Application) va Tang Giao van (Transport)|Tang Mang (Network) va Tang Lien ket (Data Link)|Tang Vat ly va Tang Mang|Tang Trinh dien va Tang Ung dung|A|B
+28|Chung chi so theo chuan X.509 duoc xac thuc va cap phat boi to chuc nao?|Certificate Authority (CA)|Internet Engineering Task Force (IETF)|W3C|ISO|A|B
+29|Hinh thuc tan cong gui luong lon yeu cau lam qua tai he thong goi la gi?|Distributed Denial of Service (DDoS)|Man-in-the-Middle (MitM)|Phishing|Ransomware|A|B
+30|Co che xac thuc da yeu to (MFA) yeu cau toi thieu bao nhieu yeu to xac minh?|Tu hai yeu to xac minh khac nhau tro len|Dung 1 mat khau dai|Chi can ma PIN|Chi can sinh trac hoc|A|B
+SV022|Pham Van|Sang|Nam|pass123|1
+MMT
+5.0
+10
+201|Mo hinh tham chieu OSI gom co bao nhieu tang tat ca?|7 tang|4 tang|5 tang|6 tang|A|A
+202|Dac diem khac biet co ban giua giao thuc TCP va UDP la gi?|TCP co thiet lap ket noi bat tay va tin cay con UDP huong khong ket noi|UDP co bat tay 3 buoc con TCP truyen khong can xac nhan|TCP chi hoat dong tren mang khong day con UDP dung tren cap mang|UDP kiem soat luu luong tot hon TCP|A|A
+203|Chieu dai dia chi IPv4 tieu chuan la bao nhieu bit?|32 bit|64 bit|128 bit|16 bit|A|A
+204|Chuc nang chinh cua he thong ten mien DNS la gi?|Chuyen doi ten mien de nho thanh dia chi IP va nguoc lai|Ma hoa du lieu truyen qua trinh duyet Web|Cap phat dia chi IP tu dong cho thiet bi|Quan ly luu luong bang thong mang|A|A
+205|Cong (Port) mac dinh cua giao thuc HTTPS la bao nhieu?|443|80|21|22|A|A
+206|Thiet bi Router mang hoat dong chu yeu o tang nao trong mo hinh OSI?|Tang Mang (Network Layer)|Tang Lien ket du lieu (Data Link Layer)|Tang Giao van (Transport Layer)|Tang Vat ly (Physical Layer)|A|B
+207|Dia chi MAC la dia chi vat ly thuoc tang nao trong mo hinh OSI?|Tang Lien ket du lieu (Data Link Layer)|Tang Mang (Network Layer)|Tang Vat ly (Physical Layer)|Tang Ung dung (Application Layer)|A|B
+208|Giao thuc nao duoc dung de tu dong cap phat dia chi IP cho may khach?|DHCP|DNS|ARP|SNMP|A|B
+209|Lenh Ping su dung ban tin cua giao thuc mang nao de kiem tra thong mang?|ICMP|IGMP|TCP|UDP|A|B
+210|Cong nghe NAT (Network Address Translation) co tac dung chinh la gi?|Anh xa dia chi IP Private noi bo thanh dia chi IP Public tren Internet|Dinh tuyen goi tin giua cac vung mang ao VLAN|Tang toc do duyet web bang cach luu cache|Loc cac goi tin doc hai bang chu ky so|A|B
+SV023|Vu Thi|Thao|Nu|pass123|0
+SV024|Hoang Van|Thang|Nam|pass123|0
+SV025|Luong Thi|Thu|Nu|pass123|0
+SV026|Dao Van|Tien|Nam|pass123|0
+SV027|Nguyen Thi|Trang|Nu|pass123|0
+D22CQCN01-N
+Lop Cong nghe thong tin 1 K22
+9
+SV028|Vo Van|Trung|Nam|pass123|2
+CTDL
+10.0
+10
+81|Do phuc tap thoi gian truy xuat phan tu theo chi so trong mang mot chieu la bao nhieu?|O(1)|O(n)|O(log n)|O(n^2)|A|A
+82|Trong danh sach lien ket don, con tro cua node cuoi cung tro toi dau?|nullptr (NULL)|Node dau tien|Chinh no|Node lien truoc no|A|A
+83|Cau truc du lieu Stack (Ngan xep) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|FILO (First In Last Out)|Random Access|A|A
+84|Cau truc du lieu Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|FIFO (First In First Out)|LIFO (Last In First Out)|Priority Only|Random Access|A|A
+85|Trong cay BST, gia tri cua node con ben trai luon co quan he gi voi node cha?|Luon nho hon node cha|Luon lon hon node cha|Bang node cha|Khong co quy tac xac dinh|A|A
+86|Phep duyet cay BST nao cho thu tu cac khoa theo chieu tang dan?|In-order (LNR)|Pre-order (NLR)|Post-order (LRN)|Level-order|A|A
+87|Do phuc tap thoi gian trung binh cua thuat toan Quick Sort la bao nhieu?|O(n log n)|O(n^2)|O(n)|O(log n)|A|A
+88|Hien tuong hai khoa khac nhau qua ham bam cho cung mot chi so goi la gi?|Xung dot (Collision)|Trang bo nho (Overflow)|Loi chi muc (Index Error)|Phan manh bo nho|A|A
+89|Thuat toan duyet do thi theo chieu rong (BFS) su dung cau truc du lieu nao?|Queue (Hang doi)|Stack (Ngan xep)|BST|Priority Queue|A|A
+90|Thuat toan Dijkstra duoc dung de tim duong di ngan nhat tren do thi nao?|Do thi co trong so khong am|Do thi co chu trinh am|Do thi cay khong co trong so|Chi ap dung cho do thi vo huong day du|A|A
+OOP
+9.0
+10
+221|Bon dac tinh co ban nhat cua Lap trinh huong doi tuong la gi?|Dong goi, Ke thua, Da hinh, Truu tuong|Lien ket, Con tro, Vung nho, Giai phong|Lop, Doi tuong, Thuoc tinh, Phuong thuc|Dong goi, Bien dich, Thuc thi, Toi uu|A|A
+222|Pham vi truy cap private trong C++ co y nghia nao sau day?|Chi co the truy cap tu ben trong lop do hoac ham friend|Co the truy cap tu bat cu dau trong toan bo chuong trinh|Cho phep lop con ke thua tu do truy xuat|Tu dong cong khai khi tao doi tuong|A|A
+223|Ham tao (Constructor) trong C++ co dac diem noi bat nao?|Ten trung voi ten lop va khong he co kieu tra ve|Kieu tra ve bat buoc phai la void|Phai duoc goi mot cach thu cong sau khi tao doi tuong|Moi lop chi duoc co duy nhat mot ham tao|A|A
+224|Ky tu dau nga (~) dat truoc ten ham trong lop the hien ham gi?|Ham huy (Destructor)|Ham sao chep|Ham tao mac dinh|Ham thuan ao|A|A
+225|Con tro this trong phuong thuc thanh vien cua class tro toi dau?|Tro toi chinh the hien doi tuong dang thuc thi phuong thuc do|Tro toi lop co so cha|Tro toi ham main cua chuong trinh|Tro toi dia chi dau tien cua bang ao vtable|A|A
+226|Tu khoa virtual dat truoc ham thanh vien lop cha dung de lam gi?|Kich hoat co che da hinh dong luc runtime va ho tro ghi de|Ngan chan khong cho lop con ke thua|Bien ham thanh phuong thuc tinh static|Tang toc do bien dich chuong trinh|A|A
+227|Ham thuan ao (Pure Virtual Function) trong C++ duoc khai bao bang cu phap nao?|virtual void func() = 0;|void func() = 0;|virtual void func() = default;|pure virtual void func();|A|A
+228|Lop truu tuong (Abstract Class) la lop co dac diem nao sau day?|Chua it nhat mot ham thuan ao va khong the khoi tao doi tuong truc tiep|Khong chua bat ky thuoc tinh thanh vien nao|Tat ca cac ham deu phai duoc cai dat day du ma nguon|Khong the cho phep bat ky lop nao ke thua|A|A
+229|Van de kim cuong (Diamond Problem) trong da ke thua C++ duoc giai quyet bang gi?|Ke thua ao (Virtual Inheritance)|Ham ban friend|Nap chong toan tu|Khong the xu ly duoc trong C++|A|A
+230|Dac diem nao dung voi thanh vien tinh (static) trong mot lop?|Duoc chia se dung chung cho tat ca doi tuong thuoc lop do|Moi doi tuong tao ra se so huu mot ban sao rieng biet|Chi duoc phep goi ben trong ham main|Tu dong bi huy ngay khi mot doi tuong ket thuc|A|B
+SV029|Ha Thi|Tuyet|Nu|pass123|1
+CTDL
+8.0
+10
+81|Do phuc tap thoi gian truy xuat phan tu theo chi so trong mang mot chieu la bao nhieu?|O(1)|O(n)|O(log n)|O(n^2)|A|A
+82|Trong danh sach lien ket don, con tro cua node cuoi cung tro toi dau?|nullptr (NULL)|Node dau tien|Chinh no|Node lien truoc no|A|A
+83|Cau truc du lieu Stack (Ngan xep) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|FILO (First In Last Out)|Random Access|A|A
+84|Cau truc du lieu Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|FIFO (First In First Out)|LIFO (Last In First Out)|Priority Only|Random Access|A|A
+85|Trong cay BST, gia tri cua node con ben trai luon co quan he gi voi node cha?|Luon nho hon node cha|Luon lon hon node cha|Bang node cha|Khong co quy tac xac dinh|A|A
+86|Phep duyet cay BST nao cho thu tu cac khoa theo chieu tang dan?|In-order (LNR)|Pre-order (NLR)|Post-order (LRN)|Level-order|A|A
+87|Do phuc tap thoi gian trung binh cua thuat toan Quick Sort la bao nhieu?|O(n log n)|O(n^2)|O(n)|O(log n)|A|A
+88|Hien tuong hai khoa khac nhau qua ham bam cho cung mot chi so goi la gi?|Xung dot (Collision)|Trang bo nho (Overflow)|Loi chi muc (Index Error)|Phan manh bo nho|A|A
+89|Thuat toan duyet do thi theo chieu rong (BFS) su dung cau truc du lieu nao?|Queue (Hang doi)|Stack (Ngan xep)|BST|Priority Queue|A|B
+90|Thuat toan Dijkstra duoc dung de tim duong di ngan nhat tren do thi nao?|Do thi co trong so khong am|Do thi co chu trinh am|Do thi cay khong co trong so|Chi ap dung cho do thi vo huong day du|A|B
+SV030|Ta Van|Vinh|Nam|pass123|1
+CTDL
+6.0
+10
+81|Do phuc tap thoi gian truy xuat phan tu theo chi so trong mang mot chieu la bao nhieu?|O(1)|O(n)|O(log n)|O(n^2)|A|A
+82|Trong danh sach lien ket don, con tro cua node cuoi cung tro toi dau?|nullptr (NULL)|Node dau tien|Chinh no|Node lien truoc no|A|A
+83|Cau truc du lieu Stack (Ngan xep) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|FILO (First In Last Out)|Random Access|A|A
+84|Cau truc du lieu Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|FIFO (First In First Out)|LIFO (Last In First Out)|Priority Only|Random Access|A|A
+85|Trong cay BST, gia tri cua node con ben trai luon co quan he gi voi node cha?|Luon nho hon node cha|Luon lon hon node cha|Bang node cha|Khong co quy tac xac dinh|A|A
+86|Phep duyet cay BST nao cho thu tu cac khoa theo chieu tang dan?|In-order (LNR)|Pre-order (NLR)|Post-order (LRN)|Level-order|A|A
+87|Do phuc tap thoi gian trung binh cua thuat toan Quick Sort la bao nhieu?|O(n log n)|O(n^2)|O(n)|O(log n)|A|B
+88|Hien tuong hai khoa khac nhau qua ham bam cho cung mot chi so goi la gi?|Xung dot (Collision)|Trang bo nho (Overflow)|Loi chi muc (Index Error)|Phan manh bo nho|A|B
+89|Thuat toan duyet do thi theo chieu rong (BFS) su dung cau truc du lieu nao?|Queue (Hang doi)|Stack (Ngan xep)|BST|Priority Queue|A|B
+90|Thuat toan Dijkstra duoc dung de tim duong di ngan nhat tren do thi nao?|Do thi co trong so khong am|Do thi co chu trinh am|Do thi cay khong co trong so|Chi ap dung cho do thi vo huong day du|A|B
+SV031|Ly Thi|Xuan|Nu|pass123|0
+SV032|Chu Van|Yen|Nam|pass123|0
+SV033|Doan Thi|Anh|Nu|pass123|0
+SV034|Bui Quang|Bach|Nam|pass123|0
+SV035|Dang Thi|Cuc|Nu|pass123|0
+SV036|Cao Minh|Dat|Nam|pass123|0
+D22CQCN02-N
+Lop Cong nghe thong tin 2 K22
+9
+SV037|Nguyen Duc|Duy|Nam|pass123|1
+CSDL
+10.0
+10
+61|Khoa chinh (Primary Key) trong bang CSDL dung de lam gi?|Dinh danh duy nhat cho moi ban ghi trong bang|Lien ket toi bang khac ma khong can rang buoc|Luu tru du lieu trung lap de tang toc truy van|Cho phep gia tri NULL de tiet kiem bo nho|A|A
+62|Thao tac LEFT JOIN trong SQL co y nghia gi?|Lay tat ca ban ghi bang trai va ban ghi thoa man o bang phai|Chi lay cac ban ghi co mat o ca hai bang|Lay tat ca ban ghi bang phai va ban ghi thoa man o bang trai|Loai bo tat ca ban ghi trung lap giua hai bang|A|A
+63|Menh de GROUP BY trong SQL thuong duoc ket hop voi cac ham nao?|Cac ham tong hop nhu COUNT, SUM, AVG, MAX, MIN|Cac ham xu ly chuoi nhu SUBSTRING, TRIM|Cac toan tu logic AND, OR, NOT|Lenh tao bang CREATE TABLE|A|A
+64|Dieu kien loc du lieu ap dung tren ket qua nhom cua GROUP BY dung tu khoa nao?|HAVING|WHERE|ORDER BY|LIMIT|A|A
+65|Bon dac tinh ACID cua mot giao dich trong CSDL quan he la gi?|Atomicity, Consistency, Isolation, Durability|Access, Control, Integrity, Data|Action, State, Identity, Dependency|Accuracy, Concurrency, Indexing, Distribution|A|A
+66|Dang chuan hoa 1NF yeu cau cac thuoc tinh trong bang phai thoa man dieu kien nao?|Tat ca gia tri cua thuoc tinh phai mang tinh nguyen to (Atomic)|Khong duoc ton tai phu thuoc ham bac cau|Moi thuoc tinh khong khoa phai phu thuoc day du vao khoa chinh|Bang phai co it nhat hai khoa ngoai|A|A
+67|Index (Chi muc) trong CSDL quan he co tac dung chinh la gi?|Tang toc do tim kiem va truy van du lieu|Tiet kiem dung luong o dia|Tang toc do thuc thi lenh INSERT va UPDATE|Tu dong sua loi du lieu sai dinh dang|A|A
+68|Khoa ngoai (Foreign Key) dung de dam bao rang buoc toan ven nao?|Toan ven tham chieu (Referential Integrity)|Toan ven thuc the (Entity Integrity)|Toan ven mien gia tri (Domain Integrity)|Toan ven ngu nghia nguoi dung|A|A
+69|Cau lenh SQL nao duoc dung de thu hoi quyen da cap cho nguoi dung?|REVOKE|GRANT|DROP|ALTER|A|A
+70|He quan tri CSDL NoSQL MongoDB luu tru du lieu duoi dang nao?|Tai lieu JSON/BSON linh hoat|Bang voi hang va cot co dinh|Cay nhi phan can bang|Do thi voi canh va dinh|A|A
+SV038|Tran Hong|Gam|Nu|pass123|1
+CSDL
+8.0
+10
+61|Khoa chinh (Primary Key) trong bang CSDL dung de lam gi?|Dinh danh duy nhat cho moi ban ghi trong bang|Lien ket toi bang khac ma khong can rang buoc|Luu tru du lieu trung lap de tang toc truy van|Cho phep gia tri NULL de tiet kiem bo nho|A|A
+62|Thao tac LEFT JOIN trong SQL co y nghia gi?|Lay tat ca ban ghi bang trai va ban ghi thoa man o bang phai|Chi lay cac ban ghi co mat o ca hai bang|Lay tat ca ban ghi bang phai va ban ghi thoa man o bang trai|Loai bo tat ca ban ghi trung lap giua hai bang|A|A
+63|Menh de GROUP BY trong SQL thuong duoc ket hop voi cac ham nao?|Cac ham tong hop nhu COUNT, SUM, AVG, MAX, MIN|Cac ham xu ly chuoi nhu SUBSTRING, TRIM|Cac toan tu logic AND, OR, NOT|Lenh tao bang CREATE TABLE|A|A
+64|Dieu kien loc du lieu ap dung tren ket qua nhom cua GROUP BY dung tu khoa nao?|HAVING|WHERE|ORDER BY|LIMIT|A|A
+65|Bon dac tinh ACID cua mot giao dich trong CSDL quan he la gi?|Atomicity, Consistency, Isolation, Durability|Access, Control, Integrity, Data|Action, State, Identity, Dependency|Accuracy, Concurrency, Indexing, Distribution|A|A
+66|Dang chuan hoa 1NF yeu cau cac thuoc tinh trong bang phai thoa man dieu kien nao?|Tat ca gia tri cua thuoc tinh phai mang tinh nguyen to (Atomic)|Khong duoc ton tai phu thuoc ham bac cau|Moi thuoc tinh khong khoa phai phu thuoc day du vao khoa chinh|Bang phai co it nhat hai khoa ngoai|A|A
+67|Index (Chi muc) trong CSDL quan he co tac dung chinh la gi?|Tang toc do tim kiem va truy van du lieu|Tiet kiem dung luong o dia|Tang toc do thuc thi lenh INSERT va UPDATE|Tu dong sua loi du lieu sai dinh dang|A|A
+68|Khoa ngoai (Foreign Key) dung de dam bao rang buoc toan ven nao?|Toan ven tham chieu (Referential Integrity)|Toan ven thuc the (Entity Integrity)|Toan ven mien gia tri (Domain Integrity)|Toan ven ngu nghia nguoi dung|A|A
+69|Cau lenh SQL nao duoc dung de thu hoi quyen da cap cho nguoi dung?|REVOKE|GRANT|DROP|ALTER|A|B
+70|He quan tri CSDL NoSQL MongoDB luu tru du lieu duoi dang nao?|Tai lieu JSON/BSON linh hoat|Bang voi hang va cot co dinh|Cay nhi phan can bang|Do thi voi canh va dinh|A|B
+SV039|Le Thanh|Hau|Nam|pass123|1
+CSDL
+7.0
+10
+61|Khoa chinh (Primary Key) trong bang CSDL dung de lam gi?|Dinh danh duy nhat cho moi ban ghi trong bang|Lien ket toi bang khac ma khong can rang buoc|Luu tru du lieu trung lap de tang toc truy van|Cho phep gia tri NULL de tiet kiem bo nho|A|A
+62|Thao tac LEFT JOIN trong SQL co y nghia gi?|Lay tat ca ban ghi bang trai va ban ghi thoa man o bang phai|Chi lay cac ban ghi co mat o ca hai bang|Lay tat ca ban ghi bang phai va ban ghi thoa man o bang trai|Loai bo tat ca ban ghi trung lap giua hai bang|A|A
+63|Menh de GROUP BY trong SQL thuong duoc ket hop voi cac ham nao?|Cac ham tong hop nhu COUNT, SUM, AVG, MAX, MIN|Cac ham xu ly chuoi nhu SUBSTRING, TRIM|Cac toan tu logic AND, OR, NOT|Lenh tao bang CREATE TABLE|A|A
+64|Dieu kien loc du lieu ap dung tren ket qua nhom cua GROUP BY dung tu khoa nao?|HAVING|WHERE|ORDER BY|LIMIT|A|A
+65|Bon dac tinh ACID cua mot giao dich trong CSDL quan he la gi?|Atomicity, Consistency, Isolation, Durability|Access, Control, Integrity, Data|Action, State, Identity, Dependency|Accuracy, Concurrency, Indexing, Distribution|A|A
+66|Dang chuan hoa 1NF yeu cau cac thuoc tinh trong bang phai thoa man dieu kien nao?|Tat ca gia tri cua thuoc tinh phai mang tinh nguyen to (Atomic)|Khong duoc ton tai phu thuoc ham bac cau|Moi thuoc tinh khong khoa phai phu thuoc day du vao khoa chinh|Bang phai co it nhat hai khoa ngoai|A|A
+67|Index (Chi muc) trong CSDL quan he co tac dung chinh la gi?|Tang toc do tim kiem va truy van du lieu|Tiet kiem dung luong o dia|Tang toc do thuc thi lenh INSERT va UPDATE|Tu dong sua loi du lieu sai dinh dang|A|A
+68|Khoa ngoai (Foreign Key) dung de dam bao rang buoc toan ven nao?|Toan ven tham chieu (Referential Integrity)|Toan ven thuc the (Entity Integrity)|Toan ven mien gia tri (Domain Integrity)|Toan ven ngu nghia nguoi dung|A|B
+69|Cau lenh SQL nao duoc dung de thu hoi quyen da cap cho nguoi dung?|REVOKE|GRANT|DROP|ALTER|A|B
+70|He quan tri CSDL NoSQL MongoDB luu tru du lieu duoi dang nao?|Tai lieu JSON/BSON linh hoat|Bang voi hang va cot co dinh|Cay nhi phan can bang|Do thi voi canh va dinh|A|B
+SV040|Pham My|Hanh|Nu|pass123|1
+MMT
+5.0
+10
+201|Mo hinh tham chieu OSI gom co bao nhieu tang tat ca?|7 tang|4 tang|5 tang|6 tang|A|A
+202|Dac diem khac biet co ban giua giao thuc TCP va UDP la gi?|TCP co thiet lap ket noi bat tay va tin cay con UDP huong khong ket noi|UDP co bat tay 3 buoc con TCP truyen khong can xac nhan|TCP chi hoat dong tren mang khong day con UDP dung tren cap mang|UDP kiem soat luu luong tot hon TCP|A|A
+203|Chieu dai dia chi IPv4 tieu chuan la bao nhieu bit?|32 bit|64 bit|128 bit|16 bit|A|A
+204|Chuc nang chinh cua he thong ten mien DNS la gi?|Chuyen doi ten mien de nho thanh dia chi IP va nguoc lai|Ma hoa du lieu truyen qua trinh duyet Web|Cap phat dia chi IP tu dong cho thiet bi|Quan ly luu luong bang thong mang|A|A
+205|Cong (Port) mac dinh cua giao thuc HTTPS la bao nhieu?|443|80|21|22|A|A
+206|Thiet bi Router mang hoat dong chu yeu o tang nao trong mo hinh OSI?|Tang Mang (Network Layer)|Tang Lien ket du lieu (Data Link Layer)|Tang Giao van (Transport Layer)|Tang Vat ly (Physical Layer)|A|B
+207|Dia chi MAC la dia chi vat ly thuoc tang nao trong mo hinh OSI?|Tang Lien ket du lieu (Data Link Layer)|Tang Mang (Network Layer)|Tang Vat ly (Physical Layer)|Tang Ung dung (Application Layer)|A|B
+208|Giao thuc nao duoc dung de tu dong cap phat dia chi IP cho may khach?|DHCP|DNS|ARP|SNMP|A|B
+209|Lenh Ping su dung ban tin cua giao thuc mang nao de kiem tra thong mang?|ICMP|IGMP|TCP|UDP|A|B
+210|Cong nghe NAT (Network Address Translation) co tac dung chinh la gi?|Anh xa dia chi IP Private noi bo thanh dia chi IP Public tren Internet|Dinh tuyen goi tin giua cac vung mang ao VLAN|Tang toc do duyet web bang cach luu cache|Loc cac goi tin doc hai bang chu ky so|A|B
+SV041|Vu Dinh|Hieu|Nam|pass123|0
+SV042|Hoang Ngoc|Diep|Nu|pass123|0
+SV043|Ngo Xuan|Huy|Nam|pass123|0
+SV044|Duong Thi|Huong|Nu|pass123|0
+SV045|Trinh Quoc|Khai|Nam|pass123|0
+D22CQCN03-N
+Lop Cong nghe thong tin 3 K22
+9
+SV046|Phan Thi|Kim|Nu|pass123|1
+ATTT
+10.0
+10
+21|Ba yeu to cot loi trong tam giac bao mat thong tin CIA la gi?|Confidentiality, Integrity, Availability|Control, Identification, Authentication|Cipher, Integrity, Authorization|Cryptography, Internet, Access|A|A
+22|Thuat toan ma hoa nao sau day la thuat toan ma hoa doi xung?|AES (Advanced Encryption Standard)|RSA|ECC (Elliptic Curve Cryptography)|Diffie-Hellman|A|A
+23|Thuat toan RSA dua tren do kho cua bai toan toan hoc nao sau day?|Phan tich so nguyen lon thanh thua so nguyen to|Tinh logarit roi rac tren truong huu han|Tim duong di Euler tren do thi|Giai he phuong trinh tuyen tinh bac nhat|A|A
+24|Ham bam mat ma nhu SHA-256 co dac diem noi bat nao?|Ham mot chieu khong the suy nguoc lai thong diep goc|Co the giai ma bang khoa bi mat|Dau ra co chieu dai thay doi theo dau vao|Hai thong diep khac nhau de dang tao ra cung ma bam|A|A
+25|Hinh thuc tan cong nao chen ma doc JavaScript vao website de thuc thi tren trinh duyet?|Cross-Site Scripting (XSS)|SQL Injection|Buffer Overflow|Denial of Service (DoS)|A|A
+26|Nguyen nhan chinh dan toi lo hong SQL Injection la gi?|Khong kiem tra va loc du lieu dau vao truoc khi ghep vao truy van|He dieu hanh chua cap nhat ban va loi|He thong mang khong dung tuong lua|Mat khau quan tri qua ngan|A|A
+27|Giao thuc mang bao mat SSL/TLS hoat dong giua hai tang nao cua mo hinh OSI?|Tang Ung dung (Application) va Tang Giao van (Transport)|Tang Mang (Network) va Tang Lien ket (Data Link)|Tang Vat ly va Tang Mang|Tang Trinh dien va Tang Ung dung|A|A
+28|Chung chi so theo chuan X.509 duoc xac thuc va cap phat boi to chuc nao?|Certificate Authority (CA)|Internet Engineering Task Force (IETF)|W3C|ISO|A|A
+29|Hinh thuc tan cong gui luong lon yeu cau lam qua tai he thong goi la gi?|Distributed Denial of Service (DDoS)|Man-in-the-Middle (MitM)|Phishing|Ransomware|A|A
+30|Co che xac thuc da yeu to (MFA) yeu cau toi thieu bao nhieu yeu to xac minh?|Tu hai yeu to xac minh khac nhau tro len|Dung 1 mat khau dai|Chi can ma PIN|Chi can sinh trac hoc|A|A
+SV047|Dinh Trong|Lam|Nam|pass123|1
+ATTT
+8.0
+10
+21|Ba yeu to cot loi trong tam giac bao mat thong tin CIA la gi?|Confidentiality, Integrity, Availability|Control, Identification, Authentication|Cipher, Integrity, Authorization|Cryptography, Internet, Access|A|A
+22|Thuat toan ma hoa nao sau day la thuat toan ma hoa doi xung?|AES (Advanced Encryption Standard)|RSA|ECC (Elliptic Curve Cryptography)|Diffie-Hellman|A|A
+23|Thuat toan RSA dua tren do kho cua bai toan toan hoc nao sau day?|Phan tich so nguyen lon thanh thua so nguyen to|Tinh logarit roi rac tren truong huu han|Tim duong di Euler tren do thi|Giai he phuong trinh tuyen tinh bac nhat|A|A
+24|Ham bam mat ma nhu SHA-256 co dac diem noi bat nao?|Ham mot chieu khong the suy nguoc lai thong diep goc|Co the giai ma bang khoa bi mat|Dau ra co chieu dai thay doi theo dau vao|Hai thong diep khac nhau de dang tao ra cung ma bam|A|A
+25|Hinh thuc tan cong nao chen ma doc JavaScript vao website de thuc thi tren trinh duyet?|Cross-Site Scripting (XSS)|SQL Injection|Buffer Overflow|Denial of Service (DoS)|A|A
+26|Nguyen nhan chinh dan toi lo hong SQL Injection la gi?|Khong kiem tra va loc du lieu dau vao truoc khi ghep vao truy van|He dieu hanh chua cap nhat ban va loi|He thong mang khong dung tuong lua|Mat khau quan tri qua ngan|A|A
+27|Giao thuc mang bao mat SSL/TLS hoat dong giua hai tang nao cua mo hinh OSI?|Tang Ung dung (Application) va Tang Giao van (Transport)|Tang Mang (Network) va Tang Lien ket (Data Link)|Tang Vat ly va Tang Mang|Tang Trinh dien va Tang Ung dung|A|A
+28|Chung chi so theo chuan X.509 duoc xac thuc va cap phat boi to chuc nao?|Certificate Authority (CA)|Internet Engineering Task Force (IETF)|W3C|ISO|A|A
+29|Hinh thuc tan cong gui luong lon yeu cau lam qua tai he thong goi la gi?|Distributed Denial of Service (DDoS)|Man-in-the-Middle (MitM)|Phishing|Ransomware|A|B
+30|Co che xac thuc da yeu to (MFA) yeu cau toi thieu bao nhieu yeu to xac minh?|Tu hai yeu to xac minh khac nhau tro len|Dung 1 mat khau dai|Chi can ma PIN|Chi can sinh trac hoc|A|B
+SV048|Mai Phuong|Linh|Nu|pass123|1
+ATTT
+6.0
+10
+21|Ba yeu to cot loi trong tam giac bao mat thong tin CIA la gi?|Confidentiality, Integrity, Availability|Control, Identification, Authentication|Cipher, Integrity, Authorization|Cryptography, Internet, Access|A|A
+22|Thuat toan ma hoa nao sau day la thuat toan ma hoa doi xung?|AES (Advanced Encryption Standard)|RSA|ECC (Elliptic Curve Cryptography)|Diffie-Hellman|A|A
+23|Thuat toan RSA dua tren do kho cua bai toan toan hoc nao sau day?|Phan tich so nguyen lon thanh thua so nguyen to|Tinh logarit roi rac tren truong huu han|Tim duong di Euler tren do thi|Giai he phuong trinh tuyen tinh bac nhat|A|A
+24|Ham bam mat ma nhu SHA-256 co dac diem noi bat nao?|Ham mot chieu khong the suy nguoc lai thong diep goc|Co the giai ma bang khoa bi mat|Dau ra co chieu dai thay doi theo dau vao|Hai thong diep khac nhau de dang tao ra cung ma bam|A|A
+25|Hinh thuc tan cong nao chen ma doc JavaScript vao website de thuc thi tren trinh duyet?|Cross-Site Scripting (XSS)|SQL Injection|Buffer Overflow|Denial of Service (DoS)|A|A
+26|Nguyen nhan chinh dan toi lo hong SQL Injection la gi?|Khong kiem tra va loc du lieu dau vao truoc khi ghep vao truy van|He dieu hanh chua cap nhat ban va loi|He thong mang khong dung tuong lua|Mat khau quan tri qua ngan|A|A
+27|Giao thuc mang bao mat SSL/TLS hoat dong giua hai tang nao cua mo hinh OSI?|Tang Ung dung (Application) va Tang Giao van (Transport)|Tang Mang (Network) va Tang Lien ket (Data Link)|Tang Vat ly va Tang Mang|Tang Trinh dien va Tang Ung dung|A|B
+28|Chung chi so theo chuan X.509 duoc xac thuc va cap phat boi to chuc nao?|Certificate Authority (CA)|Internet Engineering Task Force (IETF)|W3C|ISO|A|B
+29|Hinh thuc tan cong gui luong lon yeu cau lam qua tai he thong goi la gi?|Distributed Denial of Service (DDoS)|Man-in-the-Middle (MitM)|Phishing|Ransomware|A|B
+30|Co che xac thuc da yeu to (MFA) yeu cau toi thieu bao nhieu yeu to xac minh?|Tu hai yeu to xac minh khac nhau tro len|Dung 1 mat khau dai|Chi can ma PIN|Chi can sinh trac hoc|A|B
+SV049|Cao Cong|Luan|Nam|pass123|0
+SV050|Luu Thi|Manh|Nam|pass123|0
+SV051|Ta Thi|Nhi|Nu|pass123|0
+SV052|Do Tien|Phat|Nam|pass123|0
+SV053|Bui Thi|Quyen|Nu|pass123|0
+SV054|Dang Ngoc|Son|Nam|pass123|0
+D22CQAT01-N
+Lop An toan thong tin 1 K22
+9
+SV055|Nguyen Van|Tai|Nam|pass123|2
+CTDL
+10.0
+10
+81|Do phuc tap thoi gian truy xuat phan tu theo chi so trong mang mot chieu la bao nhieu?|O(1)|O(n)|O(log n)|O(n^2)|A|A
+82|Trong danh sach lien ket don, con tro cua node cuoi cung tro toi dau?|nullptr (NULL)|Node dau tien|Chinh no|Node lien truoc no|A|A
+83|Cau truc du lieu Stack (Ngan xep) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|FILO (First In Last Out)|Random Access|A|A
+84|Cau truc du lieu Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|FIFO (First In First Out)|LIFO (Last In First Out)|Priority Only|Random Access|A|A
+85|Trong cay BST, gia tri cua node con ben trai luon co quan he gi voi node cha?|Luon nho hon node cha|Luon lon hon node cha|Bang node cha|Khong co quy tac xac dinh|A|A
+86|Phep duyet cay BST nao cho thu tu cac khoa theo chieu tang dan?|In-order (LNR)|Pre-order (NLR)|Post-order (LRN)|Level-order|A|A
+87|Do phuc tap thoi gian trung binh cua thuat toan Quick Sort la bao nhieu?|O(n log n)|O(n^2)|O(n)|O(log n)|A|A
+88|Hien tuong hai khoa khac nhau qua ham bam cho cung mot chi so goi la gi?|Xung dot (Collision)|Trang bo nho (Overflow)|Loi chi muc (Index Error)|Phan manh bo nho|A|A
+89|Thuat toan duyet do thi theo chieu rong (BFS) su dung cau truc du lieu nao?|Queue (Hang doi)|Stack (Ngan xep)|BST|Priority Queue|A|A
+90|Thuat toan Dijkstra duoc dung de tim duong di ngan nhat tren do thi nao?|Do thi co trong so khong am|Do thi co chu trinh am|Do thi cay khong co trong so|Chi ap dung cho do thi vo huong day du|A|A
+OOP
+9.0
+10
+221|Bon dac tinh co ban nhat cua Lap trinh huong doi tuong la gi?|Dong goi, Ke thua, Da hinh, Truu tuong|Lien ket, Con tro, Vung nho, Giai phong|Lop, Doi tuong, Thuoc tinh, Phuong thuc|Dong goi, Bien dich, Thuc thi, Toi uu|A|A
+222|Pham vi truy cap private trong C++ co y nghia nao sau day?|Chi co the truy cap tu ben trong lop do hoac ham friend|Co the truy cap tu bat cu dau trong toan bo chuong trinh|Cho phep lop con ke thua tu do truy xuat|Tu dong cong khai khi tao doi tuong|A|A
+223|Ham tao (Constructor) trong C++ co dac diem noi bat nao?|Ten trung voi ten lop va khong he co kieu tra ve|Kieu tra ve bat buoc phai la void|Phai duoc goi mot cach thu cong sau khi tao doi tuong|Moi lop chi duoc co duy nhat mot ham tao|A|A
+224|Ky tu dau nga (~) dat truoc ten ham trong lop the hien ham gi?|Ham huy (Destructor)|Ham sao chep|Ham tao mac dinh|Ham thuan ao|A|A
+225|Con tro this trong phuong thuc thanh vien cua class tro toi dau?|Tro toi chinh the hien doi tuong dang thuc thi phuong thuc do|Tro toi lop co so cha|Tro toi ham main cua chuong trinh|Tro toi dia chi dau tien cua bang ao vtable|A|A
+226|Tu khoa virtual dat truoc ham thanh vien lop cha dung de lam gi?|Kich hoat co che da hinh dong luc runtime va ho tro ghi de|Ngan chan khong cho lop con ke thua|Bien ham thanh phuong thuc tinh static|Tang toc do bien dich chuong trinh|A|A
+227|Ham thuan ao (Pure Virtual Function) trong C++ duoc khai bao bang cu phap nao?|virtual void func() = 0;|void func() = 0;|virtual void func() = default;|pure virtual void func();|A|A
+228|Lop truu tuong (Abstract Class) la lop co dac diem nao sau day?|Chua it nhat mot ham thuan ao va khong the khoi tao doi tuong truc tiep|Khong chua bat ky thuoc tinh thanh vien nao|Tat ca cac ham deu phai duoc cai dat day du ma nguon|Khong the cho phep bat ky lop nao ke thua|A|A
+229|Van de kim cuong (Diamond Problem) trong da ke thua C++ duoc giai quyet bang gi?|Ke thua ao (Virtual Inheritance)|Ham ban friend|Nap chong toan tu|Khong the xu ly duoc trong C++|A|A
+230|Dac diem nao dung voi thanh vien tinh (static) trong mot lop?|Duoc chia se dung chung cho tat ca doi tuong thuoc lop do|Moi doi tuong tao ra se so huu mot ban sao rieng biet|Chi duoc phep goi ben trong ham main|Tu dong bi huy ngay khi mot doi tuong ket thuc|A|B
+SV056|Tran Thi|Tam|Nu|pass123|1
+CTDL
+8.0
+10
+81|Do phuc tap thoi gian truy xuat phan tu theo chi so trong mang mot chieu la bao nhieu?|O(1)|O(n)|O(log n)|O(n^2)|A|A
+82|Trong danh sach lien ket don, con tro cua node cuoi cung tro toi dau?|nullptr (NULL)|Node dau tien|Chinh no|Node lien truoc no|A|A
+83|Cau truc du lieu Stack (Ngan xep) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|FILO (First In Last Out)|Random Access|A|A
+84|Cau truc du lieu Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|FIFO (First In First Out)|LIFO (Last In First Out)|Priority Only|Random Access|A|A
+85|Trong cay BST, gia tri cua node con ben trai luon co quan he gi voi node cha?|Luon nho hon node cha|Luon lon hon node cha|Bang node cha|Khong co quy tac xac dinh|A|A
+86|Phep duyet cay BST nao cho thu tu cac khoa theo chieu tang dan?|In-order (LNR)|Pre-order (NLR)|Post-order (LRN)|Level-order|A|A
+87|Do phuc tap thoi gian trung binh cua thuat toan Quick Sort la bao nhieu?|O(n log n)|O(n^2)|O(n)|O(log n)|A|A
+88|Hien tuong hai khoa khac nhau qua ham bam cho cung mot chi so goi la gi?|Xung dot (Collision)|Trang bo nho (Overflow)|Loi chi muc (Index Error)|Phan manh bo nho|A|A
+89|Thuat toan duyet do thi theo chieu rong (BFS) su dung cau truc du lieu nao?|Queue (Hang doi)|Stack (Ngan xep)|BST|Priority Queue|A|B
+90|Thuat toan Dijkstra duoc dung de tim duong di ngan nhat tren do thi nao?|Do thi co trong so khong am|Do thi co chu trinh am|Do thi cay khong co trong so|Chi ap dung cho do thi vo huong day du|A|B
+SV057|Le Van|Thanh|Nam|pass123|1
+CTDL
+6.0
+10
+81|Do phuc tap thoi gian truy xuat phan tu theo chi so trong mang mot chieu la bao nhieu?|O(1)|O(n)|O(log n)|O(n^2)|A|A
+82|Trong danh sach lien ket don, con tro cua node cuoi cung tro toi dau?|nullptr (NULL)|Node dau tien|Chinh no|Node lien truoc no|A|A
+83|Cau truc du lieu Stack (Ngan xep) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|FILO (First In Last Out)|Random Access|A|A
+84|Cau truc du lieu Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|FIFO (First In First Out)|LIFO (Last In First Out)|Priority Only|Random Access|A|A
+85|Trong cay BST, gia tri cua node con ben trai luon co quan he gi voi node cha?|Luon nho hon node cha|Luon lon hon node cha|Bang node cha|Khong co quy tac xac dinh|A|A
+86|Phep duyet cay BST nao cho thu tu cac khoa theo chieu tang dan?|In-order (LNR)|Pre-order (NLR)|Post-order (LRN)|Level-order|A|A
+87|Do phuc tap thoi gian trung binh cua thuat toan Quick Sort la bao nhieu?|O(n log n)|O(n^2)|O(n)|O(log n)|A|B
+88|Hien tuong hai khoa khac nhau qua ham bam cho cung mot chi so goi la gi?|Xung dot (Collision)|Trang bo nho (Overflow)|Loi chi muc (Index Error)|Phan manh bo nho|A|B
+89|Thuat toan duyet do thi theo chieu rong (BFS) su dung cau truc du lieu nao?|Queue (Hang doi)|Stack (Ngan xep)|BST|Priority Queue|A|B
+90|Thuat toan Dijkstra duoc dung de tim duong di ngan nhat tren do thi nao?|Do thi co trong so khong am|Do thi co chu trinh am|Do thi cay khong co trong so|Chi ap dung cho do thi vo huong day du|A|B
+SV058|Pham Thi|Thuy|Nu|pass123|1
+MMT
+5.0
+10
+201|Mo hinh tham chieu OSI gom co bao nhieu tang tat ca?|7 tang|4 tang|5 tang|6 tang|A|A
+202|Dac diem khac biet co ban giua giao thuc TCP va UDP la gi?|TCP co thiet lap ket noi bat tay va tin cay con UDP huong khong ket noi|UDP co bat tay 3 buoc con TCP truyen khong can xac nhan|TCP chi hoat dong tren mang khong day con UDP dung tren cap mang|UDP kiem soat luu luong tot hon TCP|A|A
+203|Chieu dai dia chi IPv4 tieu chuan la bao nhieu bit?|32 bit|64 bit|128 bit|16 bit|A|A
+204|Chuc nang chinh cua he thong ten mien DNS la gi?|Chuyen doi ten mien de nho thanh dia chi IP va nguoc lai|Ma hoa du lieu truyen qua trinh duyet Web|Cap phat dia chi IP tu dong cho thiet bi|Quan ly luu luong bang thong mang|A|A
+205|Cong (Port) mac dinh cua giao thuc HTTPS la bao nhieu?|443|80|21|22|A|A
+206|Thiet bi Router mang hoat dong chu yeu o tang nao trong mo hinh OSI?|Tang Mang (Network Layer)|Tang Lien ket du lieu (Data Link Layer)|Tang Giao van (Transport Layer)|Tang Vat ly (Physical Layer)|A|B
+207|Dia chi MAC la dia chi vat ly thuoc tang nao trong mo hinh OSI?|Tang Lien ket du lieu (Data Link Layer)|Tang Mang (Network Layer)|Tang Vat ly (Physical Layer)|Tang Ung dung (Application Layer)|A|B
+208|Giao thuc nao duoc dung de tu dong cap phat dia chi IP cho may khach?|DHCP|DNS|ARP|SNMP|A|B
+209|Lenh Ping su dung ban tin cua giao thuc mang nao de kiem tra thong mang?|ICMP|IGMP|TCP|UDP|A|B
+210|Cong nghe NAT (Network Address Translation) co tac dung chinh la gi?|Anh xa dia chi IP Private noi bo thanh dia chi IP Public tren Internet|Dinh tuyen goi tin giua cac vung mang ao VLAN|Tang toc do duyet web bang cach luu cache|Loc cac goi tin doc hai bang chu ky so|A|B
+SV059|Vu Hong|Toan|Nam|pass123|0
+SV060|Hoang Thi|Uyen|Nu|pass123|0
+SV061|Ngo Van|Vuong|Nam|pass123|0
+SV062|Duong Thi|Van|Nu|pass123|0
+SV063|Trinh Bao|Viet|Nam|pass123|0
+D22CQVT01-N
+Lop Vien thong 1 K22
+9
+SV064|Phan Gia|Bao|Nam|pass123|1
+CSDL
+10.0
+10
+61|Khoa chinh (Primary Key) trong bang CSDL dung de lam gi?|Dinh danh duy nhat cho moi ban ghi trong bang|Lien ket toi bang khac ma khong can rang buoc|Luu tru du lieu trung lap de tang toc truy van|Cho phep gia tri NULL de tiet kiem bo nho|A|A
+62|Thao tac LEFT JOIN trong SQL co y nghia gi?|Lay tat ca ban ghi bang trai va ban ghi thoa man o bang phai|Chi lay cac ban ghi co mat o ca hai bang|Lay tat ca ban ghi bang phai va ban ghi thoa man o bang trai|Loai bo tat ca ban ghi trung lap giua hai bang|A|A
+63|Menh de GROUP BY trong SQL thuong duoc ket hop voi cac ham nao?|Cac ham tong hop nhu COUNT, SUM, AVG, MAX, MIN|Cac ham xu ly chuoi nhu SUBSTRING, TRIM|Cac toan tu logic AND, OR, NOT|Lenh tao bang CREATE TABLE|A|A
+64|Dieu kien loc du lieu ap dung tren ket qua nhom cua GROUP BY dung tu khoa nao?|HAVING|WHERE|ORDER BY|LIMIT|A|A
+65|Bon dac tinh ACID cua mot giao dich trong CSDL quan he la gi?|Atomicity, Consistency, Isolation, Durability|Access, Control, Integrity, Data|Action, State, Identity, Dependency|Accuracy, Concurrency, Indexing, Distribution|A|A
+66|Dang chuan hoa 1NF yeu cau cac thuoc tinh trong bang phai thoa man dieu kien nao?|Tat ca gia tri cua thuoc tinh phai mang tinh nguyen to (Atomic)|Khong duoc ton tai phu thuoc ham bac cau|Moi thuoc tinh khong khoa phai phu thuoc day du vao khoa chinh|Bang phai co it nhat hai khoa ngoai|A|A
+67|Index (Chi muc) trong CSDL quan he co tac dung chinh la gi?|Tang toc do tim kiem va truy van du lieu|Tiet kiem dung luong o dia|Tang toc do thuc thi lenh INSERT va UPDATE|Tu dong sua loi du lieu sai dinh dang|A|A
+68|Khoa ngoai (Foreign Key) dung de dam bao rang buoc toan ven nao?|Toan ven tham chieu (Referential Integrity)|Toan ven thuc the (Entity Integrity)|Toan ven mien gia tri (Domain Integrity)|Toan ven ngu nghia nguoi dung|A|A
+69|Cau lenh SQL nao duoc dung de thu hoi quyen da cap cho nguoi dung?|REVOKE|GRANT|DROP|ALTER|A|A
+70|He quan tri CSDL NoSQL MongoDB luu tru du lieu duoi dang nao?|Tai lieu JSON/BSON linh hoat|Bang voi hang va cot co dinh|Cay nhi phan can bang|Do thi voi canh va dinh|A|A
+SV065|Dinh Khanh|Chi|Nu|pass123|1
+CSDL
+8.0
+10
+61|Khoa chinh (Primary Key) trong bang CSDL dung de lam gi?|Dinh danh duy nhat cho moi ban ghi trong bang|Lien ket toi bang khac ma khong can rang buoc|Luu tru du lieu trung lap de tang toc truy van|Cho phep gia tri NULL de tiet kiem bo nho|A|A
+62|Thao tac LEFT JOIN trong SQL co y nghia gi?|Lay tat ca ban ghi bang trai va ban ghi thoa man o bang phai|Chi lay cac ban ghi co mat o ca hai bang|Lay tat ca ban ghi bang phai va ban ghi thoa man o bang trai|Loai bo tat ca ban ghi trung lap giua hai bang|A|A
+63|Menh de GROUP BY trong SQL thuong duoc ket hop voi cac ham nao?|Cac ham tong hop nhu COUNT, SUM, AVG, MAX, MIN|Cac ham xu ly chuoi nhu SUBSTRING, TRIM|Cac toan tu logic AND, OR, NOT|Lenh tao bang CREATE TABLE|A|A
+64|Dieu kien loc du lieu ap dung tren ket qua nhom cua GROUP BY dung tu khoa nao?|HAVING|WHERE|ORDER BY|LIMIT|A|A
+65|Bon dac tinh ACID cua mot giao dich trong CSDL quan he la gi?|Atomicity, Consistency, Isolation, Durability|Access, Control, Integrity, Data|Action, State, Identity, Dependency|Accuracy, Concurrency, Indexing, Distribution|A|A
+66|Dang chuan hoa 1NF yeu cau cac thuoc tinh trong bang phai thoa man dieu kien nao?|Tat ca gia tri cua thuoc tinh phai mang tinh nguyen to (Atomic)|Khong duoc ton tai phu thuoc ham bac cau|Moi thuoc tinh khong khoa phai phu thuoc day du vao khoa chinh|Bang phai co it nhat hai khoa ngoai|A|A
+67|Index (Chi muc) trong CSDL quan he co tac dung chinh la gi?|Tang toc do tim kiem va truy van du lieu|Tiet kiem dung luong o dia|Tang toc do thuc thi lenh INSERT va UPDATE|Tu dong sua loi du lieu sai dinh dang|A|A
+68|Khoa ngoai (Foreign Key) dung de dam bao rang buoc toan ven nao?|Toan ven tham chieu (Referential Integrity)|Toan ven thuc the (Entity Integrity)|Toan ven mien gia tri (Domain Integrity)|Toan ven ngu nghia nguoi dung|A|A
+69|Cau lenh SQL nao duoc dung de thu hoi quyen da cap cho nguoi dung?|REVOKE|GRANT|DROP|ALTER|A|B
+70|He quan tri CSDL NoSQL MongoDB luu tru du lieu duoi dang nao?|Tai lieu JSON/BSON linh hoat|Bang voi hang va cot co dinh|Cay nhi phan can bang|Do thi voi canh va dinh|A|B
+SV066|Mai Manh|Chien|Nam|pass123|1
+CSDL
+7.0
+10
+61|Khoa chinh (Primary Key) trong bang CSDL dung de lam gi?|Dinh danh duy nhat cho moi ban ghi trong bang|Lien ket toi bang khac ma khong can rang buoc|Luu tru du lieu trung lap de tang toc truy van|Cho phep gia tri NULL de tiet kiem bo nho|A|A
+62|Thao tac LEFT JOIN trong SQL co y nghia gi?|Lay tat ca ban ghi bang trai va ban ghi thoa man o bang phai|Chi lay cac ban ghi co mat o ca hai bang|Lay tat ca ban ghi bang phai va ban ghi thoa man o bang trai|Loai bo tat ca ban ghi trung lap giua hai bang|A|A
+63|Menh de GROUP BY trong SQL thuong duoc ket hop voi cac ham nao?|Cac ham tong hop nhu COUNT, SUM, AVG, MAX, MIN|Cac ham xu ly chuoi nhu SUBSTRING, TRIM|Cac toan tu logic AND, OR, NOT|Lenh tao bang CREATE TABLE|A|A
+64|Dieu kien loc du lieu ap dung tren ket qua nhom cua GROUP BY dung tu khoa nao?|HAVING|WHERE|ORDER BY|LIMIT|A|A
+65|Bon dac tinh ACID cua mot giao dich trong CSDL quan he la gi?|Atomicity, Consistency, Isolation, Durability|Access, Control, Integrity, Data|Action, State, Identity, Dependency|Accuracy, Concurrency, Indexing, Distribution|A|A
+66|Dang chuan hoa 1NF yeu cau cac thuoc tinh trong bang phai thoa man dieu kien nao?|Tat ca gia tri cua thuoc tinh phai mang tinh nguyen to (Atomic)|Khong duoc ton tai phu thuoc ham bac cau|Moi thuoc tinh khong khoa phai phu thuoc day du vao khoa chinh|Bang phai co it nhat hai khoa ngoai|A|A
+67|Index (Chi muc) trong CSDL quan he co tac dung chinh la gi?|Tang toc do tim kiem va truy van du lieu|Tiet kiem dung luong o dia|Tang toc do thuc thi lenh INSERT va UPDATE|Tu dong sua loi du lieu sai dinh dang|A|A
+68|Khoa ngoai (Foreign Key) dung de dam bao rang buoc toan ven nao?|Toan ven tham chieu (Referential Integrity)|Toan ven thuc the (Entity Integrity)|Toan ven mien gia tri (Domain Integrity)|Toan ven ngu nghia nguoi dung|A|B
+69|Cau lenh SQL nao duoc dung de thu hoi quyen da cap cho nguoi dung?|REVOKE|GRANT|DROP|ALTER|A|B
+70|He quan tri CSDL NoSQL MongoDB luu tru du lieu duoi dang nao?|Tai lieu JSON/BSON linh hoat|Bang voi hang va cot co dinh|Cay nhi phan can bang|Do thi voi canh va dinh|A|B
+SV067|Cao Thuy|Duong|Nu|pass123|0
+SV068|Luu Tuan|Dung|Nam|pass123|0
+SV069|Ta Thi|Ha|Nu|pass123|0
+SV070|Doan Quoc|Hiep|Nam|pass123|0
+SV071|Bui Thu|Huyen|Nu|pass123|0
+SV072|Dang Chi|Kien|Nam|pass123|0
+D23CQCN01-N
+Lop Cong nghe thong tin 1 K23
+9
+SV073|Nguyen Truong|Khang|Nam|pass123|1
+ATTT
+10.0
+10
+21|Ba yeu to cot loi trong tam giac bao mat thong tin CIA la gi?|Confidentiality, Integrity, Availability|Control, Identification, Authentication|Cipher, Integrity, Authorization|Cryptography, Internet, Access|A|A
+22|Thuat toan ma hoa nao sau day la thuat toan ma hoa doi xung?|AES (Advanced Encryption Standard)|RSA|ECC (Elliptic Curve Cryptography)|Diffie-Hellman|A|A
+23|Thuat toan RSA dua tren do kho cua bai toan toan hoc nao sau day?|Phan tich so nguyen lon thanh thua so nguyen to|Tinh logarit roi rac tren truong huu han|Tim duong di Euler tren do thi|Giai he phuong trinh tuyen tinh bac nhat|A|A
+24|Ham bam mat ma nhu SHA-256 co dac diem noi bat nao?|Ham mot chieu khong the suy nguoc lai thong diep goc|Co the giai ma bang khoa bi mat|Dau ra co chieu dai thay doi theo dau vao|Hai thong diep khac nhau de dang tao ra cung ma bam|A|A
+25|Hinh thuc tan cong nao chen ma doc JavaScript vao website de thuc thi tren trinh duyet?|Cross-Site Scripting (XSS)|SQL Injection|Buffer Overflow|Denial of Service (DoS)|A|A
+26|Nguyen nhan chinh dan toi lo hong SQL Injection la gi?|Khong kiem tra va loc du lieu dau vao truoc khi ghep vao truy van|He dieu hanh chua cap nhat ban va loi|He thong mang khong dung tuong lua|Mat khau quan tri qua ngan|A|A
+27|Giao thuc mang bao mat SSL/TLS hoat dong giua hai tang nao cua mo hinh OSI?|Tang Ung dung (Application) va Tang Giao van (Transport)|Tang Mang (Network) va Tang Lien ket (Data Link)|Tang Vat ly va Tang Mang|Tang Trinh dien va Tang Ung dung|A|A
+28|Chung chi so theo chuan X.509 duoc xac thuc va cap phat boi to chuc nao?|Certificate Authority (CA)|Internet Engineering Task Force (IETF)|W3C|ISO|A|A
+29|Hinh thuc tan cong gui luong lon yeu cau lam qua tai he thong goi la gi?|Distributed Denial of Service (DDoS)|Man-in-the-Middle (MitM)|Phishing|Ransomware|A|A
+30|Co che xac thuc da yeu to (MFA) yeu cau toi thieu bao nhieu yeu to xac minh?|Tu hai yeu to xac minh khac nhau tro len|Dung 1 mat khau dai|Chi can ma PIN|Chi can sinh trac hoc|A|A
+SV074|Tran Nhat|Le|Nu|pass123|1
+ATTT
+8.0
+10
+21|Ba yeu to cot loi trong tam giac bao mat thong tin CIA la gi?|Confidentiality, Integrity, Availability|Control, Identification, Authentication|Cipher, Integrity, Authorization|Cryptography, Internet, Access|A|A
+22|Thuat toan ma hoa nao sau day la thuat toan ma hoa doi xung?|AES (Advanced Encryption Standard)|RSA|ECC (Elliptic Curve Cryptography)|Diffie-Hellman|A|A
+23|Thuat toan RSA dua tren do kho cua bai toan toan hoc nao sau day?|Phan tich so nguyen lon thanh thua so nguyen to|Tinh logarit roi rac tren truong huu han|Tim duong di Euler tren do thi|Giai he phuong trinh tuyen tinh bac nhat|A|A
+24|Ham bam mat ma nhu SHA-256 co dac diem noi bat nao?|Ham mot chieu khong the suy nguoc lai thong diep goc|Co the giai ma bang khoa bi mat|Dau ra co chieu dai thay doi theo dau vao|Hai thong diep khac nhau de dang tao ra cung ma bam|A|A
+25|Hinh thuc tan cong nao chen ma doc JavaScript vao website de thuc thi tren trinh duyet?|Cross-Site Scripting (XSS)|SQL Injection|Buffer Overflow|Denial of Service (DoS)|A|A
+26|Nguyen nhan chinh dan toi lo hong SQL Injection la gi?|Khong kiem tra va loc du lieu dau vao truoc khi ghep vao truy van|He dieu hanh chua cap nhat ban va loi|He thong mang khong dung tuong lua|Mat khau quan tri qua ngan|A|A
+27|Giao thuc mang bao mat SSL/TLS hoat dong giua hai tang nao cua mo hinh OSI?|Tang Ung dung (Application) va Tang Giao van (Transport)|Tang Mang (Network) va Tang Lien ket (Data Link)|Tang Vat ly va Tang Mang|Tang Trinh dien va Tang Ung dung|A|A
+28|Chung chi so theo chuan X.509 duoc xac thuc va cap phat boi to chuc nao?|Certificate Authority (CA)|Internet Engineering Task Force (IETF)|W3C|ISO|A|A
+29|Hinh thuc tan cong gui luong lon yeu cau lam qua tai he thong goi la gi?|Distributed Denial of Service (DDoS)|Man-in-the-Middle (MitM)|Phishing|Ransomware|A|B
+30|Co che xac thuc da yeu to (MFA) yeu cau toi thieu bao nhieu yeu to xac minh?|Tu hai yeu to xac minh khac nhau tro len|Dung 1 mat khau dai|Chi can ma PIN|Chi can sinh trac hoc|A|B
+SV075|Le Dinh|Luc|Nam|pass123|1
+ATTT
+6.0
+10
+21|Ba yeu to cot loi trong tam giac bao mat thong tin CIA la gi?|Confidentiality, Integrity, Availability|Control, Identification, Authentication|Cipher, Integrity, Authorization|Cryptography, Internet, Access|A|A
+22|Thuat toan ma hoa nao sau day la thuat toan ma hoa doi xung?|AES (Advanced Encryption Standard)|RSA|ECC (Elliptic Curve Cryptography)|Diffie-Hellman|A|A
+23|Thuat toan RSA dua tren do kho cua bai toan toan hoc nao sau day?|Phan tich so nguyen lon thanh thua so nguyen to|Tinh logarit roi rac tren truong huu han|Tim duong di Euler tren do thi|Giai he phuong trinh tuyen tinh bac nhat|A|A
+24|Ham bam mat ma nhu SHA-256 co dac diem noi bat nao?|Ham mot chieu khong the suy nguoc lai thong diep goc|Co the giai ma bang khoa bi mat|Dau ra co chieu dai thay doi theo dau vao|Hai thong diep khac nhau de dang tao ra cung ma bam|A|A
+25|Hinh thuc tan cong nao chen ma doc JavaScript vao website de thuc thi tren trinh duyet?|Cross-Site Scripting (XSS)|SQL Injection|Buffer Overflow|Denial of Service (DoS)|A|A
+26|Nguyen nhan chinh dan toi lo hong SQL Injection la gi?|Khong kiem tra va loc du lieu dau vao truoc khi ghep vao truy van|He dieu hanh chua cap nhat ban va loi|He thong mang khong dung tuong lua|Mat khau quan tri qua ngan|A|A
+27|Giao thuc mang bao mat SSL/TLS hoat dong giua hai tang nao cua mo hinh OSI?|Tang Ung dung (Application) va Tang Giao van (Transport)|Tang Mang (Network) va Tang Lien ket (Data Link)|Tang Vat ly va Tang Mang|Tang Trinh dien va Tang Ung dung|A|B
+28|Chung chi so theo chuan X.509 duoc xac thuc va cap phat boi to chuc nao?|Certificate Authority (CA)|Internet Engineering Task Force (IETF)|W3C|ISO|A|B
+29|Hinh thuc tan cong gui luong lon yeu cau lam qua tai he thong goi la gi?|Distributed Denial of Service (DDoS)|Man-in-the-Middle (MitM)|Phishing|Ransomware|A|B
+30|Co che xac thuc da yeu to (MFA) yeu cau toi thieu bao nhieu yeu to xac minh?|Tu hai yeu to xac minh khac nhau tro len|Dung 1 mat khau dai|Chi can ma PIN|Chi can sinh trac hoc|A|B
+SV076|Pham Cam|Ly|Nu|pass123|1
+MMT
+5.0
+10
+201|Mo hinh tham chieu OSI gom co bao nhieu tang tat ca?|7 tang|4 tang|5 tang|6 tang|A|A
+202|Dac diem khac biet co ban giua giao thuc TCP va UDP la gi?|TCP co thiet lap ket noi bat tay va tin cay con UDP huong khong ket noi|UDP co bat tay 3 buoc con TCP truyen khong can xac nhan|TCP chi hoat dong tren mang khong day con UDP dung tren cap mang|UDP kiem soat luu luong tot hon TCP|A|A
+203|Chieu dai dia chi IPv4 tieu chuan la bao nhieu bit?|32 bit|64 bit|128 bit|16 bit|A|A
+204|Chuc nang chinh cua he thong ten mien DNS la gi?|Chuyen doi ten mien de nho thanh dia chi IP va nguoc lai|Ma hoa du lieu truyen qua trinh duyet Web|Cap phat dia chi IP tu dong cho thiet bi|Quan ly luu luong bang thong mang|A|A
+205|Cong (Port) mac dinh cua giao thuc HTTPS la bao nhieu?|443|80|21|22|A|A
+206|Thiet bi Router mang hoat dong chu yeu o tang nao trong mo hinh OSI?|Tang Mang (Network Layer)|Tang Lien ket du lieu (Data Link Layer)|Tang Giao van (Transport Layer)|Tang Vat ly (Physical Layer)|A|B
+207|Dia chi MAC la dia chi vat ly thuoc tang nao trong mo hinh OSI?|Tang Lien ket du lieu (Data Link Layer)|Tang Mang (Network Layer)|Tang Vat ly (Physical Layer)|Tang Ung dung (Application Layer)|A|B
+208|Giao thuc nao duoc dung de tu dong cap phat dia chi IP cho may khach?|DHCP|DNS|ARP|SNMP|A|B
+209|Lenh Ping su dung ban tin cua giao thuc mang nao de kiem tra thong mang?|ICMP|IGMP|TCP|UDP|A|B
+210|Cong nghe NAT (Network Address Translation) co tac dung chinh la gi?|Anh xa dia chi IP Private noi bo thanh dia chi IP Public tren Internet|Dinh tuyen goi tin giua cac vung mang ao VLAN|Tang toc do duyet web bang cach luu cache|Loc cac goi tin doc hai bang chu ky so|A|B
+SV077|Vu Van|Nghia|Nam|pass123|0
+SV078|Hoang Yen|Nhung|Nu|pass123|0
+SV079|Ngo Hong|Phuc|Nam|pass123|0
+SV080|Duong Thi|Quynh|Nu|pass123|0
+SV081|Trinh Minh|Quan|Nam|pass123|0
+D23CQCN02-N
+Lop Cong nghe thong tin 2 K23
+9
+SV082|Phan Van|Sinh|Nam|pass123|2
+CTDL
+10.0
+10
+81|Do phuc tap thoi gian truy xuat phan tu theo chi so trong mang mot chieu la bao nhieu?|O(1)|O(n)|O(log n)|O(n^2)|A|A
+82|Trong danh sach lien ket don, con tro cua node cuoi cung tro toi dau?|nullptr (NULL)|Node dau tien|Chinh no|Node lien truoc no|A|A
+83|Cau truc du lieu Stack (Ngan xep) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|FILO (First In Last Out)|Random Access|A|A
+84|Cau truc du lieu Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|FIFO (First In First Out)|LIFO (Last In First Out)|Priority Only|Random Access|A|A
+85|Trong cay BST, gia tri cua node con ben trai luon co quan he gi voi node cha?|Luon nho hon node cha|Luon lon hon node cha|Bang node cha|Khong co quy tac xac dinh|A|A
+86|Phep duyet cay BST nao cho thu tu cac khoa theo chieu tang dan?|In-order (LNR)|Pre-order (NLR)|Post-order (LRN)|Level-order|A|A
+87|Do phuc tap thoi gian trung binh cua thuat toan Quick Sort la bao nhieu?|O(n log n)|O(n^2)|O(n)|O(log n)|A|A
+88|Hien tuong hai khoa khac nhau qua ham bam cho cung mot chi so goi la gi?|Xung dot (Collision)|Trang bo nho (Overflow)|Loi chi muc (Index Error)|Phan manh bo nho|A|A
+89|Thuat toan duyet do thi theo chieu rong (BFS) su dung cau truc du lieu nao?|Queue (Hang doi)|Stack (Ngan xep)|BST|Priority Queue|A|A
+90|Thuat toan Dijkstra duoc dung de tim duong di ngan nhat tren do thi nao?|Do thi co trong so khong am|Do thi co chu trinh am|Do thi cay khong co trong so|Chi ap dung cho do thi vo huong day du|A|A
+OOP
+9.0
+10
+221|Bon dac tinh co ban nhat cua Lap trinh huong doi tuong la gi?|Dong goi, Ke thua, Da hinh, Truu tuong|Lien ket, Con tro, Vung nho, Giai phong|Lop, Doi tuong, Thuoc tinh, Phuong thuc|Dong goi, Bien dich, Thuc thi, Toi uu|A|A
+222|Pham vi truy cap private trong C++ co y nghia nao sau day?|Chi co the truy cap tu ben trong lop do hoac ham friend|Co the truy cap tu bat cu dau trong toan bo chuong trinh|Cho phep lop con ke thua tu do truy xuat|Tu dong cong khai khi tao doi tuong|A|A
+223|Ham tao (Constructor) trong C++ co dac diem noi bat nao?|Ten trung voi ten lop va khong he co kieu tra ve|Kieu tra ve bat buoc phai la void|Phai duoc goi mot cach thu cong sau khi tao doi tuong|Moi lop chi duoc co duy nhat mot ham tao|A|A
+224|Ky tu dau nga (~) dat truoc ten ham trong lop the hien ham gi?|Ham huy (Destructor)|Ham sao chep|Ham tao mac dinh|Ham thuan ao|A|A
+225|Con tro this trong phuong thuc thanh vien cua class tro toi dau?|Tro toi chinh the hien doi tuong dang thuc thi phuong thuc do|Tro toi lop co so cha|Tro toi ham main cua chuong trinh|Tro toi dia chi dau tien cua bang ao vtable|A|A
+226|Tu khoa virtual dat truoc ham thanh vien lop cha dung de lam gi?|Kich hoat co che da hinh dong luc runtime va ho tro ghi de|Ngan chan khong cho lop con ke thua|Bien ham thanh phuong thuc tinh static|Tang toc do bien dich chuong trinh|A|A
+227|Ham thuan ao (Pure Virtual Function) trong C++ duoc khai bao bang cu phap nao?|virtual void func() = 0;|void func() = 0;|virtual void func() = default;|pure virtual void func();|A|A
+228|Lop truu tuong (Abstract Class) la lop co dac diem nao sau day?|Chua it nhat mot ham thuan ao va khong the khoi tao doi tuong truc tiep|Khong chua bat ky thuoc tinh thanh vien nao|Tat ca cac ham deu phai duoc cai dat day du ma nguon|Khong the cho phep bat ky lop nao ke thua|A|A
+229|Van de kim cuong (Diamond Problem) trong da ke thua C++ duoc giai quyet bang gi?|Ke thua ao (Virtual Inheritance)|Ham ban friend|Nap chong toan tu|Khong the xu ly duoc trong C++|A|A
+230|Dac diem nao dung voi thanh vien tinh (static) trong mot lop?|Duoc chia se dung chung cho tat ca doi tuong thuoc lop do|Moi doi tuong tao ra se so huu mot ban sao rieng biet|Chi duoc phep goi ben trong ham main|Tu dong bi huy ngay khi mot doi tuong ket thuc|A|B
+SV083|Dinh Bich|Thao|Nu|pass123|1
+CTDL
+8.0
+10
+81|Do phuc tap thoi gian truy xuat phan tu theo chi so trong mang mot chieu la bao nhieu?|O(1)|O(n)|O(log n)|O(n^2)|A|A
+82|Trong danh sach lien ket don, con tro cua node cuoi cung tro toi dau?|nullptr (NULL)|Node dau tien|Chinh no|Node lien truoc no|A|A
+83|Cau truc du lieu Stack (Ngan xep) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|FILO (First In Last Out)|Random Access|A|A
+84|Cau truc du lieu Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|FIFO (First In First Out)|LIFO (Last In First Out)|Priority Only|Random Access|A|A
+85|Trong cay BST, gia tri cua node con ben trai luon co quan he gi voi node cha?|Luon nho hon node cha|Luon lon hon node cha|Bang node cha|Khong co quy tac xac dinh|A|A
+86|Phep duyet cay BST nao cho thu tu cac khoa theo chieu tang dan?|In-order (LNR)|Pre-order (NLR)|Post-order (LRN)|Level-order|A|A
+87|Do phuc tap thoi gian trung binh cua thuat toan Quick Sort la bao nhieu?|O(n log n)|O(n^2)|O(n)|O(log n)|A|A
+88|Hien tuong hai khoa khac nhau qua ham bam cho cung mot chi so goi la gi?|Xung dot (Collision)|Trang bo nho (Overflow)|Loi chi muc (Index Error)|Phan manh bo nho|A|A
+89|Thuat toan duyet do thi theo chieu rong (BFS) su dung cau truc du lieu nao?|Queue (Hang doi)|Stack (Ngan xep)|BST|Priority Queue|A|B
+90|Thuat toan Dijkstra duoc dung de tim duong di ngan nhat tren do thi nao?|Do thi co trong so khong am|Do thi co chu trinh am|Do thi cay khong co trong so|Chi ap dung cho do thi vo huong day du|A|B
+SV084|Mai Cong|Thanh|Nam|pass123|1
+CTDL
+6.0
+10
+81|Do phuc tap thoi gian truy xuat phan tu theo chi so trong mang mot chieu la bao nhieu?|O(1)|O(n)|O(log n)|O(n^2)|A|A
+82|Trong danh sach lien ket don, con tro cua node cuoi cung tro toi dau?|nullptr (NULL)|Node dau tien|Chinh no|Node lien truoc no|A|A
+83|Cau truc du lieu Stack (Ngan xep) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|FILO (First In Last Out)|Random Access|A|A
+84|Cau truc du lieu Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|FIFO (First In First Out)|LIFO (Last In First Out)|Priority Only|Random Access|A|A
+85|Trong cay BST, gia tri cua node con ben trai luon co quan he gi voi node cha?|Luon nho hon node cha|Luon lon hon node cha|Bang node cha|Khong co quy tac xac dinh|A|A
+86|Phep duyet cay BST nao cho thu tu cac khoa theo chieu tang dan?|In-order (LNR)|Pre-order (NLR)|Post-order (LRN)|Level-order|A|A
+87|Do phuc tap thoi gian trung binh cua thuat toan Quick Sort la bao nhieu?|O(n log n)|O(n^2)|O(n)|O(log n)|A|B
+88|Hien tuong hai khoa khac nhau qua ham bam cho cung mot chi so goi la gi?|Xung dot (Collision)|Trang bo nho (Overflow)|Loi chi muc (Index Error)|Phan manh bo nho|A|B
+89|Thuat toan duyet do thi theo chieu rong (BFS) su dung cau truc du lieu nao?|Queue (Hang doi)|Stack (Ngan xep)|BST|Priority Queue|A|B
+90|Thuat toan Dijkstra duoc dung de tim duong di ngan nhat tren do thi nao?|Do thi co trong so khong am|Do thi co chu trinh am|Do thi cay khong co trong so|Chi ap dung cho do thi vo huong day du|A|B
+SV085|Cao Ngoc|Thuy|Nu|pass123|0
+SV086|Luu Tien|Thinh|Nam|pass123|0
+SV087|Ta Thu|Trang|Nu|pass123|0
+SV088|Do Hoang|Tuan|Nam|pass123|0
+SV089|Bui Thi|Vy|Nu|pass123|0
+SV090|Dang Quoc|Vu|Nam|pass123|0
 D23CQAT01-N
 Lop An toan thong tin 1 K23
-2
-SV022|Hoang Van|Thang|Nam|pass123|0
-SV023|Luong Thi|Thu|Nu|pass123|0
+9
+SV091|Nguyen Khac|An|Nam|pass123|1
+CSDL
+10.0
+10
+61|Khoa chinh (Primary Key) trong bang CSDL dung de lam gi?|Dinh danh duy nhat cho moi ban ghi trong bang|Lien ket toi bang khac ma khong can rang buoc|Luu tru du lieu trung lap de tang toc truy van|Cho phep gia tri NULL de tiet kiem bo nho|A|A
+62|Thao tac LEFT JOIN trong SQL co y nghia gi?|Lay tat ca ban ghi bang trai va ban ghi thoa man o bang phai|Chi lay cac ban ghi co mat o ca hai bang|Lay tat ca ban ghi bang phai va ban ghi thoa man o bang trai|Loai bo tat ca ban ghi trung lap giua hai bang|A|A
+63|Menh de GROUP BY trong SQL thuong duoc ket hop voi cac ham nao?|Cac ham tong hop nhu COUNT, SUM, AVG, MAX, MIN|Cac ham xu ly chuoi nhu SUBSTRING, TRIM|Cac toan tu logic AND, OR, NOT|Lenh tao bang CREATE TABLE|A|A
+64|Dieu kien loc du lieu ap dung tren ket qua nhom cua GROUP BY dung tu khoa nao?|HAVING|WHERE|ORDER BY|LIMIT|A|A
+65|Bon dac tinh ACID cua mot giao dich trong CSDL quan he la gi?|Atomicity, Consistency, Isolation, Durability|Access, Control, Integrity, Data|Action, State, Identity, Dependency|Accuracy, Concurrency, Indexing, Distribution|A|A
+66|Dang chuan hoa 1NF yeu cau cac thuoc tinh trong bang phai thoa man dieu kien nao?|Tat ca gia tri cua thuoc tinh phai mang tinh nguyen to (Atomic)|Khong duoc ton tai phu thuoc ham bac cau|Moi thuoc tinh khong khoa phai phu thuoc day du vao khoa chinh|Bang phai co it nhat hai khoa ngoai|A|A
+67|Index (Chi muc) trong CSDL quan he co tac dung chinh la gi?|Tang toc do tim kiem va truy van du lieu|Tiet kiem dung luong o dia|Tang toc do thuc thi lenh INSERT va UPDATE|Tu dong sua loi du lieu sai dinh dang|A|A
+68|Khoa ngoai (Foreign Key) dung de dam bao rang buoc toan ven nao?|Toan ven tham chieu (Referential Integrity)|Toan ven thuc the (Entity Integrity)|Toan ven mien gia tri (Domain Integrity)|Toan ven ngu nghia nguoi dung|A|A
+69|Cau lenh SQL nao duoc dung de thu hoi quyen da cap cho nguoi dung?|REVOKE|GRANT|DROP|ALTER|A|A
+70|He quan tri CSDL NoSQL MongoDB luu tru du lieu duoi dang nao?|Tai lieu JSON/BSON linh hoat|Bang voi hang va cot co dinh|Cay nhi phan can bang|Do thi voi canh va dinh|A|A
+SV092|Tran Ngoc|Anh|Nu|pass123|1
+CSDL
+8.0
+10
+61|Khoa chinh (Primary Key) trong bang CSDL dung de lam gi?|Dinh danh duy nhat cho moi ban ghi trong bang|Lien ket toi bang khac ma khong can rang buoc|Luu tru du lieu trung lap de tang toc truy van|Cho phep gia tri NULL de tiet kiem bo nho|A|A
+62|Thao tac LEFT JOIN trong SQL co y nghia gi?|Lay tat ca ban ghi bang trai va ban ghi thoa man o bang phai|Chi lay cac ban ghi co mat o ca hai bang|Lay tat ca ban ghi bang phai va ban ghi thoa man o bang trai|Loai bo tat ca ban ghi trung lap giua hai bang|A|A
+63|Menh de GROUP BY trong SQL thuong duoc ket hop voi cac ham nao?|Cac ham tong hop nhu COUNT, SUM, AVG, MAX, MIN|Cac ham xu ly chuoi nhu SUBSTRING, TRIM|Cac toan tu logic AND, OR, NOT|Lenh tao bang CREATE TABLE|A|A
+64|Dieu kien loc du lieu ap dung tren ket qua nhom cua GROUP BY dung tu khoa nao?|HAVING|WHERE|ORDER BY|LIMIT|A|A
+65|Bon dac tinh ACID cua mot giao dich trong CSDL quan he la gi?|Atomicity, Consistency, Isolation, Durability|Access, Control, Integrity, Data|Action, State, Identity, Dependency|Accuracy, Concurrency, Indexing, Distribution|A|A
+66|Dang chuan hoa 1NF yeu cau cac thuoc tinh trong bang phai thoa man dieu kien nao?|Tat ca gia tri cua thuoc tinh phai mang tinh nguyen to (Atomic)|Khong duoc ton tai phu thuoc ham bac cau|Moi thuoc tinh khong khoa phai phu thuoc day du vao khoa chinh|Bang phai co it nhat hai khoa ngoai|A|A
+67|Index (Chi muc) trong CSDL quan he co tac dung chinh la gi?|Tang toc do tim kiem va truy van du lieu|Tiet kiem dung luong o dia|Tang toc do thuc thi lenh INSERT va UPDATE|Tu dong sua loi du lieu sai dinh dang|A|A
+68|Khoa ngoai (Foreign Key) dung de dam bao rang buoc toan ven nao?|Toan ven tham chieu (Referential Integrity)|Toan ven thuc the (Entity Integrity)|Toan ven mien gia tri (Domain Integrity)|Toan ven ngu nghia nguoi dung|A|A
+69|Cau lenh SQL nao duoc dung de thu hoi quyen da cap cho nguoi dung?|REVOKE|GRANT|DROP|ALTER|A|B
+70|He quan tri CSDL NoSQL MongoDB luu tru du lieu duoi dang nao?|Tai lieu JSON/BSON linh hoat|Bang voi hang va cot co dinh|Cay nhi phan can bang|Do thi voi canh va dinh|A|B
+SV093|Le Quang|Binh|Nam|pass123|1
+CSDL
+7.0
+10
+61|Khoa chinh (Primary Key) trong bang CSDL dung de lam gi?|Dinh danh duy nhat cho moi ban ghi trong bang|Lien ket toi bang khac ma khong can rang buoc|Luu tru du lieu trung lap de tang toc truy van|Cho phep gia tri NULL de tiet kiem bo nho|A|A
+62|Thao tac LEFT JOIN trong SQL co y nghia gi?|Lay tat ca ban ghi bang trai va ban ghi thoa man o bang phai|Chi lay cac ban ghi co mat o ca hai bang|Lay tat ca ban ghi bang phai va ban ghi thoa man o bang trai|Loai bo tat ca ban ghi trung lap giua hai bang|A|A
+63|Menh de GROUP BY trong SQL thuong duoc ket hop voi cac ham nao?|Cac ham tong hop nhu COUNT, SUM, AVG, MAX, MIN|Cac ham xu ly chuoi nhu SUBSTRING, TRIM|Cac toan tu logic AND, OR, NOT|Lenh tao bang CREATE TABLE|A|A
+64|Dieu kien loc du lieu ap dung tren ket qua nhom cua GROUP BY dung tu khoa nao?|HAVING|WHERE|ORDER BY|LIMIT|A|A
+65|Bon dac tinh ACID cua mot giao dich trong CSDL quan he la gi?|Atomicity, Consistency, Isolation, Durability|Access, Control, Integrity, Data|Action, State, Identity, Dependency|Accuracy, Concurrency, Indexing, Distribution|A|A
+66|Dang chuan hoa 1NF yeu cau cac thuoc tinh trong bang phai thoa man dieu kien nao?|Tat ca gia tri cua thuoc tinh phai mang tinh nguyen to (Atomic)|Khong duoc ton tai phu thuoc ham bac cau|Moi thuoc tinh khong khoa phai phu thuoc day du vao khoa chinh|Bang phai co it nhat hai khoa ngoai|A|A
+67|Index (Chi muc) trong CSDL quan he co tac dung chinh la gi?|Tang toc do tim kiem va truy van du lieu|Tiet kiem dung luong o dia|Tang toc do thuc thi lenh INSERT va UPDATE|Tu dong sua loi du lieu sai dinh dang|A|A
+68|Khoa ngoai (Foreign Key) dung de dam bao rang buoc toan ven nao?|Toan ven tham chieu (Referential Integrity)|Toan ven thuc the (Entity Integrity)|Toan ven mien gia tri (Domain Integrity)|Toan ven ngu nghia nguoi dung|A|B
+69|Cau lenh SQL nao duoc dung de thu hoi quyen da cap cho nguoi dung?|REVOKE|GRANT|DROP|ALTER|A|B
+70|He quan tri CSDL NoSQL MongoDB luu tru du lieu duoi dang nao?|Tai lieu JSON/BSON linh hoat|Bang voi hang va cot co dinh|Cay nhi phan can bang|Do thi voi canh va dinh|A|B
+SV094|Pham Thanh|Chau|Nu|pass123|1
+MMT
+5.0
+10
+201|Mo hinh tham chieu OSI gom co bao nhieu tang tat ca?|7 tang|4 tang|5 tang|6 tang|A|A
+202|Dac diem khac biet co ban giua giao thuc TCP va UDP la gi?|TCP co thiet lap ket noi bat tay va tin cay con UDP huong khong ket noi|UDP co bat tay 3 buoc con TCP truyen khong can xac nhan|TCP chi hoat dong tren mang khong day con UDP dung tren cap mang|UDP kiem soat luu luong tot hon TCP|A|A
+203|Chieu dai dia chi IPv4 tieu chuan la bao nhieu bit?|32 bit|64 bit|128 bit|16 bit|A|A
+204|Chuc nang chinh cua he thong ten mien DNS la gi?|Chuyen doi ten mien de nho thanh dia chi IP va nguoc lai|Ma hoa du lieu truyen qua trinh duyet Web|Cap phat dia chi IP tu dong cho thiet bi|Quan ly luu luong bang thong mang|A|A
+205|Cong (Port) mac dinh cua giao thuc HTTPS la bao nhieu?|443|80|21|22|A|A
+206|Thiet bi Router mang hoat dong chu yeu o tang nao trong mo hinh OSI?|Tang Mang (Network Layer)|Tang Lien ket du lieu (Data Link Layer)|Tang Giao van (Transport Layer)|Tang Vat ly (Physical Layer)|A|B
+207|Dia chi MAC la dia chi vat ly thuoc tang nao trong mo hinh OSI?|Tang Lien ket du lieu (Data Link Layer)|Tang Mang (Network Layer)|Tang Vat ly (Physical Layer)|Tang Ung dung (Application Layer)|A|B
+208|Giao thuc nao duoc dung de tu dong cap phat dia chi IP cho may khach?|DHCP|DNS|ARP|SNMP|A|B
+209|Lenh Ping su dung ban tin cua giao thuc mang nao de kiem tra thong mang?|ICMP|IGMP|TCP|UDP|A|B
+210|Cong nghe NAT (Network Address Translation) co tac dung chinh la gi?|Anh xa dia chi IP Private noi bo thanh dia chi IP Public tren Internet|Dinh tuyen goi tin giua cac vung mang ao VLAN|Tang toc do duyet web bang cach luu cache|Loc cac goi tin doc hai bang chu ky so|A|B
+SV095|Vu Tuan|Dat|Nam|pass123|0
+SV096|Hoang Thi|Dieu|Nu|pass123|0
+SV097|Ngo Viet|Duc|Nam|pass123|0
+SV098|Duong Thi|Hanh|Nu|pass123|0
+SV099|Trinh Gia|Huy|Nam|pass123|0
 D23CQMR01-N
 Lop Mang may tinh 1 K23
-2
-SV024|Dao Van|Tien|Nam|pass123|0
-SV025|Nguyen Thi|Trang|Nu|pass123|0
+9
+SV100|Phan Van|Kha|Nam|pass123|1
+ATTT
+10.0
+10
+21|Ba yeu to cot loi trong tam giac bao mat thong tin CIA la gi?|Confidentiality, Integrity, Availability|Control, Identification, Authentication|Cipher, Integrity, Authorization|Cryptography, Internet, Access|A|A
+22|Thuat toan ma hoa nao sau day la thuat toan ma hoa doi xung?|AES (Advanced Encryption Standard)|RSA|ECC (Elliptic Curve Cryptography)|Diffie-Hellman|A|A
+23|Thuat toan RSA dua tren do kho cua bai toan toan hoc nao sau day?|Phan tich so nguyen lon thanh thua so nguyen to|Tinh logarit roi rac tren truong huu han|Tim duong di Euler tren do thi|Giai he phuong trinh tuyen tinh bac nhat|A|A
+24|Ham bam mat ma nhu SHA-256 co dac diem noi bat nao?|Ham mot chieu khong the suy nguoc lai thong diep goc|Co the giai ma bang khoa bi mat|Dau ra co chieu dai thay doi theo dau vao|Hai thong diep khac nhau de dang tao ra cung ma bam|A|A
+25|Hinh thuc tan cong nao chen ma doc JavaScript vao website de thuc thi tren trinh duyet?|Cross-Site Scripting (XSS)|SQL Injection|Buffer Overflow|Denial of Service (DoS)|A|A
+26|Nguyen nhan chinh dan toi lo hong SQL Injection la gi?|Khong kiem tra va loc du lieu dau vao truoc khi ghep vao truy van|He dieu hanh chua cap nhat ban va loi|He thong mang khong dung tuong lua|Mat khau quan tri qua ngan|A|A
+27|Giao thuc mang bao mat SSL/TLS hoat dong giua hai tang nao cua mo hinh OSI?|Tang Ung dung (Application) va Tang Giao van (Transport)|Tang Mang (Network) va Tang Lien ket (Data Link)|Tang Vat ly va Tang Mang|Tang Trinh dien va Tang Ung dung|A|A
+28|Chung chi so theo chuan X.509 duoc xac thuc va cap phat boi to chuc nao?|Certificate Authority (CA)|Internet Engineering Task Force (IETF)|W3C|ISO|A|A
+29|Hinh thuc tan cong gui luong lon yeu cau lam qua tai he thong goi la gi?|Distributed Denial of Service (DDoS)|Man-in-the-Middle (MitM)|Phishing|Ransomware|A|A
+30|Co che xac thuc da yeu to (MFA) yeu cau toi thieu bao nhieu yeu to xac minh?|Tu hai yeu to xac minh khac nhau tro len|Dung 1 mat khau dai|Chi can ma PIN|Chi can sinh trac hoc|A|A
+SV101|Dinh Thi|Lien|Nu|pass123|1
+ATTT
+8.0
+10
+21|Ba yeu to cot loi trong tam giac bao mat thong tin CIA la gi?|Confidentiality, Integrity, Availability|Control, Identification, Authentication|Cipher, Integrity, Authorization|Cryptography, Internet, Access|A|A
+22|Thuat toan ma hoa nao sau day la thuat toan ma hoa doi xung?|AES (Advanced Encryption Standard)|RSA|ECC (Elliptic Curve Cryptography)|Diffie-Hellman|A|A
+23|Thuat toan RSA dua tren do kho cua bai toan toan hoc nao sau day?|Phan tich so nguyen lon thanh thua so nguyen to|Tinh logarit roi rac tren truong huu han|Tim duong di Euler tren do thi|Giai he phuong trinh tuyen tinh bac nhat|A|A
+24|Ham bam mat ma nhu SHA-256 co dac diem noi bat nao?|Ham mot chieu khong the suy nguoc lai thong diep goc|Co the giai ma bang khoa bi mat|Dau ra co chieu dai thay doi theo dau vao|Hai thong diep khac nhau de dang tao ra cung ma bam|A|A
+25|Hinh thuc tan cong nao chen ma doc JavaScript vao website de thuc thi tren trinh duyet?|Cross-Site Scripting (XSS)|SQL Injection|Buffer Overflow|Denial of Service (DoS)|A|A
+26|Nguyen nhan chinh dan toi lo hong SQL Injection la gi?|Khong kiem tra va loc du lieu dau vao truoc khi ghep vao truy van|He dieu hanh chua cap nhat ban va loi|He thong mang khong dung tuong lua|Mat khau quan tri qua ngan|A|A
+27|Giao thuc mang bao mat SSL/TLS hoat dong giua hai tang nao cua mo hinh OSI?|Tang Ung dung (Application) va Tang Giao van (Transport)|Tang Mang (Network) va Tang Lien ket (Data Link)|Tang Vat ly va Tang Mang|Tang Trinh dien va Tang Ung dung|A|A
+28|Chung chi so theo chuan X.509 duoc xac thuc va cap phat boi to chuc nao?|Certificate Authority (CA)|Internet Engineering Task Force (IETF)|W3C|ISO|A|A
+29|Hinh thuc tan cong gui luong lon yeu cau lam qua tai he thong goi la gi?|Distributed Denial of Service (DDoS)|Man-in-the-Middle (MitM)|Phishing|Ransomware|A|B
+30|Co che xac thuc da yeu to (MFA) yeu cau toi thieu bao nhieu yeu to xac minh?|Tu hai yeu to xac minh khac nhau tro len|Dung 1 mat khau dai|Chi can ma PIN|Chi can sinh trac hoc|A|B
+SV102|Mai Thanh|Long|Nam|pass123|1
+ATTT
+6.0
+10
+21|Ba yeu to cot loi trong tam giac bao mat thong tin CIA la gi?|Confidentiality, Integrity, Availability|Control, Identification, Authentication|Cipher, Integrity, Authorization|Cryptography, Internet, Access|A|A
+22|Thuat toan ma hoa nao sau day la thuat toan ma hoa doi xung?|AES (Advanced Encryption Standard)|RSA|ECC (Elliptic Curve Cryptography)|Diffie-Hellman|A|A
+23|Thuat toan RSA dua tren do kho cua bai toan toan hoc nao sau day?|Phan tich so nguyen lon thanh thua so nguyen to|Tinh logarit roi rac tren truong huu han|Tim duong di Euler tren do thi|Giai he phuong trinh tuyen tinh bac nhat|A|A
+24|Ham bam mat ma nhu SHA-256 co dac diem noi bat nao?|Ham mot chieu khong the suy nguoc lai thong diep goc|Co the giai ma bang khoa bi mat|Dau ra co chieu dai thay doi theo dau vao|Hai thong diep khac nhau de dang tao ra cung ma bam|A|A
+25|Hinh thuc tan cong nao chen ma doc JavaScript vao website de thuc thi tren trinh duyet?|Cross-Site Scripting (XSS)|SQL Injection|Buffer Overflow|Denial of Service (DoS)|A|A
+26|Nguyen nhan chinh dan toi lo hong SQL Injection la gi?|Khong kiem tra va loc du lieu dau vao truoc khi ghep vao truy van|He dieu hanh chua cap nhat ban va loi|He thong mang khong dung tuong lua|Mat khau quan tri qua ngan|A|A
+27|Giao thuc mang bao mat SSL/TLS hoat dong giua hai tang nao cua mo hinh OSI?|Tang Ung dung (Application) va Tang Giao van (Transport)|Tang Mang (Network) va Tang Lien ket (Data Link)|Tang Vat ly va Tang Mang|Tang Trinh dien va Tang Ung dung|A|B
+28|Chung chi so theo chuan X.509 duoc xac thuc va cap phat boi to chuc nao?|Certificate Authority (CA)|Internet Engineering Task Force (IETF)|W3C|ISO|A|B
+29|Hinh thuc tan cong gui luong lon yeu cau lam qua tai he thong goi la gi?|Distributed Denial of Service (DDoS)|Man-in-the-Middle (MitM)|Phishing|Ransomware|A|B
+30|Co che xac thuc da yeu to (MFA) yeu cau toi thieu bao nhieu yeu to xac minh?|Tu hai yeu to xac minh khac nhau tro len|Dung 1 mat khau dai|Chi can ma PIN|Chi can sinh trac hoc|A|B
+SV103|Cao Thi|Minh|Nu|pass123|0
+SV104|Luu Huu|Nghia|Nam|pass123|0
+SV105|Ta Thu|Ngan|Nu|pass123|0
+SV106|Do Duc|Phu|Nam|pass123|0
+SV107|Bui Thi|Phuong|Nu|pass123|0
+SV108|Dang Xuan|Quang|Nam|pass123|0
 D23CQIS01-N
 Lop He thong thong tin 1 K23
-2
-SV026|Vo Van|Trung|Nam|pass123|0
-SV027|Ha Thi|Tuyet|Nu|pass123|0
+9
+SV109|Nguyen Van|Sang|Nam|pass123|2
+CTDL
+10.0
+10
+81|Do phuc tap thoi gian truy xuat phan tu theo chi so trong mang mot chieu la bao nhieu?|O(1)|O(n)|O(log n)|O(n^2)|A|A
+82|Trong danh sach lien ket don, con tro cua node cuoi cung tro toi dau?|nullptr (NULL)|Node dau tien|Chinh no|Node lien truoc no|A|A
+83|Cau truc du lieu Stack (Ngan xep) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|FILO (First In Last Out)|Random Access|A|A
+84|Cau truc du lieu Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|FIFO (First In First Out)|LIFO (Last In First Out)|Priority Only|Random Access|A|A
+85|Trong cay BST, gia tri cua node con ben trai luon co quan he gi voi node cha?|Luon nho hon node cha|Luon lon hon node cha|Bang node cha|Khong co quy tac xac dinh|A|A
+86|Phep duyet cay BST nao cho thu tu cac khoa theo chieu tang dan?|In-order (LNR)|Pre-order (NLR)|Post-order (LRN)|Level-order|A|A
+87|Do phuc tap thoi gian trung binh cua thuat toan Quick Sort la bao nhieu?|O(n log n)|O(n^2)|O(n)|O(log n)|A|A
+88|Hien tuong hai khoa khac nhau qua ham bam cho cung mot chi so goi la gi?|Xung dot (Collision)|Trang bo nho (Overflow)|Loi chi muc (Index Error)|Phan manh bo nho|A|A
+89|Thuat toan duyet do thi theo chieu rong (BFS) su dung cau truc du lieu nao?|Queue (Hang doi)|Stack (Ngan xep)|BST|Priority Queue|A|A
+90|Thuat toan Dijkstra duoc dung de tim duong di ngan nhat tren do thi nao?|Do thi co trong so khong am|Do thi co chu trinh am|Do thi cay khong co trong so|Chi ap dung cho do thi vo huong day du|A|A
+OOP
+9.0
+10
+221|Bon dac tinh co ban nhat cua Lap trinh huong doi tuong la gi?|Dong goi, Ke thua, Da hinh, Truu tuong|Lien ket, Con tro, Vung nho, Giai phong|Lop, Doi tuong, Thuoc tinh, Phuong thuc|Dong goi, Bien dich, Thuc thi, Toi uu|A|A
+222|Pham vi truy cap private trong C++ co y nghia nao sau day?|Chi co the truy cap tu ben trong lop do hoac ham friend|Co the truy cap tu bat cu dau trong toan bo chuong trinh|Cho phep lop con ke thua tu do truy xuat|Tu dong cong khai khi tao doi tuong|A|A
+223|Ham tao (Constructor) trong C++ co dac diem noi bat nao?|Ten trung voi ten lop va khong he co kieu tra ve|Kieu tra ve bat buoc phai la void|Phai duoc goi mot cach thu cong sau khi tao doi tuong|Moi lop chi duoc co duy nhat mot ham tao|A|A
+224|Ky tu dau nga (~) dat truoc ten ham trong lop the hien ham gi?|Ham huy (Destructor)|Ham sao chep|Ham tao mac dinh|Ham thuan ao|A|A
+225|Con tro this trong phuong thuc thanh vien cua class tro toi dau?|Tro toi chinh the hien doi tuong dang thuc thi phuong thuc do|Tro toi lop co so cha|Tro toi ham main cua chuong trinh|Tro toi dia chi dau tien cua bang ao vtable|A|A
+226|Tu khoa virtual dat truoc ham thanh vien lop cha dung de lam gi?|Kich hoat co che da hinh dong luc runtime va ho tro ghi de|Ngan chan khong cho lop con ke thua|Bien ham thanh phuong thuc tinh static|Tang toc do bien dich chuong trinh|A|A
+227|Ham thuan ao (Pure Virtual Function) trong C++ duoc khai bao bang cu phap nao?|virtual void func() = 0;|void func() = 0;|virtual void func() = default;|pure virtual void func();|A|A
+228|Lop truu tuong (Abstract Class) la lop co dac diem nao sau day?|Chua it nhat mot ham thuan ao va khong the khoi tao doi tuong truc tiep|Khong chua bat ky thuoc tinh thanh vien nao|Tat ca cac ham deu phai duoc cai dat day du ma nguon|Khong the cho phep bat ky lop nao ke thua|A|A
+229|Van de kim cuong (Diamond Problem) trong da ke thua C++ duoc giai quyet bang gi?|Ke thua ao (Virtual Inheritance)|Ham ban friend|Nap chong toan tu|Khong the xu ly duoc trong C++|A|A
+230|Dac diem nao dung voi thanh vien tinh (static) trong mot lop?|Duoc chia se dung chung cho tat ca doi tuong thuoc lop do|Moi doi tuong tao ra se so huu mot ban sao rieng biet|Chi duoc phep goi ben trong ham main|Tu dong bi huy ngay khi mot doi tuong ket thuc|A|B
+SV110|Tran Thi|Sen|Nu|pass123|1
+CTDL
+8.0
+10
+81|Do phuc tap thoi gian truy xuat phan tu theo chi so trong mang mot chieu la bao nhieu?|O(1)|O(n)|O(log n)|O(n^2)|A|A
+82|Trong danh sach lien ket don, con tro cua node cuoi cung tro toi dau?|nullptr (NULL)|Node dau tien|Chinh no|Node lien truoc no|A|A
+83|Cau truc du lieu Stack (Ngan xep) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|FILO (First In Last Out)|Random Access|A|A
+84|Cau truc du lieu Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|FIFO (First In First Out)|LIFO (Last In First Out)|Priority Only|Random Access|A|A
+85|Trong cay BST, gia tri cua node con ben trai luon co quan he gi voi node cha?|Luon nho hon node cha|Luon lon hon node cha|Bang node cha|Khong co quy tac xac dinh|A|A
+86|Phep duyet cay BST nao cho thu tu cac khoa theo chieu tang dan?|In-order (LNR)|Pre-order (NLR)|Post-order (LRN)|Level-order|A|A
+87|Do phuc tap thoi gian trung binh cua thuat toan Quick Sort la bao nhieu?|O(n log n)|O(n^2)|O(n)|O(log n)|A|A
+88|Hien tuong hai khoa khac nhau qua ham bam cho cung mot chi so goi la gi?|Xung dot (Collision)|Trang bo nho (Overflow)|Loi chi muc (Index Error)|Phan manh bo nho|A|A
+89|Thuat toan duyet do thi theo chieu rong (BFS) su dung cau truc du lieu nao?|Queue (Hang doi)|Stack (Ngan xep)|BST|Priority Queue|A|B
+90|Thuat toan Dijkstra duoc dung de tim duong di ngan nhat tren do thi nao?|Do thi co trong so khong am|Do thi co chu trinh am|Do thi cay khong co trong so|Chi ap dung cho do thi vo huong day du|A|B
+SV111|Le Van|Tam|Nam|pass123|1
+CTDL
+6.0
+10
+81|Do phuc tap thoi gian truy xuat phan tu theo chi so trong mang mot chieu la bao nhieu?|O(1)|O(n)|O(log n)|O(n^2)|A|A
+82|Trong danh sach lien ket don, con tro cua node cuoi cung tro toi dau?|nullptr (NULL)|Node dau tien|Chinh no|Node lien truoc no|A|A
+83|Cau truc du lieu Stack (Ngan xep) hoat dong theo nguyen ly nao sau day?|LIFO (Last In First Out)|FIFO (First In First Out)|FILO (First In Last Out)|Random Access|A|A
+84|Cau truc du lieu Queue (Hang doi) hoat dong theo nguyen ly nao sau day?|FIFO (First In First Out)|LIFO (Last In First Out)|Priority Only|Random Access|A|A
+85|Trong cay BST, gia tri cua node con ben trai luon co quan he gi voi node cha?|Luon nho hon node cha|Luon lon hon node cha|Bang node cha|Khong co quy tac xac dinh|A|A
+86|Phep duyet cay BST nao cho thu tu cac khoa theo chieu tang dan?|In-order (LNR)|Pre-order (NLR)|Post-order (LRN)|Level-order|A|A
+87|Do phuc tap thoi gian trung binh cua thuat toan Quick Sort la bao nhieu?|O(n log n)|O(n^2)|O(n)|O(log n)|A|B
+88|Hien tuong hai khoa khac nhau qua ham bam cho cung mot chi so goi la gi?|Xung dot (Collision)|Trang bo nho (Overflow)|Loi chi muc (Index Error)|Phan manh bo nho|A|B
+89|Thuat toan duyet do thi theo chieu rong (BFS) su dung cau truc du lieu nao?|Queue (Hang doi)|Stack (Ngan xep)|BST|Priority Queue|A|B
+90|Thuat toan Dijkstra duoc dung de tim duong di ngan nhat tren do thi nao?|Do thi co trong so khong am|Do thi co chu trinh am|Do thi cay khong co trong so|Chi ap dung cho do thi vo huong day du|A|B
+SV112|Pham Thi|Thu|Nu|pass123|1
+MMT
+5.0
+10
+201|Mo hinh tham chieu OSI gom co bao nhieu tang tat ca?|7 tang|4 tang|5 tang|6 tang|A|A
+202|Dac diem khac biet co ban giua giao thuc TCP va UDP la gi?|TCP co thiet lap ket noi bat tay va tin cay con UDP huong khong ket noi|UDP co bat tay 3 buoc con TCP truyen khong can xac nhan|TCP chi hoat dong tren mang khong day con UDP dung tren cap mang|UDP kiem soat luu luong tot hon TCP|A|A
+203|Chieu dai dia chi IPv4 tieu chuan la bao nhieu bit?|32 bit|64 bit|128 bit|16 bit|A|A
+204|Chuc nang chinh cua he thong ten mien DNS la gi?|Chuyen doi ten mien de nho thanh dia chi IP va nguoc lai|Ma hoa du lieu truyen qua trinh duyet Web|Cap phat dia chi IP tu dong cho thiet bi|Quan ly luu luong bang thong mang|A|A
+205|Cong (Port) mac dinh cua giao thuc HTTPS la bao nhieu?|443|80|21|22|A|A
+206|Thiet bi Router mang hoat dong chu yeu o tang nao trong mo hinh OSI?|Tang Mang (Network Layer)|Tang Lien ket du lieu (Data Link Layer)|Tang Giao van (Transport Layer)|Tang Vat ly (Physical Layer)|A|B
+207|Dia chi MAC la dia chi vat ly thuoc tang nao trong mo hinh OSI?|Tang Lien ket du lieu (Data Link Layer)|Tang Mang (Network Layer)|Tang Vat ly (Physical Layer)|Tang Ung dung (Application Layer)|A|B
+208|Giao thuc nao duoc dung de tu dong cap phat dia chi IP cho may khach?|DHCP|DNS|ARP|SNMP|A|B
+209|Lenh Ping su dung ban tin cua giao thuc mang nao de kiem tra thong mang?|ICMP|IGMP|TCP|UDP|A|B
+210|Cong nghe NAT (Network Address Translation) co tac dung chinh la gi?|Anh xa dia chi IP Private noi bo thanh dia chi IP Public tren Internet|Dinh tuyen goi tin giua cac vung mang ao VLAN|Tang toc do duyet web bang cach luu cache|Loc cac goi tin doc hai bang chu ky so|A|B
+SV113|Vu Van|Thong|Nam|pass123|0
+SV114|Hoang Thi|Thuy|Nu|pass123|0
+SV115|Ngo Van|Tien|Nam|pass123|0
+SV116|Duong Thi|Trinh|Nu|pass123|0
+SV117|Trinh Van|Truong|Nam|pass123|0
 D23CQKT01-N
 Lop Ky thuat dien tu 1 K23
-2
-SV028|Ta Van|Vinh|Nam|pass123|0
-SV029|Ly Thi|Xuan|Nu|pass123|0
+9
+SV118|Phan Hoang|Tu|Nam|pass123|1
+CSDL
+10.0
+10
+61|Khoa chinh (Primary Key) trong bang CSDL dung de lam gi?|Dinh danh duy nhat cho moi ban ghi trong bang|Lien ket toi bang khac ma khong can rang buoc|Luu tru du lieu trung lap de tang toc truy van|Cho phep gia tri NULL de tiet kiem bo nho|A|A
+62|Thao tac LEFT JOIN trong SQL co y nghia gi?|Lay tat ca ban ghi bang trai va ban ghi thoa man o bang phai|Chi lay cac ban ghi co mat o ca hai bang|Lay tat ca ban ghi bang phai va ban ghi thoa man o bang trai|Loai bo tat ca ban ghi trung lap giua hai bang|A|A
+63|Menh de GROUP BY trong SQL thuong duoc ket hop voi cac ham nao?|Cac ham tong hop nhu COUNT, SUM, AVG, MAX, MIN|Cac ham xu ly chuoi nhu SUBSTRING, TRIM|Cac toan tu logic AND, OR, NOT|Lenh tao bang CREATE TABLE|A|A
+64|Dieu kien loc du lieu ap dung tren ket qua nhom cua GROUP BY dung tu khoa nao?|HAVING|WHERE|ORDER BY|LIMIT|A|A
+65|Bon dac tinh ACID cua mot giao dich trong CSDL quan he la gi?|Atomicity, Consistency, Isolation, Durability|Access, Control, Integrity, Data|Action, State, Identity, Dependency|Accuracy, Concurrency, Indexing, Distribution|A|A
+66|Dang chuan hoa 1NF yeu cau cac thuoc tinh trong bang phai thoa man dieu kien nao?|Tat ca gia tri cua thuoc tinh phai mang tinh nguyen to (Atomic)|Khong duoc ton tai phu thuoc ham bac cau|Moi thuoc tinh khong khoa phai phu thuoc day du vao khoa chinh|Bang phai co it nhat hai khoa ngoai|A|A
+67|Index (Chi muc) trong CSDL quan he co tac dung chinh la gi?|Tang toc do tim kiem va truy van du lieu|Tiet kiem dung luong o dia|Tang toc do thuc thi lenh INSERT va UPDATE|Tu dong sua loi du lieu sai dinh dang|A|A
+68|Khoa ngoai (Foreign Key) dung de dam bao rang buoc toan ven nao?|Toan ven tham chieu (Referential Integrity)|Toan ven thuc the (Entity Integrity)|Toan ven mien gia tri (Domain Integrity)|Toan ven ngu nghia nguoi dung|A|A
+69|Cau lenh SQL nao duoc dung de thu hoi quyen da cap cho nguoi dung?|REVOKE|GRANT|DROP|ALTER|A|A
+70|He quan tri CSDL NoSQL MongoDB luu tru du lieu duoi dang nao?|Tai lieu JSON/BSON linh hoat|Bang voi hang va cot co dinh|Cay nhi phan can bang|Do thi voi canh va dinh|A|A
+SV119|Dinh Thi|Van|Nu|pass123|1
+CSDL
+8.0
+10
+61|Khoa chinh (Primary Key) trong bang CSDL dung de lam gi?|Dinh danh duy nhat cho moi ban ghi trong bang|Lien ket toi bang khac ma khong can rang buoc|Luu tru du lieu trung lap de tang toc truy van|Cho phep gia tri NULL de tiet kiem bo nho|A|A
+62|Thao tac LEFT JOIN trong SQL co y nghia gi?|Lay tat ca ban ghi bang trai va ban ghi thoa man o bang phai|Chi lay cac ban ghi co mat o ca hai bang|Lay tat ca ban ghi bang phai va ban ghi thoa man o bang trai|Loai bo tat ca ban ghi trung lap giua hai bang|A|A
+63|Menh de GROUP BY trong SQL thuong duoc ket hop voi cac ham nao?|Cac ham tong hop nhu COUNT, SUM, AVG, MAX, MIN|Cac ham xu ly chuoi nhu SUBSTRING, TRIM|Cac toan tu logic AND, OR, NOT|Lenh tao bang CREATE TABLE|A|A
+64|Dieu kien loc du lieu ap dung tren ket qua nhom cua GROUP BY dung tu khoa nao?|HAVING|WHERE|ORDER BY|LIMIT|A|A
+65|Bon dac tinh ACID cua mot giao dich trong CSDL quan he la gi?|Atomicity, Consistency, Isolation, Durability|Access, Control, Integrity, Data|Action, State, Identity, Dependency|Accuracy, Concurrency, Indexing, Distribution|A|A
+66|Dang chuan hoa 1NF yeu cau cac thuoc tinh trong bang phai thoa man dieu kien nao?|Tat ca gia tri cua thuoc tinh phai mang tinh nguyen to (Atomic)|Khong duoc ton tai phu thuoc ham bac cau|Moi thuoc tinh khong khoa phai phu thuoc day du vao khoa chinh|Bang phai co it nhat hai khoa ngoai|A|A
+67|Index (Chi muc) trong CSDL quan he co tac dung chinh la gi?|Tang toc do tim kiem va truy van du lieu|Tiet kiem dung luong o dia|Tang toc do thuc thi lenh INSERT va UPDATE|Tu dong sua loi du lieu sai dinh dang|A|A
+68|Khoa ngoai (Foreign Key) dung de dam bao rang buoc toan ven nao?|Toan ven tham chieu (Referential Integrity)|Toan ven thuc the (Entity Integrity)|Toan ven mien gia tri (Domain Integrity)|Toan ven ngu nghia nguoi dung|A|A
+69|Cau lenh SQL nao duoc dung de thu hoi quyen da cap cho nguoi dung?|REVOKE|GRANT|DROP|ALTER|A|B
+70|He quan tri CSDL NoSQL MongoDB luu tru du lieu duoi dang nao?|Tai lieu JSON/BSON linh hoat|Bang voi hang va cot co dinh|Cay nhi phan can bang|Do thi voi canh va dinh|A|B
+SV120|Mai Van|Vinh|Nam|pass123|1
+CSDL
+7.0
+10
+61|Khoa chinh (Primary Key) trong bang CSDL dung de lam gi?|Dinh danh duy nhat cho moi ban ghi trong bang|Lien ket toi bang khac ma khong can rang buoc|Luu tru du lieu trung lap de tang toc truy van|Cho phep gia tri NULL de tiet kiem bo nho|A|A
+62|Thao tac LEFT JOIN trong SQL co y nghia gi?|Lay tat ca ban ghi bang trai va ban ghi thoa man o bang phai|Chi lay cac ban ghi co mat o ca hai bang|Lay tat ca ban ghi bang phai va ban ghi thoa man o bang trai|Loai bo tat ca ban ghi trung lap giua hai bang|A|A
+63|Menh de GROUP BY trong SQL thuong duoc ket hop voi cac ham nao?|Cac ham tong hop nhu COUNT, SUM, AVG, MAX, MIN|Cac ham xu ly chuoi nhu SUBSTRING, TRIM|Cac toan tu logic AND, OR, NOT|Lenh tao bang CREATE TABLE|A|A
+64|Dieu kien loc du lieu ap dung tren ket qua nhom cua GROUP BY dung tu khoa nao?|HAVING|WHERE|ORDER BY|LIMIT|A|A
+65|Bon dac tinh ACID cua mot giao dich trong CSDL quan he la gi?|Atomicity, Consistency, Isolation, Durability|Access, Control, Integrity, Data|Action, State, Identity, Dependency|Accuracy, Concurrency, Indexing, Distribution|A|A
+66|Dang chuan hoa 1NF yeu cau cac thuoc tinh trong bang phai thoa man dieu kien nao?|Tat ca gia tri cua thuoc tinh phai mang tinh nguyen to (Atomic)|Khong duoc ton tai phu thuoc ham bac cau|Moi thuoc tinh khong khoa phai phu thuoc day du vao khoa chinh|Bang phai co it nhat hai khoa ngoai|A|A
+67|Index (Chi muc) trong CSDL quan he co tac dung chinh la gi?|Tang toc do tim kiem va truy van du lieu|Tiet kiem dung luong o dia|Tang toc do thuc thi lenh INSERT va UPDATE|Tu dong sua loi du lieu sai dinh dang|A|A
+68|Khoa ngoai (Foreign Key) dung de dam bao rang buoc toan ven nao?|Toan ven tham chieu (Referential Integrity)|Toan ven thuc the (Entity Integrity)|Toan ven mien gia tri (Domain Integrity)|Toan ven ngu nghia nguoi dung|A|B
+69|Cau lenh SQL nao duoc dung de thu hoi quyen da cap cho nguoi dung?|REVOKE|GRANT|DROP|ALTER|A|B
+70|He quan tri CSDL NoSQL MongoDB luu tru du lieu duoi dang nao?|Tai lieu JSON/BSON linh hoat|Bang voi hang va cot co dinh|Cay nhi phan can bang|Do thi voi canh va dinh|A|B
+SV121|Cao Thi|Xuyen|Nu|pass123|0
+SV122|Luu Van|Yen|Nam|pass123|0
+SV123|Ta Minh|Chien|Nam|pass123|0
+SV124|Do Thi|Dao|Nu|pass123|0
+SV125|Bui Van|Giang|Nam|pass123|0
+SV126|Dang Thi|Hong|Nu|pass123|0
 D23CQDPT01-N
 Lop Da phuong tien 1 K23
-2
-SV030|Chu Van|Yen|Nam|pass123|0
-SV031|Doan Thi|Anh|Nu|pass123|0
+9
+SV127|Nguyen Huu|Kien|Nam|pass123|1
+ATTT
+10.0
+10
+21|Ba yeu to cot loi trong tam giac bao mat thong tin CIA la gi?|Confidentiality, Integrity, Availability|Control, Identification, Authentication|Cipher, Integrity, Authorization|Cryptography, Internet, Access|A|A
+22|Thuat toan ma hoa nao sau day la thuat toan ma hoa doi xung?|AES (Advanced Encryption Standard)|RSA|ECC (Elliptic Curve Cryptography)|Diffie-Hellman|A|A
+23|Thuat toan RSA dua tren do kho cua bai toan toan hoc nao sau day?|Phan tich so nguyen lon thanh thua so nguyen to|Tinh logarit roi rac tren truong huu han|Tim duong di Euler tren do thi|Giai he phuong trinh tuyen tinh bac nhat|A|A
+24|Ham bam mat ma nhu SHA-256 co dac diem noi bat nao?|Ham mot chieu khong the suy nguoc lai thong diep goc|Co the giai ma bang khoa bi mat|Dau ra co chieu dai thay doi theo dau vao|Hai thong diep khac nhau de dang tao ra cung ma bam|A|A
+25|Hinh thuc tan cong nao chen ma doc JavaScript vao website de thuc thi tren trinh duyet?|Cross-Site Scripting (XSS)|SQL Injection|Buffer Overflow|Denial of Service (DoS)|A|A
+26|Nguyen nhan chinh dan toi lo hong SQL Injection la gi?|Khong kiem tra va loc du lieu dau vao truoc khi ghep vao truy van|He dieu hanh chua cap nhat ban va loi|He thong mang khong dung tuong lua|Mat khau quan tri qua ngan|A|A
+27|Giao thuc mang bao mat SSL/TLS hoat dong giua hai tang nao cua mo hinh OSI?|Tang Ung dung (Application) va Tang Giao van (Transport)|Tang Mang (Network) va Tang Lien ket (Data Link)|Tang Vat ly va Tang Mang|Tang Trinh dien va Tang Ung dung|A|A
+28|Chung chi so theo chuan X.509 duoc xac thuc va cap phat boi to chuc nao?|Certificate Authority (CA)|Internet Engineering Task Force (IETF)|W3C|ISO|A|A
+29|Hinh thuc tan cong gui luong lon yeu cau lam qua tai he thong goi la gi?|Distributed Denial of Service (DDoS)|Man-in-the-Middle (MitM)|Phishing|Ransomware|A|A
+30|Co che xac thuc da yeu to (MFA) yeu cau toi thieu bao nhieu yeu to xac minh?|Tu hai yeu to xac minh khac nhau tro len|Dung 1 mat khau dai|Chi can ma PIN|Chi can sinh trac hoc|A|A
+SV128|Tran Thi|Loan|Nu|pass123|1
+ATTT
+8.0
+10
+21|Ba yeu to cot loi trong tam giac bao mat thong tin CIA la gi?|Confidentiality, Integrity, Availability|Control, Identification, Authentication|Cipher, Integrity, Authorization|Cryptography, Internet, Access|A|A
+22|Thuat toan ma hoa nao sau day la thuat toan ma hoa doi xung?|AES (Advanced Encryption Standard)|RSA|ECC (Elliptic Curve Cryptography)|Diffie-Hellman|A|A
+23|Thuat toan RSA dua tren do kho cua bai toan toan hoc nao sau day?|Phan tich so nguyen lon thanh thua so nguyen to|Tinh logarit roi rac tren truong huu han|Tim duong di Euler tren do thi|Giai he phuong trinh tuyen tinh bac nhat|A|A
+24|Ham bam mat ma nhu SHA-256 co dac diem noi bat nao?|Ham mot chieu khong the suy nguoc lai thong diep goc|Co the giai ma bang khoa bi mat|Dau ra co chieu dai thay doi theo dau vao|Hai thong diep khac nhau de dang tao ra cung ma bam|A|A
+25|Hinh thuc tan cong nao chen ma doc JavaScript vao website de thuc thi tren trinh duyet?|Cross-Site Scripting (XSS)|SQL Injection|Buffer Overflow|Denial of Service (DoS)|A|A
+26|Nguyen nhan chinh dan toi lo hong SQL Injection la gi?|Khong kiem tra va loc du lieu dau vao truoc khi ghep vao truy van|He dieu hanh chua cap nhat ban va loi|He thong mang khong dung tuong lua|Mat khau quan tri qua ngan|A|A
+27|Giao thuc mang bao mat SSL/TLS hoat dong giua hai tang nao cua mo hinh OSI?|Tang Ung dung (Application) va Tang Giao van (Transport)|Tang Mang (Network) va Tang Lien ket (Data Link)|Tang Vat ly va Tang Mang|Tang Trinh dien va Tang Ung dung|A|A
+28|Chung chi so theo chuan X.509 duoc xac thuc va cap phat boi to chuc nao?|Certificate Authority (CA)|Internet Engineering Task Force (IETF)|W3C|ISO|A|A
+29|Hinh thuc tan cong gui luong lon yeu cau lam qua tai he thong goi la gi?|Distributed Denial of Service (DDoS)|Man-in-the-Middle (MitM)|Phishing|Ransomware|A|B
+30|Co che xac thuc da yeu to (MFA) yeu cau toi thieu bao nhieu yeu to xac minh?|Tu hai yeu to xac minh khac nhau tro len|Dung 1 mat khau dai|Chi can ma PIN|Chi can sinh trac hoc|A|B
+SV129|Le Van|Minh|Nam|pass123|1
+ATTT
+6.0
+10
+21|Ba yeu to cot loi trong tam giac bao mat thong tin CIA la gi?|Confidentiality, Integrity, Availability|Control, Identification, Authentication|Cipher, Integrity, Authorization|Cryptography, Internet, Access|A|A
+22|Thuat toan ma hoa nao sau day la thuat toan ma hoa doi xung?|AES (Advanced Encryption Standard)|RSA|ECC (Elliptic Curve Cryptography)|Diffie-Hellman|A|A
+23|Thuat toan RSA dua tren do kho cua bai toan toan hoc nao sau day?|Phan tich so nguyen lon thanh thua so nguyen to|Tinh logarit roi rac tren truong huu han|Tim duong di Euler tren do thi|Giai he phuong trinh tuyen tinh bac nhat|A|A
+24|Ham bam mat ma nhu SHA-256 co dac diem noi bat nao?|Ham mot chieu khong the suy nguoc lai thong diep goc|Co the giai ma bang khoa bi mat|Dau ra co chieu dai thay doi theo dau vao|Hai thong diep khac nhau de dang tao ra cung ma bam|A|A
+25|Hinh thuc tan cong nao chen ma doc JavaScript vao website de thuc thi tren trinh duyet?|Cross-Site Scripting (XSS)|SQL Injection|Buffer Overflow|Denial of Service (DoS)|A|A
+26|Nguyen nhan chinh dan toi lo hong SQL Injection la gi?|Khong kiem tra va loc du lieu dau vao truoc khi ghep vao truy van|He dieu hanh chua cap nhat ban va loi|He thong mang khong dung tuong lua|Mat khau quan tri qua ngan|A|A
+27|Giao thuc mang bao mat SSL/TLS hoat dong giua hai tang nao cua mo hinh OSI?|Tang Ung dung (Application) va Tang Giao van (Transport)|Tang Mang (Network) va Tang Lien ket (Data Link)|Tang Vat ly va Tang Mang|Tang Trinh dien va Tang Ung dung|A|B
+28|Chung chi so theo chuan X.509 duoc xac thuc va cap phat boi to chuc nao?|Certificate Authority (CA)|Internet Engineering Task Force (IETF)|W3C|ISO|A|B
+29|Hinh thuc tan cong gui luong lon yeu cau lam qua tai he thong goi la gi?|Distributed Denial of Service (DDoS)|Man-in-the-Middle (MitM)|Phishing|Ransomware|A|B
+30|Co che xac thuc da yeu to (MFA) yeu cau toi thieu bao nhieu yeu to xac minh?|Tu hai yeu to xac minh khac nhau tro len|Dung 1 mat khau dai|Chi can ma PIN|Chi can sinh trac hoc|A|B
+SV130|Pham Thi|Nu|Nu|pass123|1
+MMT
+5.0
+10
+201|Mo hinh tham chieu OSI gom co bao nhieu tang tat ca?|7 tang|4 tang|5 tang|6 tang|A|A
+202|Dac diem khac biet co ban giua giao thuc TCP va UDP la gi?|TCP co thiet lap ket noi bat tay va tin cay con UDP huong khong ket noi|UDP co bat tay 3 buoc con TCP truyen khong can xac nhan|TCP chi hoat dong tren mang khong day con UDP dung tren cap mang|UDP kiem soat luu luong tot hon TCP|A|A
+203|Chieu dai dia chi IPv4 tieu chuan la bao nhieu bit?|32 bit|64 bit|128 bit|16 bit|A|A
+204|Chuc nang chinh cua he thong ten mien DNS la gi?|Chuyen doi ten mien de nho thanh dia chi IP va nguoc lai|Ma hoa du lieu truyen qua trinh duyet Web|Cap phat dia chi IP tu dong cho thiet bi|Quan ly luu luong bang thong mang|A|A
+205|Cong (Port) mac dinh cua giao thuc HTTPS la bao nhieu?|443|80|21|22|A|A
+206|Thiet bi Router mang hoat dong chu yeu o tang nao trong mo hinh OSI?|Tang Mang (Network Layer)|Tang Lien ket du lieu (Data Link Layer)|Tang Giao van (Transport Layer)|Tang Vat ly (Physical Layer)|A|B
+207|Dia chi MAC la dia chi vat ly thuoc tang nao trong mo hinh OSI?|Tang Lien ket du lieu (Data Link Layer)|Tang Mang (Network Layer)|Tang Vat ly (Physical Layer)|Tang Ung dung (Application Layer)|A|B
+208|Giao thuc nao duoc dung de tu dong cap phat dia chi IP cho may khach?|DHCP|DNS|ARP|SNMP|A|B
+209|Lenh Ping su dung ban tin cua giao thuc mang nao de kiem tra thong mang?|ICMP|IGMP|TCP|UDP|A|B
+210|Cong nghe NAT (Network Address Translation) co tac dung chinh la gi?|Anh xa dia chi IP Private noi bo thanh dia chi IP Public tren Internet|Dinh tuyen goi tin giua cac vung mang ao VLAN|Tang toc do duyet web bang cach luu cache|Loc cac goi tin doc hai bang chu ky so|A|B
+SV131|Vu Hoang|Phuc|Nam|pass123|0
+SV132|Hoang Thi|Quyen|Nu|pass123|0
+SV133|Ngo Van|Son|Nam|pass123|0
+SV134|Duong Thi|Thanh|Nu|pass123|0
+SV135|Trinh Van|Thinh|Nam|pass123|0
