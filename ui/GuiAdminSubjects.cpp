@@ -56,7 +56,7 @@ void drawAdminTabSubjects(GuiState& g) {
 
             DrawTxt(TextFormat("%d", i + 1), contentRec.x + 45, (float)rowY + 11, 15, COLOR_TEXT_DARK);
             DrawTxt(view[i]->id, contentRec.x + 100, (float)rowY + 11, 15, COLOR_PRIMARY, true);
-            DrawTxt(view[i]->name, contentRec.x + 350, (float)rowY + 11, 15, COLOR_TEXT_DARK);
+            DrawTxtClipped(view[i]->name, contentRec.x + 350, (float)rowY + 11, 15, COLOR_TEXT_DARK, false, 300.0f);
 
             int qCount = countQuestions(view[i]->questionList);
             DrawTxt(TextFormat("%d cau", qCount), contentRec.x + 670, (float)rowY + 11, 15, COLOR_TEXT_MUTED);

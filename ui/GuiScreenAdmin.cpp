@@ -3,8 +3,6 @@
 
 #include "../business/FileStorage.h"
 
-#include <cstdio>
-
 void drawAdminDashboard(GuiState& g) {
     DrawRectangle(0, 0, GUI_WIDTH, 65, COLOR_SIDEBAR);
     DrawTxt("BANG DIEU KHIEN GIANG VIEN", 30, 20, 22, WHITE, true);
@@ -18,6 +16,8 @@ void drawAdminDashboard(GuiState& g) {
         g.currentScreen = SCREEN_LOGIN;
         g.currentRole = LOGIN_FAILED;
         g.loggedStudent = nullptr;
+        g.loginUser[0] = '\0';
+        g.loginPass[0] = '\0';
     }
 
     DrawRectangle(0, 65, 240, GUI_HEIGHT - 65, COLOR_SIDEBAR);

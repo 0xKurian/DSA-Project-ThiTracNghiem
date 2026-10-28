@@ -11,7 +11,6 @@
 
 #include <algorithm>
 #include <cstdio>
-#include <cstring>
 
 static const int PREVIEW_PER_PAGE = 2;
 
@@ -21,13 +20,12 @@ struct ConfigRow {
 };
 
 static int collectConfigRows(GuiState& g, Arr<ConfigRow>& out) {
-    size_t clsLen = strlen(g.configFilterClass);
     for (int i = 0; i < g.classCount; ++i) {
         if (g.classes[i] == nullptr) continue;
-        if (clsLen > 0 && strncmp(g.classes[i]->id, g.configFilterClass, clsLen) != 0) continue;
+        if (g.configFilterClass[0] != '\0' && !GuiMatchText(g.classes[i]->id, g.configFilterClass)) continue;
         for (ExamConfig* cfg = g.classes[i]->configList; cfg != nullptr; cfg = cfg->next) {
             if (g.configFilterSubject[0] != '\0'
-                && strncmp(cfg->subjectId, g.configFilterSubject, strlen(g.configFilterSubject)) != 0) continue;
+                && !GuiMatchText(cfg->subjectId, g.configFilterSubject)) continue;
             ConfigRow row { g.classes[i], cfg };
             out.push_back(row);
         }

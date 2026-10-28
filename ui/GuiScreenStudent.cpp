@@ -5,7 +5,6 @@
 #include "../core/SubjectBST.h"
 
 #include <algorithm>
-#include <cstdio>
 
 void drawStudentHome(GuiState& g) {
     DrawRectangle(0, 0, GUI_WIDTH, 65, COLOR_SIDEBAR);
@@ -20,6 +19,8 @@ void drawStudentHome(GuiState& g) {
         g.currentScreen = SCREEN_LOGIN;
         g.currentRole = LOGIN_FAILED;
         g.loggedStudent = nullptr;
+        g.loginUser[0] = '\0';
+        g.loginPass[0] = '\0';
         return;
     }
 
@@ -117,29 +118,49 @@ void drawStudentTabScores(GuiState& g) {
     DrawTxt("DIEM THI (Thang 10)", contentRec.x + 700, (float)tableY + 11, 15, WHITE, true);
     DrawTxt("THAO TAC", contentRec.x + 880, (float)tableY + 11, 15, WHITE, true);
 
+    int scoreTotal = 0;
+    for (Score* s = g.loggedStudent->scoreList; s != nullptr; s = s->next) scoreTotal++;
+    int totalScorePages = (scoreTotal == 0) ? 1 : (scoreTotal + SCORES_PER_PAGE - 1) / SCORES_PER_PAGE;
+    if (g.studentScorePage >= totalScorePages) g.studentScorePage = totalScorePages - 1;
+    if (g.studentScorePage < 0) g.studentScorePage = 0;
+    int startScore = g.studentScorePage * SCORES_PER_PAGE;
+    int endScore = std::min(startScore + SCORES_PER_PAGE, scoreTotal);
+
     Score* sc = g.loggedStudent->scoreList;
     int idx = 0;
     while (sc != nullptr) {
-        int rowY = tableY + 45 + idx * 45;
-        Color rowBg = (idx % 2 == 0) ? COLOR_CARD : COLOR_ROW_ALT;
-        DrawRectangle((int)contentRec.x + 30, rowY, (int)contentRec.width - 60, 42, rowBg);
-        DrawRectangleLines((int)contentRec.x + 30, rowY, (int)contentRec.width - 60, 42, COLOR_BORDER);
+        if (idx >= startScore && idx < endScore) {
+            int rowY = tableY + 45 + (idx - startScore) * 45;
+            Color rowBg = (idx % 2 == 0) ? COLOR_CARD : COLOR_ROW_ALT;
+            DrawRectangle((int)contentRec.x + 30, rowY, (int)contentRec.width - 60, 42, rowBg);
+            DrawRectangleLines((int)contentRec.x + 30, rowY, (int)contentRec.width - 60, 42, COLOR_BORDER);
 
-        DrawTxt(sc->subjectId, contentRec.x + 50, (float)rowY + 11, 15, COLOR_PRIMARY, true);
-        Subject* sNode = findSubject(g.root, sc->subjectId);
-        DrawTxt(sNode ? sNode->name : "Mon hoc", contentRec.x + 250, (float)rowY + 11, 15, COLOR_TEXT_DARK);
-        DrawTxt(TextFormat("%.2f diem", sc->score), contentRec.x + 700, (float)rowY + 11, 17, COLOR_SUCCESS, true);
+            DrawTxt(sc->subjectId, contentRec.x + 50, (float)rowY + 11, 15, COLOR_PRIMARY, true);
+            Subject* sNode = findSubject(g.root, sc->subjectId);
+            DrawTxt(sNode ? sNode->name : "Mon hoc", contentRec.x + 250, (float)rowY + 11, 15, COLOR_TEXT_DARK);
+            DrawTxt(TextFormat("%.2f diem", sc->score), contentRec.x + 700, (float)rowY + 11, 17, COLOR_SUCCESS, true);
 
-        if (GuiBtnOutline({ contentRec.x + 880, (float)rowY + 6, 65, 30 }, "Xem", COLOR_PRIMARY, COLOR_PRIMARY, 14, false, sc->detailList == nullptr)) {
-            g.studentReviewScoreIdx = idx;
-            g.reviewQPage = 0;
+            if (GuiBtnOutline({ contentRec.x + 880, (float)rowY + 6, 65, 30 }, "Xem", COLOR_PRIMARY, COLOR_PRIMARY, 14, false, sc->detailList == nullptr)) {
+                g.studentReviewScoreIdx = idx;
+                g.reviewQPage = 0;
+            }
         }
 
         sc = sc->next;
         idx++;
     }
 
-    if (idx == 0) {
+    if (scoreTotal == 0) {
         DrawTxt("Ban chua co diem mon nao trong he thong. Hay vao tab 'Vao thi' de bat dau.", contentRec.x + 50, (float)tableY + 60, 16, COLOR_TEXT_MUTED);
+    } else {
+        int pageBarY = (int)contentRec.y + (int)contentRec.height - 45;
+        DrawTxt(TextFormat("Trang %d / %d (Tong: %d bai thi)", g.studentScorePage + 1, totalScorePages, scoreTotal),
+                contentRec.x + 50, (float)pageBarY + 8, 15, COLOR_TEXT_MUTED, true);
+        if (GuiBtnOutline({ contentRec.x + contentRec.width - 240, (float)pageBarY, 105, 32 }, "< Trang truoc", COLOR_PRIMARY, COLOR_PRIMARY, 13, false, g.studentScorePage == 0)) {
+            if (g.studentScorePage > 0) g.studentScorePage--;
+        }
+        if (GuiBtnOutline({ contentRec.x + contentRec.width - 125, (float)pageBarY, 105, 32 }, "Trang sau >", COLOR_PRIMARY, COLOR_PRIMARY, 13, false, g.studentScorePage >= totalScorePages - 1)) {
+            if (g.studentScorePage < totalScorePages - 1) g.studentScorePage++;
+        }
     }
 }

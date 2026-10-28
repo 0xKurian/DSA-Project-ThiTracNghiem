@@ -171,9 +171,14 @@ static void drawStudentAddEditModal(GuiState& g) {
     DrawTxt((g.currentModal == MODAL_ADD_STUDENT) ? "THEM SINH VIEN MOI" : "HIEU CHINH SINH VIEN", bigModal.x + 30, bigModal.y + 25, 20, COLOR_TEXT_DARK, true);
 
     DrawTxt("Ma sinh vien (MASV):", bigModal.x + 30, bigModal.y + 65, 14, COLOR_TEXT_DARK);
-    bool actId = (g.activeFormBox == 1);
-    GuiTextBoxInput({ bigModal.x + 30, bigModal.y + 85, 480, 34 }, g.formId, sizeof(g.formId), actId, "VD: SV004");
-    if (actId) g.activeFormBox = 1;
+    if (g.currentModal == MODAL_ADD_STUDENT) {
+        bool actId = (g.activeFormBox == 1);
+        GuiTextBoxInput({ bigModal.x + 30, bigModal.y + 85, 480, 34 }, g.formId, sizeof(g.formId), actId, "VD: SV004");
+        if (actId) g.activeFormBox = 1;
+    } else {
+        DrawRectangleRounded({ bigModal.x + 30, bigModal.y + 85, 480, 34 }, 0.15f, 4, COLOR_ROW_ALT);
+        DrawTxt(g.formId, bigModal.x + 42, bigModal.y + 94, 16, COLOR_TEXT_MUTED, true);
+    }
 
     DrawTxt("Ho dem:", bigModal.x + 30, bigModal.y + 130, 14, COLOR_TEXT_DARK);
     bool actHo = (g.activeFormBox == 2);
@@ -185,10 +190,14 @@ static void drawStudentAddEditModal(GuiState& g) {
     GuiTextBoxInput({ bigModal.x + 280, bigModal.y + 150, 230, 34 }, g.formTen, sizeof(g.formTen), actTen, "VD: Dung");
     if (actTen) g.activeFormBox = 3;
 
-    DrawTxt("Phai (Nam / Nu):", bigModal.x + 30, bigModal.y + 195, 14, COLOR_TEXT_DARK);
-    bool actGen = (g.activeFormBox == 4);
-    GuiTextBoxInput({ bigModal.x + 30, bigModal.y + 215, 230, 34 }, g.formGender, sizeof(g.formGender), actGen, "Nam");
-    if (actGen) g.activeFormBox = 4;
+    DrawTxt("Gioi tinh:", bigModal.x + 30, bigModal.y + 195, 14, COLOR_TEXT_DARK);
+    bool isNam = (strcmp(g.formGender, "Nam") == 0);
+    if (GuiBtn({ bigModal.x + 30, bigModal.y + 215, 110, 34 }, "Nam", isNam ? COLOR_PRIMARY : COLOR_SIDEBAR, COLOR_PRIMARY_HOVER, WHITE, 15, isNam)) {
+        snprintf(g.formGender, sizeof(g.formGender), "Nam");
+    }
+    if (GuiBtn({ bigModal.x + 150, bigModal.y + 215, 110, 34 }, "Nu", isNam ? COLOR_SIDEBAR : COLOR_PRIMARY, COLOR_PRIMARY_HOVER, WHITE, 15, !isNam)) {
+        snprintf(g.formGender, sizeof(g.formGender), "Nu");
+    }
 
     DrawTxt("Mat khau:", bigModal.x + 280, bigModal.y + 195, 14, COLOR_TEXT_DARK);
     bool actP = (g.activeFormBox == 5);
@@ -203,7 +212,7 @@ static void drawStudentAddEditModal(GuiState& g) {
     if (IsKeyPressed(KEY_ENTER)) submitStd = true;
 
     if (submitStd) {
-        if (g.selectedClassIdx < g.classCount && g.classes[g.selectedClassIdx] != nullptr) {
+        if (g.selectedClassIdx >= 0 && g.selectedClassIdx < g.classCount && g.classes[g.selectedClassIdx] != nullptr) {
             BusinessResult res = SUCCESS;
             if (g.currentModal == MODAL_ADD_STUDENT) {
                 res = addStudentWorkflow(g.classes, g.classCount, g.classes[g.selectedClassIdx]->id, g.formId, g.formHo, g.formTen, g.formGender, g.formPass);
@@ -350,7 +359,7 @@ static void drawQuestionDeleteModal(GuiState& g) {
 }
 
 static void drawCancelExamSessionModal(GuiState& g) {
-    Rectangle rec = { (float)(GUI_WIDTH / 2 - 250), (float)(GUI_HEIGHT / 2 - 180), 500, 360 };
+    Rectangle rec = modalRec();
     DrawCardPanel(rec);
     DrawTxt("HUY PHIEN THI DO DANG", rec.x + 30, rec.y + 25, 20, COLOR_DANGER, true);
 
@@ -393,8 +402,12 @@ void renderModalDialogs(GuiState& g) {
         if (g.currentModal == MODAL_ADD_SUBJECT || g.currentModal == MODAL_EDIT_SUBJECT || g.currentModal == MODAL_ADD_CLASS) {
             g.activeFormBox = (g.activeFormBox == 1) ? 2 : 1;
         } else if (g.currentModal == MODAL_ADD_STUDENT || g.currentModal == MODAL_EDIT_STUDENT) {
-            g.activeFormBox++;
-            if (g.activeFormBox > 5) g.activeFormBox = (g.currentModal == MODAL_ADD_STUDENT) ? 1 : 2;
+            if (g.activeFormBox == 1) g.activeFormBox = 2;
+            else if (g.activeFormBox == 2) g.activeFormBox = 3;
+            else if (g.activeFormBox == 3) g.activeFormBox = 5;
+            else g.activeFormBox = (g.currentModal == MODAL_ADD_STUDENT) ? 1 : 2;
+        } else if (g.currentModal == MODAL_CLASS_EXAM_CONFIG) {
+            g.activeFormBox = (g.activeFormBox == 3) ? 4 : 3;
         } else if (g.currentModal == MODAL_ADD_QUESTION || g.currentModal == MODAL_EDIT_QUESTION) {
             g.activeFormBox++;
             if (g.activeFormBox > 5) g.activeFormBox = 1;

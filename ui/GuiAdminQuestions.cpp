@@ -58,15 +58,20 @@ void drawAdminTabQuestions(GuiState& g) {
                 snprintf(idLabel, sizeof(idLabel), "ID %d:", qList[i]->id);
                 DrawTxt(idLabel, qCard.x + 15, qCard.y + 12, 16, COLOR_PRIMARY, true);
                 float qx = std::max(qCard.x + 75.0f, qCard.x + 15 + MeasureTxt(idLabel, 16, true) + 10);
-                DrawTxtWrapped(qList[i]->content, qx, qCard.y + 12, qCard.x + qCard.width - 85 - (qx - qCard.x), 16, COLOR_TEXT_DARK, true);
+                float qW = qCard.width - (qx - qCard.x) - 25.0f;
+                BeginScissorMode((int)qx, (int)qCard.y + 10, (int)qW, 42);
+                float qH = DrawTxtWrapped(qList[i]->content, qx, qCard.y + 12, qW, 16, COLOR_TEXT_DARK, true);
+                EndScissorMode();
+                if (qH > 40.0f) qH = 40.0f;
+                float optY = std::max(qCard.y + 45.0f, qCard.y + 12 + qH + 6);
 
                 float ansMid = qCard.x + qCard.width * 0.5f;
-                DrawTxtClipped(TextFormat("A. %s", qList[i]->answerA), qCard.x + 25, qCard.y + 45, 14, (qList[i]->correctAnswer == 'A') ? COLOR_SUCCESS : COLOR_TEXT_MUTED, false, ansMid - qCard.x - 40);
-                DrawTxtClipped(TextFormat("B. %s", qList[i]->answerB), qCard.x + 25, qCard.y + 70, 14, (qList[i]->correctAnswer == 'B') ? COLOR_SUCCESS : COLOR_TEXT_MUTED, false, ansMid - qCard.x - 40);
-                DrawTxtClipped(TextFormat("C. %s", qList[i]->answerC), ansMid, qCard.y + 45, 14, (qList[i]->correctAnswer == 'C') ? COLOR_SUCCESS : COLOR_TEXT_MUTED, false, qCard.x + qCard.width - ansMid - 45);
-                DrawTxtClipped(TextFormat("D. %s", qList[i]->answerD), ansMid, qCard.y + 70, 14, (qList[i]->correctAnswer == 'D') ? COLOR_SUCCESS : COLOR_TEXT_MUTED, false, qCard.x + qCard.width - ansMid - 45);
+                DrawTxtClipped(TextFormat("A. %s", qList[i]->answerA), qCard.x + 25, optY, 14, (qList[i]->correctAnswer == 'A') ? COLOR_SUCCESS : COLOR_TEXT_MUTED, false, ansMid - qCard.x - 40);
+                DrawTxtClipped(TextFormat("B. %s", qList[i]->answerB), qCard.x + 25, optY + 25, 14, (qList[i]->correctAnswer == 'B') ? COLOR_SUCCESS : COLOR_TEXT_MUTED, false, ansMid - qCard.x - 40);
+                DrawTxtClipped(TextFormat("C. %s", qList[i]->answerC), ansMid, optY, 14, (qList[i]->correctAnswer == 'C') ? COLOR_SUCCESS : COLOR_TEXT_MUTED, false, qCard.x + qCard.width - ansMid - 45);
+                DrawTxtClipped(TextFormat("D. %s", qList[i]->answerD), ansMid, optY + 25, 14, (qList[i]->correctAnswer == 'D') ? COLOR_SUCCESS : COLOR_TEXT_MUTED, false, qCard.x + qCard.width - ansMid - 45);
 
-                DrawTxt(TextFormat("Dap an dung: %c", qList[i]->correctAnswer), qCard.x + 25, qCard.y + 105, 15, COLOR_SUCCESS, true);
+                DrawTxt(TextFormat("Dap an dung: %c", qList[i]->correctAnswer), qCard.x + 25, optY + 60, 15, COLOR_SUCCESS, true);
 
                 if (GuiBtnOutline({ qCard.x + qCard.width - 150, qCard.y + 100, 65, 30 }, "Sua", COLOR_PRIMARY, COLOR_PRIMARY, 14)) {
                     g.currentModal = MODAL_EDIT_QUESTION;

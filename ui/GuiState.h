@@ -113,6 +113,7 @@ struct GuiState {
     int studentTab;
     int studentSubChoice;
     int studentReviewScoreIdx = -1;
+    int studentScorePage = 0;
 
     ExamDetail* examHead;
     Arr<ExamDetail*> examList;

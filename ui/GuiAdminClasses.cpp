@@ -179,10 +179,9 @@ void drawAdminTabClasses(GuiState& g) {
     bool showClassCol = g.classShowAll;
     int xStt = 10;
     int xMasv = 45;
-    int xLop = 112;
-    int xName = showClassCol ? 232 : 120;
-    int xGender = showClassCol ? 345 : 340;
-    int xPass = showClassCol ? 390 : 385;
+    int xLop = 140;
+    int xName = showClassCol ? 235 : 120;
+    int xGender = showClassCol ? 400 : 340;
     int xActions = (int)rightPane.width - 130;
 
     int tableY = (int)rightPane.y + 100;
@@ -191,17 +190,12 @@ void drawAdminTabClasses(GuiState& g) {
     DrawTxt("MASV", rightPane.x + xMasv, (float)tableY + 11, 15, WHITE, true);
     if (showClassCol) DrawTxt("MA LOP", rightPane.x + xLop, (float)tableY + 11, 15, WHITE, true);
     DrawTxt("HO VA TEN", rightPane.x + xName, (float)tableY + 11, 15, WHITE, true);
-    DrawTxt("PHAI", rightPane.x + xGender, (float)tableY + 11, 15, WHITE, true);
-    DrawTxt("MAT KHAU", rightPane.x + xPass, (float)tableY + 11, 15, WHITE, true);
+    DrawTxt("GIOI TINH", rightPane.x + xGender, (float)tableY + 11, 15, WHITE, true);
     DrawTxt("THAO TAC", rightPane.x + xActions, (float)tableY + 11, 15, WHITE, true);
 
     bool noClassAtAll = (g.classCount == 0);
     bool classHasNoStudents = (curClass != nullptr && curClass->studentList == nullptr);
     bool filterNoMatch = rows.empty() && g.searchStudent[0] != '\0';
-    if (!g.classShowAll && curClass != nullptr) {
-        int rawCount = countStudentsInClass(curClass);
-        if (rawCount > 0 && rows.empty()) filterNoMatch = true;
-    }
 
     if (noClassAtAll) {
         DrawTxt("Vui long them lop hoc o cot ben trai truoc.", rightPane.x + 20, (float)tableY + 60, 16, COLOR_TEXT_MUTED);
@@ -230,10 +224,9 @@ void drawAdminTabClasses(GuiState& g) {
             Student* s = rows[i].student;
             DrawTxt(TextFormat("%d", i + 1), rightPane.x + xStt, (float)rowY + 11, 15, COLOR_TEXT_DARK);
             DrawTxt(s->id, rightPane.x + xMasv, (float)rowY + 11, 15, COLOR_PRIMARY, true);
-            if (showClassCol) DrawTxtClipped(rows[i].classroom->id, rightPane.x + xLop, (float)rowY + 11, 14, COLOR_TEXT_MUTED, false, xName - xLop - 10);
+            if (showClassCol) DrawTxtClipped(rows[i].classroom->id, rightPane.x + xLop, (float)rowY + 11, 13, COLOR_TEXT_MUTED, false, xName - xLop - 10);
             DrawTxtClipped(TextFormat("%s %s", s->ho, s->ten), rightPane.x + xName, (float)rowY + 11, 15, COLOR_TEXT_DARK, false, xGender - xName - 10);
             DrawTxt(s->gender, rightPane.x + xGender, (float)rowY + 11, 15, COLOR_TEXT_MUTED);
-            DrawTxt("******", rightPane.x + xPass, (float)rowY + 11, 15, COLOR_TEXT_MUTED);
 
             if (GuiBtnOutline({ rightPane.x + xActions, (float)rowY + 6, 55, 30 }, "Sua", COLOR_PRIMARY, COLOR_PRIMARY, 14)) {
                 g.currentModal = MODAL_EDIT_STUDENT;

@@ -4,8 +4,6 @@
 #include "../business/AuthService.h"
 #include "../business/BusinessErrors.h"
 
-#include <cstdio>
-
 void drawLoginScreen(GuiState& g) {
     DrawRectangle(0, 0, GUI_WIDTH, 180, COLOR_SIDEBAR);
     const char* title = "HE THONG QUAN LY VA THI TRAC NGHIEM C++";

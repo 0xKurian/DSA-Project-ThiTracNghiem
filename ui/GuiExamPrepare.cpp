@@ -6,8 +6,6 @@
 #include "../business/ExamService.h"
 #include "../core/ExamConfigList.h"
 
-#include <cstdio>
-
 static void applyExamSessionToUi(GuiState& g, const char* subId, int totalSeconds, bool useResume) {
     g.examList.clear();
     ExamDetail* cur = g.examHead;
@@ -100,5 +98,9 @@ void drawExamPrepareTab(GuiState& g) {
                                       g.activeSearchPrepare, items,
                                       "Tim theo ma hoac ten mon...");
         if (picked >= 0) g.studentSubChoice = picked;
+        if (g.studentSubChoice >= 0 && g.studentSubChoice < (int)g.subjects.size()) {
+            DrawTxt(TextFormat("Dang chon: %s - %s", g.subjects[g.studentSubChoice]->id, g.subjects[g.studentSubChoice]->name),
+                    prepSearchRec.x, prepSearchRec.y + 48, 15, COLOR_TEXT_MUTED);
+        }
     }
 }

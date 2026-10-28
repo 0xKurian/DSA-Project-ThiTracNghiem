@@ -467,9 +467,6 @@ int GuiSearchSuggest(Rectangle rec, char* query, int capacity, bool& active,
     const int maxRows = 6;
     int shown = (int)matches.size();
     if (shown > maxRows) shown = maxRows;
-    int scrollMax = (int)matches.size() - maxRows;
-    if (suggestScroll > scrollMax) suggestScroll = scrollMax;
-    if (suggestScroll < 0) suggestScroll = 0;
 
     const float rowH = 34.0f;
     float panelW = rec.width < 420.0f ? 420.0f : rec.width;
@@ -495,6 +492,10 @@ int GuiSearchSuggest(Rectangle rec, char* query, int capacity, bool& active,
     if (shown > 0 && CheckCollisionPointRec(mouse, panel)) {
         suggestScroll += (int)GetMouseWheelMove() * -1;
     }
+    int scrollMax = (int)matches.size() - maxRows;
+    if (scrollMax < 0) scrollMax = 0;
+    if (suggestScroll > scrollMax) suggestScroll = scrollMax;
+    if (suggestScroll < 0) suggestScroll = 0;
 
     for (int r = 0; r < shown; ++r) {
         const SuggestItem* it = matches[suggestScroll + r];

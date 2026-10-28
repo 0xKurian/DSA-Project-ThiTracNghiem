@@ -3,8 +3,6 @@
 
 #include "../business/BusinessQueries.h"
 
-#include <cstdio>
-
 void drawExamResult(GuiState& g) {
     DrawRectangle(0, 0, GUI_WIDTH, GUI_HEIGHT, COLOR_BG);
 

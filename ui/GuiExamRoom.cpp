@@ -5,8 +5,6 @@
 #include "../business/ExamConfigService.h"
 #include "../business/ExamService.h"
 
-#include <cstdio>
-
 static void finishExamAndShowResult(GuiState& g, bool expired) {
     g.currentModal = MODAL_NONE;
     g.examTimer.stop();
@@ -70,7 +68,8 @@ void drawExamRoom(GuiState& g) {
     DrawTxt(TextFormat("CAU HOI %d / %d", g.currentExamQuestionIdx + 1, (int)g.examList.size()), qPane.x + 30, qPane.y + 25, 20, COLOR_PRIMARY, true);
     DrawLine((int)qPane.x + 30, (int)qPane.y + 55, (int)qPane.x + (int)qPane.width - 30, (int)qPane.y + 55, COLOR_BORDER);
 
-    DrawTxtWrapped(curQ->content, qPane.x + 30, qPane.y + 70, qPane.width - 60, 18, COLOR_TEXT_DARK, true);
+    float qH = DrawTxtWrapped(curQ->content, qPane.x + 30, qPane.y + 70, qPane.width - 60, 18, COLOR_TEXT_DARK, true);
+    float ansStartY = std::max(qPane.y + 140.0f, qPane.y + 70.0f + qH + 15.0f);
 
     struct AnsChoice { char letter; const char* text; };
     AnsChoice choices[4] = {
@@ -81,7 +80,7 @@ void drawExamRoom(GuiState& g) {
     };
 
     for (int i = 0; i < 4; ++i) {
-        Rectangle ansRec = { qPane.x + 30, (float)(qPane.y + 140 + i * 85), qPane.width - 60, 70 };
+        Rectangle ansRec = { qPane.x + 30, (float)(ansStartY + i * 85), qPane.width - 60, 70 };
         bool isSelected = (curQ->selectedAnswer == choices[i].letter);
 
         Color btnBg = isSelected ? MakeColor(219, 234, 254) : COLOR_CARD;
@@ -119,9 +118,13 @@ void drawExamRoom(GuiState& g) {
     DrawTxt("DANH SACH CAU HOI", gridPane.x + 25, gridPane.y + 22, 17, COLOR_TEXT_DARK, true);
     DrawTxt("Xanh: Da lam | Trang: Chua lam", gridPane.x + 25, gridPane.y + 48, 13, COLOR_TEXT_MUTED);
 
-    int btnSize = (g.examList.size() > 36) ? 36 : 42;
-    int btnGap = (g.examList.size() > 36) ? 8 : 12;
-    int cols = 6;
+    int btnSize = 42, btnGap = 12, cols = 6, numFont = 15;
+    int examCount = (int)g.examList.size();
+    if (examCount > 120) {
+        btnSize = 26; btnGap = 5; cols = 8; numFont = 12;
+    } else if (examCount > 36) {
+        btnSize = 30; btnGap = 6; cols = 8; numFont = 13;
+    }
     for (size_t i = 0; i < g.examList.size(); ++i) {
         int col = (int)i % cols;
         int row = (int)i / cols;
@@ -139,7 +142,7 @@ void drawExamRoom(GuiState& g) {
         }
 
         const char* numStr = TextFormat("%d", (int)i + 1);
-        DrawTxt(numStr, numRec.x + (btnSize - MeasureTxt(numStr, 15, true)) / 2.0f, numRec.y + (btnSize - 15) / 2.0f, 15, numText, true);
+        DrawTxt(numStr, numRec.x + (btnSize - MeasureTxt(numStr, (float)numFont, true)) / 2.0f, numRec.y + (btnSize - numFont) / 2.0f, (float)numFont, numText, true);
 
         Vector2 mouse = GetMousePosition();
         if (g.currentModal == MODAL_NONE && CheckCollisionPointRec(mouse, numRec) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {

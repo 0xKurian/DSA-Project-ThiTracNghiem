@@ -10,7 +10,6 @@
 
 #include <algorithm>
 #include <cstdio>
-#include <cstring>
 
 void drawAdminTabScores(GuiState& g) {
     Rectangle contentRec = { 260, 85, (float)(GUI_WIDTH - 280), (float)(GUI_HEIGHT - 105) };
