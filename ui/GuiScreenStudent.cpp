@@ -1,6 +1,7 @@
 #include "GuiCommon.h"
 #include "GuiState.h"
 
+#include "../business/ExamConfigService.h"
 #include "../core/SubjectBST.h"
 
 #include <algorithm>
@@ -8,7 +9,12 @@
 
 void drawStudentHome(GuiState& g) {
     DrawRectangle(0, 0, GUI_WIDTH, 65, COLOR_SIDEBAR);
-    DrawTxt(TextFormat("SINH VIEN: %s - %s %s", g.loggedStudent->id, g.loggedStudent->ho, g.loggedStudent->ten), 30, 20, 22, WHITE, true);
+    Class* svClass = findStudentClass(g.classes, g.classCount, g.loggedStudent->id);
+    if (svClass != nullptr) {
+        DrawTxt(TextFormat("SINH VIEN: %s - %s - %s %s", g.loggedStudent->id, svClass->id, g.loggedStudent->ho, g.loggedStudent->ten), 30, 20, 22, WHITE, true);
+    } else {
+        DrawTxt(TextFormat("SINH VIEN: %s - %s %s", g.loggedStudent->id, g.loggedStudent->ho, g.loggedStudent->ten), 30, 20, 22, WHITE, true);
+    }
 
     if (GuiBtn({ (float)(GUI_WIDTH - 130), 15, 100, 35 }, "Dang xuat", COLOR_DANGER, COLOR_DANGER_HOVER, WHITE, 15, true)) {
         g.currentScreen = SCREEN_LOGIN;

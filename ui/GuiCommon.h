@@ -51,6 +51,7 @@ void DrawTxt(const char* text, float posX, float posY, float fontSize, Color col
 float MeasureTxt(const char* text, float fontSize, bool bold = false);
 float DrawTxtWrapped(const char* text, float posX, float posY, float maxWidth, float fontSize,
                      Color color = COLOR_TEXT_DARK, bool bold = false, float lineSpacing = 4.0f);
+void DrawTxtClipped(const char* text, float x, float y, float fontSize, Color color = COLOR_TEXT_DARK, bool bold = false, float maxW = 0.0f);
 
 void GuiSetModalState(bool modalOpen);
 void GuiMarkInsideModal();

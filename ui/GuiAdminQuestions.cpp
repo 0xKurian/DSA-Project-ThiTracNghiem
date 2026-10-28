@@ -60,10 +60,11 @@ void drawAdminTabQuestions(GuiState& g) {
                 float qx = std::max(qCard.x + 75.0f, qCard.x + 15 + MeasureTxt(idLabel, 16, true) + 10);
                 DrawTxtWrapped(qList[i]->content, qx, qCard.y + 12, qCard.x + qCard.width - 85 - (qx - qCard.x), 16, COLOR_TEXT_DARK, true);
 
-                DrawTxt(TextFormat("A. %s", qList[i]->answerA), qCard.x + 25, qCard.y + 45, 14, (qList[i]->correctAnswer == 'A') ? COLOR_SUCCESS : COLOR_TEXT_MUTED);
-                DrawTxt(TextFormat("B. %s", qList[i]->answerB), qCard.x + 25, qCard.y + 70, 14, (qList[i]->correctAnswer == 'B') ? COLOR_SUCCESS : COLOR_TEXT_MUTED);
-                DrawTxt(TextFormat("C. %s", qList[i]->answerC), qCard.x + 450, qCard.y + 45, 14, (qList[i]->correctAnswer == 'C') ? COLOR_SUCCESS : COLOR_TEXT_MUTED);
-                DrawTxt(TextFormat("D. %s", qList[i]->answerD), qCard.x + 450, qCard.y + 70, 14, (qList[i]->correctAnswer == 'D') ? COLOR_SUCCESS : COLOR_TEXT_MUTED);
+                float ansMid = qCard.x + qCard.width * 0.5f;
+                DrawTxtClipped(TextFormat("A. %s", qList[i]->answerA), qCard.x + 25, qCard.y + 45, 14, (qList[i]->correctAnswer == 'A') ? COLOR_SUCCESS : COLOR_TEXT_MUTED, false, ansMid - qCard.x - 40);
+                DrawTxtClipped(TextFormat("B. %s", qList[i]->answerB), qCard.x + 25, qCard.y + 70, 14, (qList[i]->correctAnswer == 'B') ? COLOR_SUCCESS : COLOR_TEXT_MUTED, false, ansMid - qCard.x - 40);
+                DrawTxtClipped(TextFormat("C. %s", qList[i]->answerC), ansMid, qCard.y + 45, 14, (qList[i]->correctAnswer == 'C') ? COLOR_SUCCESS : COLOR_TEXT_MUTED, false, qCard.x + qCard.width - ansMid - 45);
+                DrawTxtClipped(TextFormat("D. %s", qList[i]->answerD), ansMid, qCard.y + 70, 14, (qList[i]->correctAnswer == 'D') ? COLOR_SUCCESS : COLOR_TEXT_MUTED, false, qCard.x + qCard.width - ansMid - 45);
 
                 DrawTxt(TextFormat("Dap an dung: %c", qList[i]->correctAnswer), qCard.x + 25, qCard.y + 105, 15, COLOR_SUCCESS, true);
 

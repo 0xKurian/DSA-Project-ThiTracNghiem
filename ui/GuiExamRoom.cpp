@@ -96,7 +96,7 @@ void drawExamRoom(GuiState& g) {
 
         Vector2 mouse = GetMousePosition();
         if (g.currentModal == MODAL_NONE && CheckCollisionPointRec(mouse, ansRec) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-            curQ->selectedAnswer = choices[i].letter;
+            recordSelectedAnswer(curQ, choices[i].letter);
             tickExamSession(g.examTimer, g.examTracker, g.loggedStudent->id,
                             g.activeExamSubId.c_str(), g.examHead);
         }

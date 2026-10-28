@@ -12,6 +12,7 @@
 #include <string>
 
 static Font gFontRegular;
+static int suggestScroll = 0;
 static Font gFontBold;
 
 static bool gModalOpen = false;
@@ -137,6 +138,18 @@ float DrawTxtWrapped(const char* text, float posX, float posY, float maxWidth, f
         currentY += fontSize + lineSpacing;
     }
     return currentY - posY;
+}
+
+void DrawTxtClipped(const char* text, float x, float y, float fontSize, Color color, bool bold, float maxW) {
+    std::string out;
+    if (MeasureTxt(text, fontSize, bold) > maxW) {
+        out = text;
+        while (!out.empty() && MeasureTxt((out + "...").c_str(), fontSize, bold) > maxW) out.pop_back();
+        out += "...";
+    }
+    BeginScissorMode((int)x, (int)y - 1, (int)maxW, (int)fontSize + 4);
+    DrawTxt(out.empty() ? text : out.c_str(), x, y, fontSize, color, bold);
+    EndScissorMode();
 }
 
 static bool drawBtnShell(Rectangle rec, const char* text, float fontSize, bool bold,
@@ -382,10 +395,11 @@ void GuiDrawTakenExamCard(const ExamDetail* d, int index, Rectangle dCard) {
     float qx = std::max(dCard.x + 80.0f, dCard.x + 15 + MeasureTxt(qLabel, 16, true) + 10);
     DrawTxtWrapped(d->content, qx, dCard.y + 12, dCard.x + dCard.width - 15 - qx, 16, COLOR_TEXT_DARK, true);
 
-    DrawTxt(TextFormat("A. %s", d->answerA), dCard.x + 25, dCard.y + 42, 14, COLOR_TEXT_MUTED);
-    DrawTxt(TextFormat("B. %s", d->answerB), dCard.x + 25, dCard.y + 68, 14, COLOR_TEXT_MUTED);
-    DrawTxt(TextFormat("C. %s", d->answerC), dCard.x + 450, dCard.y + 42, 14, COLOR_TEXT_MUTED);
-    DrawTxt(TextFormat("D. %s", d->answerD), dCard.x + 450, dCard.y + 68, 14, COLOR_TEXT_MUTED);
+    float ansMid = dCard.x + dCard.width * 0.5f;
+    DrawTxtClipped(TextFormat("A. %s", d->answerA), dCard.x + 25, dCard.y + 42, 14, COLOR_TEXT_MUTED, false, ansMid - dCard.x - 40);
+    DrawTxtClipped(TextFormat("B. %s", d->answerB), dCard.x + 25, dCard.y + 68, 14, COLOR_TEXT_MUTED, false, ansMid - dCard.x - 40);
+    DrawTxtClipped(TextFormat("C. %s", d->answerC), ansMid, dCard.y + 42, 14, COLOR_TEXT_MUTED, false, dCard.x + dCard.width - ansMid - 45);
+    DrawTxtClipped(TextFormat("D. %s", d->answerD), ansMid, dCard.y + 68, 14, COLOR_TEXT_MUTED, false, dCard.x + dCard.width - ansMid - 45);
 
     bool isCorrect = (d->selectedAnswer == d->correctAnswer);
     DrawTxt(TextFormat("Ban chon: %c | Dap an dung: %c", d->selectedAnswer ? d->selectedAnswer : '-', d->correctAnswer),
@@ -441,6 +455,7 @@ int GuiSearchSuggest(Rectangle rec, char* query, int capacity, bool& active,
     bool wasActive = active;
     GuiTextBoxInput(rec, query, capacity, active, placeholder);
     if (!active && !wasActive) return -1;
+    if (active && !wasActive) suggestScroll = 0;
 
     Arr<const SuggestItem*> matches;
     for (const SuggestItem& it : items) {
@@ -452,6 +467,9 @@ int GuiSearchSuggest(Rectangle rec, char* query, int capacity, bool& active,
     const int maxRows = 6;
     int shown = (int)matches.size();
     if (shown > maxRows) shown = maxRows;
+    int scrollMax = (int)matches.size() - maxRows;
+    if (suggestScroll > scrollMax) suggestScroll = scrollMax;
+    if (suggestScroll < 0) suggestScroll = 0;
 
     const float rowH = 34.0f;
     float panelW = rec.width < 420.0f ? 420.0f : rec.width;
@@ -474,8 +492,12 @@ int GuiSearchSuggest(Rectangle rec, char* query, int capacity, bool& active,
     bool pressed = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
     int picked = -1;
 
+    if (shown > 0 && CheckCollisionPointRec(mouse, panel)) {
+        suggestScroll += (int)GetMouseWheelMove() * -1;
+    }
+
     for (int r = 0; r < shown; ++r) {
-        const SuggestItem* it = matches[r];
+        const SuggestItem* it = matches[suggestScroll + r];
         Rectangle row = { panel.x + 4, panel.y + 4 + r * rowH, panel.width - 8, rowH };
         bool hover = CheckCollisionPointRec(mouse, row);
 

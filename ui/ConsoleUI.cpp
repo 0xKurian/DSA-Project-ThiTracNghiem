@@ -738,7 +738,7 @@ static void runExamLoop(
         if (cmd >= 'a' && cmd <= 'z') cmd = (char)(cmd - ('a' - 'A'));
 
         if (cmd == 'A' || cmd == 'B' || cmd == 'C' || cmd == 'D') {
-            q->selectedAnswer = cmd;
+            recordSelectedAnswer(q, cmd);
             tick();
             if (currentIdx < totalQuestions - 1) {
                 currentIdx++;

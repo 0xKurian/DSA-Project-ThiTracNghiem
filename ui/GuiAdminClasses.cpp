@@ -180,7 +180,7 @@ void drawAdminTabClasses(GuiState& g) {
     int xStt = 10;
     int xMasv = 45;
     int xLop = 112;
-    int xName = showClassCol ? 205 : 120;
+    int xName = showClassCol ? 232 : 120;
     int xGender = showClassCol ? 345 : 340;
     int xPass = showClassCol ? 390 : 385;
     int xActions = (int)rightPane.width - 130;
@@ -230,8 +230,8 @@ void drawAdminTabClasses(GuiState& g) {
             Student* s = rows[i].student;
             DrawTxt(TextFormat("%d", i + 1), rightPane.x + xStt, (float)rowY + 11, 15, COLOR_TEXT_DARK);
             DrawTxt(s->id, rightPane.x + xMasv, (float)rowY + 11, 15, COLOR_PRIMARY, true);
-            if (showClassCol) DrawTxt(rows[i].classroom->id, rightPane.x + xLop, (float)rowY + 11, 14, COLOR_TEXT_MUTED);
-            DrawTxt(TextFormat("%s %s", s->ho, s->ten), rightPane.x + xName, (float)rowY + 11, 15, COLOR_TEXT_DARK);
+            if (showClassCol) DrawTxtClipped(rows[i].classroom->id, rightPane.x + xLop, (float)rowY + 11, 14, COLOR_TEXT_MUTED, false, xName - xLop - 10);
+            DrawTxtClipped(TextFormat("%s %s", s->ho, s->ten), rightPane.x + xName, (float)rowY + 11, 15, COLOR_TEXT_DARK, false, xGender - xName - 10);
             DrawTxt(s->gender, rightPane.x + xGender, (float)rowY + 11, 15, COLOR_TEXT_MUTED);
             DrawTxt("******", rightPane.x + xPass, (float)rowY + 11, 15, COLOR_TEXT_MUTED);
 

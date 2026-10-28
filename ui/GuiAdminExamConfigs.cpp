@@ -82,7 +82,6 @@ static void drawConfigList(GuiState& g, Rectangle pane) {
     if (total == 0) {
         DrawTxt("Chua co cau hinh nao.", pane.x + 15, (float)listTop + 15, 15, COLOR_TEXT_MUTED);
         DrawTxt("Bam '+ Tao Cau Hinh' de tao cau hinh lop - mon.", pane.x + 15, (float)listTop + 42, 15, COLOR_TEXT_MUTED);
-        return;
     }
 
     int start = g.configPage * SCORES_PER_PAGE;
@@ -118,12 +117,14 @@ static void drawConfigList(GuiState& g, Rectangle pane) {
     }
 
     int pageBarY = (int)(pane.y + pane.height - 40);
-    DrawTxt(TextFormat("Trang %d / %d", g.configPage + 1, totalPages), pane.x + 15, (float)pageBarY + 6, 14, COLOR_TEXT_MUTED);
-    if (GuiBtnOutline({ pane.x + pane.width - 230, (float)pageBarY, 100, 28 }, "< Truoc", COLOR_PRIMARY, COLOR_PRIMARY, 13, false, g.configPage == 0)) {
-        if (g.configPage > 0) g.configPage--;
-    }
-    if (GuiBtnOutline({ pane.x + pane.width - 120, (float)pageBarY, 100, 28 }, "Sau >", COLOR_PRIMARY, COLOR_PRIMARY, 13, false, g.configPage >= totalPages - 1)) {
-        if (g.configPage < totalPages - 1) g.configPage++;
+    if (total > 0) {
+        DrawTxt(TextFormat("Trang %d / %d", g.configPage + 1, totalPages), pane.x + 15, (float)pageBarY + 6, 14, COLOR_TEXT_MUTED);
+        if (GuiBtnOutline({ pane.x + pane.width - 230, (float)pageBarY, 100, 28 }, "< Truoc", COLOR_PRIMARY, COLOR_PRIMARY, 13, false, g.configPage == 0)) {
+            if (g.configPage > 0) g.configPage--;
+        }
+        if (GuiBtnOutline({ pane.x + pane.width - 120, (float)pageBarY, 100, 28 }, "Sau >", COLOR_PRIMARY, COLOR_PRIMARY, 13, false, g.configPage >= totalPages - 1)) {
+            if (g.configPage < totalPages - 1) g.configPage++;
+        }
     }
 
     Arr<SuggestItem> classItems;
@@ -160,19 +161,6 @@ static void drawConfigList(GuiState& g, Rectangle pane) {
         g.configPage = 0;
         g.configSelected = -1;
     }
-}
-
-static void DrawTxtClipped(const char* text, float x, float y, float fontSize, Color color, bool bold, float maxW) {
-    // std::string chi lam text tam trong helper hien thi, khong lam cau truc du lieu
-    std::string out;
-    if (MeasureTxt(text, fontSize, bold) > maxW) {
-        out = text;
-        while (!out.empty() && MeasureTxt((out + "...").c_str(), fontSize, bold) > maxW) out.pop_back();
-        out += "...";
-    }
-    BeginScissorMode((int)x, (int)y - 1, (int)maxW, (int)fontSize + 4);
-    DrawTxt(out.empty() ? text : out.c_str(), x, y, fontSize, color, bold);
-    EndScissorMode();
 }
 
 static void drawConfigPreview(GuiState& g, Rectangle pane) {
