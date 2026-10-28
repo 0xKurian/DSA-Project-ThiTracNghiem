@@ -186,7 +186,7 @@ KTLT|Ky thuat lap trinh|20
 176|Thu tu luu tru mang 2 chieu arr[m][n] trong bo nho may tinh cua C/C++ la gi?|Thu tu uu tien dong (Row-major Order)|Thu tu uu tien cot (Column-major Order)|Luu tru ngau nhien khong co thu tu|Luu tru theo dang duong cheo|A
 177|Con tro ham (Function Pointer) trong C++ duoc su dung vao muc dich gi?|Luu dia chi cua ham de co the goi ham dong hoac truyen lam callback|Tang toc do thuc thi cua ham len gap doi|Che giau ma nguon cua ham khoi hacker|Tu dong bien dich ham sang ma may|A
 178|Cau lenh re nhanh switch-case trong C++ chap nhan kieu du lieu nao cho bieu thuc?|Kieu nguyen thuy dang so nguyen (int, char, enum)|Kieu so thuc float hoac double|Kieu chuoi ky tu std::string|Kieu con tro hoac mang|A
-179|Chuoi ky tu co dien trong ngon ngu C (C-string) duoc ket thuc boi ky tu nao?|Ky tu null '\0'|Ky tu xuong dong '\n'|Ky tu dau cach ' '|Dau cham cau '.'|A
+179|Chuoi ky tu co dien trong ngon ngu C (C-string) duoc ket thuc boi ky tu nao?|Ky tu null '\\0'|Ky tu xuong dong '\\n'|Ky tu dau cach ' '|Dau cham cau '.'|A
 180|Diem khac nhau giua malloc trong C va toan tu new trong C++ la gi?|new tu dong goi Constructor cua lop con malloc chi cap phat vung nho tho|malloc tu dong giai phong bo nho con new thi khong|new khong the cap phat cho mang|malloc tra ve con tro co kieu con new tra ve void*|A
 LTDD|Lap trinh thiet bi di dong|20
 181|Phuong thuc dau tien duoc goi khi khoi tao mot Activity trong Android la gi?|onCreate()|onStart()|onResume()|onRestart()|A

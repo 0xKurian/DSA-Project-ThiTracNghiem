@@ -21,7 +21,7 @@
 
 ---
 
-## Đang mở (Đã hoàn tất toàn bộ B01 — B08)
+## B01 — B08 đã hoàn tất
 
 ### B01 — Rebalance BST môn học sau khi nạp file (R1)
 
@@ -129,6 +129,7 @@ Tầng UI chỉ cần include các header tương ứng và gọi các API chu�
 | Kiểm tra điều kiện thi & lý do | `canStudentTakeSubject` | `business/ExamConfigService.h` |
 | Tick đếm giờ & tự động lưu session | `tickExamSession` | `business/ExamService.h` |
 | Định dạng chuỗi đồng hồ (`MM:SS`) | `formatExamClock` | `business/ExamService.h` |
+| Ghi nhận đáp án sinh viên chọn (`A`–`D`) | `recordSelectedAnswer` | `business/ExamService.h` |
 | Nộp bài thi thủ công | `finishExamWorkflow` | `business/ExamService.h` |
 | Tự động nộp khi hết giờ | `submitExpiredExamWorkflow` | `business/ExamService.h` |
 | Hủy phiên thi dở dang (tự nộp) | `cancelPendingExamWorkflow` | `business/ExamService.h` |
@@ -190,11 +191,11 @@ Nghiệm thu chung:
 
 ---
 
-## Đang mở
+## Bàn giao bổ sung đã hoàn tất
 
 ### B09 — `cancelPendingExamWorkflow` dọn phiên thi hỏng
 
-- **Trạng thái:** Chờ business
+- **Trạng thái:** Xong (28/10/2026)
 - **UI đang chờ:** `ui/GuiExamPrepare.cpp` (banner phiên dở), `ui/GuiModalDialogs.cpp`
   (`MODAL_CANCEL_EXAM`), `ui/ConsoleUI.cpp` (`takeExamSession`)
 - **Vấn đề:** `business/ExamService.cpp` — nếu file `temp_<MASV>.dat` không đọc được,
@@ -206,12 +207,16 @@ Nghiệm thu chung:
   (hoặc `SUCCESS` kèm cờ) để UI thoát trạng thái kẹt.
 - **Acceptance/test:** tạo `temp_SV001.dat` rác → gọi `cancelPendingExamWorkflow`
   → file bị xoá, lần gọi sau không còn cảnh báo phiên dở.
+- **Đã triển khai:** khi không nạp được phiên thi, business giải phóng dữ liệu tạm
+  (nếu có), xoá file phiên và trả `ERR_NOT_FOUND`; cờ `saveFailedOut` được đặt
+  về `false`. `tests/test_exam_timer.cpp` kiểm tra file hỏng bị xoá và gọi lại
+  không còn phiên dở.
 
 ---
 
 ### B10 — API ghi nhận đáp án đang chọn của sinh viên
 
-- **Trạng thái:** Chờ business
+- **Trạng thái:** Xong (28/10/2026)
 - **UI đang chờ:** `ui/GuiExamRoom.cpp:87`
 - **Vấn đề:** UI gán trực tiếp `curQ->selectedAnswer = choices[i].letter` vào node
   `ExamDetail` của core khi sinh viên click đáp án trong phòng thi. Việc ghi nhận
@@ -222,6 +227,10 @@ Nghiệm thu chung:
   'A'..'D', trả SUCCESS khi gán được; chữ khác/trả ERR_INVALID... để UI disable.
 - **Acceptance/test:** gọi với 'A'..'D' → `selectedAnswer` đổi đúng; gọi với 'E'
   → lỗi BusinessResult, node không đổi; tick/nộp bài vẫn đọc được lựa chọn như cũ.
+- **Đã triển khai:** `recordSelectedAnswer(ExamDetail*, char)` trả `SUCCESS`
+  và ghi lựa chọn `A`–`D`; trả `ERR_INVALID_FORMAT` cho ký tự khác và
+  `ERR_NOT_FOUND` khi node null, không đổi đáp án hiện có. Kiểm thử xác nhận
+  đáp án được giữ qua lưu/khôi phục phiên và nộp bài.
 
 ---
 

@@ -57,6 +57,8 @@ void formatExamTime(
 
 void formatExamClock(int seconds, char out[], int size);
 
+BusinessResult recordSelectedAnswer(ExamDetail* detail, char answer);
+
 struct ExamSessionTracker {
     int lastSavedSecond = -1;
 };

@@ -7,6 +7,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <fstream>
 
 int main() {
     ExamTimer timer;
@@ -36,6 +37,15 @@ int main() {
 
     ExamDetail* head = createExamDetail(question);
     assert(head != nullptr);
+    for (char answer = 'A'; answer <= 'D'; ++answer) {
+        assert(recordSelectedAnswer(head, answer) == SUCCESS);
+        assert(head->selectedAnswer == answer);
+    }
+    assert(recordSelectedAnswer(head, 'E') == ERR_INVALID_FORMAT);
+    assert(head->selectedAnswer == 'D');
+    assert(recordSelectedAnswer(head, 'a') == ERR_INVALID_FORMAT);
+    assert(head->selectedAnswer == 'D');
+    assert(recordSelectedAnswer(nullptr, 'A') == ERR_NOT_FOUND);
     assert(!saveExamSession("../SV1", "CTDL", 5, head));
     assert(!checkExamSession("../SV1"));
     ExamSessionTracker tracker;
@@ -54,6 +64,7 @@ int main() {
     assert(resumeExamWorkflow(root, classes, classCount, student, resumed,
                               subject, remaining, sessionFile) == SUCCESS);
     assert(std::strcmp(subject, "CTDL") == 0 && resumed != nullptr);
+    assert(resumed->selectedAnswer == 'D');
     cancelExam(resumed);
 
     float score = 0.0f;
@@ -65,6 +76,7 @@ int main() {
                               "build/test_finish_data", sessionFile) == SUCCESS);
     assert(head == nullptr && !saveFailed && total == 1);
     assert(findScore(student, "CTDL") != nullptr);
+    assert(findScore(student, "CTDL")->detailList->selectedAnswer == 'D');
     assert(!checkExamSession(student->id, sessionFile));
 
     Student* other = createStudent("SV2", "B", "Two", "Nam", "pw");
@@ -91,6 +103,23 @@ int main() {
     assert(findScore(saveFailureStudent, "CTDL") != nullptr);
     assert(checkExamSession(saveFailureStudent->id, sessionFile));
     assert(removeExamSession(saveFailureStudent->id, sessionFile));
+
+    Student* brokenSessionStudent = createStudent("SV4", "D", "Four", "Nam", "pw");
+    assert(addStudent(classroom, brokenSessionStudent));
+    {
+        std::ofstream broken(sessionFile);
+        broken << "broken session\n";
+    }
+    assert(checkExamSession(brokenSessionStudent->id, sessionFile));
+    saveFailed = true;
+    assert(cancelPendingExamWorkflow(root, classes, classCount,
+                                     brokenSessionStudent, &saveFailed,
+                                     "build/test_finish_data", sessionFile) == ERR_NOT_FOUND);
+    assert(!saveFailed);
+    assert(!checkExamSession(brokenSessionStudent->id, sessionFile));
+    assert(cancelPendingExamWorkflow(root, classes, classCount,
+                                     brokenSessionStudent, &saveFailed,
+                                     "build/test_finish_data", sessionFile) == ERR_NOT_FOUND);
 
     timer.stop();
     assert(timer.isExpired());

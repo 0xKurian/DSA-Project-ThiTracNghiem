@@ -135,6 +135,13 @@ void formatExamClock(int seconds, char out[], int size) {
     std::snprintf(out, size, "%02d:%02d", seconds / 60, seconds % 60);
 }
 
+BusinessResult recordSelectedAnswer(ExamDetail* detail, char answer) {
+    if (detail == nullptr) return ERR_NOT_FOUND;
+    if (answer < 'A' || answer > 'D') return ERR_INVALID_FORMAT;
+    detail->selectedAnswer = answer;
+    return SUCCESS;
+}
+
 ExamTickResult tickExamSession(
     ExamTimer& timer, ExamSessionTracker& tracker, const char studentId[],
     const char subjectId[], ExamDetail* examHead, const char* filepath) {
@@ -722,6 +729,7 @@ BusinessResult submitExpiredExamWorkflow(
 BusinessResult cancelPendingExamWorkflow(
     Subject* root, Class* classes[], int classCount, Student* student,
     bool* saveFailedOut, const char* dataDir, const char* sessionFilepath) {
+    if (saveFailedOut != nullptr) *saveFailedOut = false;
     if (student == nullptr ||
         findStudentClass(classes, classCount, student->id) == nullptr)
         return ERR_NOT_FOUND;
@@ -729,7 +737,11 @@ BusinessResult cancelPendingExamWorkflow(
     char subjectId[SUBJECT_ID_LEN] = {};
     int remaining = 0;
     if (!loadExamSession(student->id, subjectId, remaining, head, root,
-                         sessionFilepath)) return ERR_NOT_FOUND;
+                         sessionFilepath)) {
+        if (head != nullptr) cancelExam(head);
+        removeExamSession(student->id, sessionFilepath);
+        return ERR_NOT_FOUND;
+    }
     float score = 0.0f;
     int correct = 0;
     int total = 0;
